@@ -18,26 +18,30 @@ import toast from "react-hot-toast";
 import { API } from "@/constants";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { REAVALIDAION_TIME } from "@/actions/contants";
+import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
+type props = {
+  type: string;
+  queryKey: string;
+  path:string
+};
 
-export function DeleteDialog() {
+export function DeleteDialog({ type, queryKey,path }: props) {
   const session = useSession();
   const queryClient = new QueryClient();
-  console.log({ session });
 
   const params = useParams();
   const router = useRouter();
   const mutation = useMutation({
     mutationFn: async () => {
       try {
-        const res = await fetch(API + `person/${params.id}`, {
+        const res = await fetch(API + `${type}/${params.id}`, {
           method: "DELETE",
           headers: {
             Authorization: "Bearer " + session!.data!.user.token || "",
           },
         });
         if (!res.ok) {
-          throw new Error("Failed to delete Person");
+          throw new Error(`Failed to delete ${type}`);
         }
         return res.json();
       } catch (error: any) {
@@ -45,14 +49,17 @@ export function DeleteDialog() {
       }
     },
     onSuccess: async () => {
-      toast.success("Person deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["persons"] });
+      toast.success(`${type} deleted successfully`);
+      queryClient.invalidateQueries({ queryKey: [queryKey] });
       const { data } = await axios.post("/api/revalidate", {
-        tags: REAVALIDAION_TIME.COUNT.TAGS,
-        path : "/dashboard"
+        tags:
+          queryKey === QUERY_KEYS.ALL_USERS
+            ? REAVALIDAION_TIME.USER.TAGS(String(params.id))
+            : REAVALIDAION_TIME.SCHOOL.TAGS(String(params.id)),
+        path: "/dashboard",
       });
       if (data) {
-        router.push("/dashboard/persons");
+        router.push(path);
       }
     },
     onError: (error: any) => {

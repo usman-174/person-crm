@@ -13,6 +13,28 @@ export const addSocialPlatform = async (req: Request, res: Response) => {
     res.status(500).json({ message: constants.INTERNAL_SERVER });
   }
 };
+export const deleteSocialPlatform = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    await prisma.social.delete({ where: { id: String(id) } });
+    res.status(200).json({ message: constants.SOCIAL_PLATFORM_DELETED });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: constants.INTERNAL_SERVER });
+  }
+};
+export const getAllSocialPlatforms = async (
+  _: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const socialPlatforms = await prisma.social.findMany();
+    res.status(200).json(socialPlatforms);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: constants.INTERNAL_SERVER });
+  }
+};
 
 export const getAllUsers = async (_: Request, res: Response): Promise<void> => {
   try {
@@ -55,6 +77,8 @@ export const getUserbyId = async (
         lastModifiedBy: true,
       },
     });
+    console.log(user);
+
     if (!user) {
       res.status(404).json({ message: constants.USER_NOT_FOUND });
       return;
@@ -71,17 +95,30 @@ export const updateUser = async (
   res: Response
 ): Promise<void> => {
   const { id } = req.params;
-  console.log(req.body);
-  
+  const { social, ...rest } = req.body;
+  console.log({ rest });
+
   try {
     const user = await prisma.person.update({
       where: { id: String(id) },
       data: {
-        ...req.body,
+        ...rest,
 
         lastModifiedBy: { connect: { id: res.locals.user.id } },
       },
     });
+    for (const record of social) {
+      await prisma.social.update({
+        where: {
+          id: record.id,
+        },
+        data: {
+          account: record.account,
+          platform: record.platform,
+        },
+      });
+    }
+
     res.status(200).json(user);
   } catch (error) {
     console.error(error);

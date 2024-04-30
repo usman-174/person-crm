@@ -99,7 +99,6 @@ model user {
   createdPersons  person[] @relation("created_by")
   modifiedPersons person[] @relation("last_modified_by")
 
-  social social[]
 }
 
 model school {
@@ -139,12 +138,12 @@ model social {
   id       String          @id @default(uuid())
   platform social_platform
   account  String
-  userId   String
-  user     user            @relation(fields: [userId], references: [id], map: "Social_userId_fkey")
+  // userId   String
+  // user     user            @relation(fields: [userId], references: [id], map: "Social_userId_fkey")
   person   person?         @relation(fields: [personId], references: [id])
   personId String?
 
-  @@index([userId], map: "Social_userId_fkey")
+
 }
 
 enum social_platform {

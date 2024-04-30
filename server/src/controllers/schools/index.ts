@@ -26,7 +26,14 @@ export const getAllSchools = async (
   res: Response
 ): Promise<void> => {
   try {
-    const schools = await prisma.school.findMany();
+    const schools = await prisma.school.findMany({
+      include:{
+        head:true,
+        organization:true,
+        createdBy:true,
+        lastModifiedBy:true
+      }
+    });
     res.status(200).json(schools);
   } catch (error) {
     console.error(error);
@@ -43,7 +50,13 @@ export const getSchoolbyId = async (
     const school = await prisma.school.findUnique({
       where: { id: String(id) },
 
-      include: { createdBy: true, lastModifiedBy: true },
+      include: { createdBy: true, lastModifiedBy: true 
+        ,
+        head:true,
+        organization:true,
+        
+
+      },
     });
     if (!school) {
       res.status(404).json({ message: constants.SCHOOL_NOT_FOUND });

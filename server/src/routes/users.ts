@@ -4,7 +4,9 @@ import {
   addUser,
   deleteAllUsers,
   deleteManyUsers,
+  deleteSocialPlatform,
   deleteUser,
+  getAllSocialPlatforms,
   getAllUsers,
   getUserbyId,
   searchUsers,
@@ -16,13 +18,34 @@ const personRouter = express.Router();
 
 // Define your routes here
 
+personRouter.get(
+  "/",
+  checkToken,
+  requireAuth,
+  allowRoles("ADMIN"),
+  getAllUsers
+);
+personRouter.delete(
+  "/social/:id",
+  checkToken,
+  //  requireAuth, allowRoles("ADMIN"),
+  deleteSocialPlatform
+);
 
-personRouter.get("/", checkToken, requireAuth, allowRoles("ADMIN"), getAllUsers);
 personRouter.post("/", checkToken, requireAuth, allowRoles("ADMIN"), addUser);
-personRouter.post("/social", 
-checkToken,
-//  requireAuth, allowRoles("ADMIN"),
-  addSocialPlatform);
+personRouter.get(
+  "/social",
+  checkToken,
+  //  requireAuth, allowRoles("ADMIN"),
+  getAllSocialPlatforms
+);
+
+personRouter.post(
+  "/social",
+  checkToken,
+  //  requireAuth, allowRoles("ADMIN"),
+  addSocialPlatform
+);
 
 personRouter.get(
   "/search",
@@ -61,10 +84,10 @@ personRouter.delete(
   deleteManyUsers
 );
 personRouter.delete(
-    "/",
-    checkToken,
-    requireAuth,
-    allowRoles("ADMIN"),
-    deleteAllUsers
-  );
+  "/",
+  checkToken,
+  requireAuth,
+  allowRoles("ADMIN"),
+  deleteAllUsers
+);
 export default personRouter;

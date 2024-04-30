@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-export const addPersonSchema = z.object({
+export const editPersonSchema = z.object({
+    id: z.string().optional(),
   username: z
     .string({
       message: "Please enter a valid Email",
@@ -82,6 +83,7 @@ export const addPersonSchema = z.object({
     required_error: "Select a Date of Birth.",
   }),
   social : z.array(z.object({
+    id: z.string().optional(),
     account: z.string().optional(),
     platform: z.string().optional(),
     personId: z.string().optional(),

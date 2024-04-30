@@ -31,19 +31,21 @@ import { QueryClient, useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useParams, useRouter } from "next/navigation";
+import {  useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { addPersonSchema } from "./valdidations/addPerson";
 import axios from "axios";
 import { REAVALIDAION_TIME } from "@/actions/contants";
+import { AddSocialDialog } from "./AddSocialDialog";
+import { useState } from "react";
 
 export function AddPerson() {
   const session = useSession();
   const queryClient = new QueryClient();
 
-  const params = useParams();
+  
   const router = useRouter();
   const form = useForm<z.infer<typeof addPersonSchema>>({
     mode: "onSubmit",
@@ -57,7 +59,7 @@ export function AddPerson() {
       city: "",
       notes: "",
     },
-  }); 
+  });
 
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addPersonSchema>) => {
@@ -77,14 +79,13 @@ export function AddPerson() {
         throw new Error(error.response?.data?.message || "Failed to add user");
       }
     },
-    onSuccess: async() => {
+    onSuccess: async () => {
       toast.success("User Added successfully");
       queryClient.invalidateQueries({ queryKey: ["persons"] });
-    let {data}= await axios.post("/api/revalidate", {
+      let { data } = await axios.post("/api/revalidate", {
         tags: REAVALIDAION_TIME.COUNT.TAGS,
       });
-      if(data){
-
+      if (data) {
         router.push("/dashboard/persons");
       }
     },
@@ -314,6 +315,7 @@ export function AddPerson() {
               </FormItem>
             )}
           />
+          
         </div>
 
         <Button type="submit">Submit</Button>

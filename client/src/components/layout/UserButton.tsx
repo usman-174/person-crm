@@ -22,7 +22,6 @@ interface UserButtonProps {
 
 export default function UserButton({ user }: UserButtonProps) {
   const isAdmin = user?.role === "ADMIN";
-  console.log(user);
   
   return (
     <DropdownMenu>

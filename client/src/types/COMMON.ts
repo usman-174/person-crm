@@ -1,10 +1,10 @@
+import { USER } from "./USER";
+
 type DateTime = string; // Assuming DateTime is a string type in your system
 
 export interface Head {
   id: string;
-  fname: string;
-  mname?: string | null;
-  lname: string;
+ name: string;
   gender: string;
   organizationId?: string | null;
   createdAt: DateTime;
@@ -32,9 +32,10 @@ export interface SCHOOL {
   organizationId?: string;
   headId?: string | null;
   notes?: string | null;
-  createdAt: DateTime;
-  updatedAt: DateTime;
+  createdAt: Date;
+  lastModified: Date;
+  createdBy?: USER;
+  lastModifiedBy?: USER;
   head?: Head | null;
   organization?: ORGANIZATION;
 }
-

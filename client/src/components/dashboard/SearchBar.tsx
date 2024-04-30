@@ -15,7 +15,7 @@ const SearchBar = ({ setQuery, query,placeholder }: SearchBarProps) => {
       <Input
         type="text"
         placeholder={placeholder||"Search ..."}
-        className="w-3/12 sm:w-1/2" // Adjust margin-right to create space between input and button
+        className="w-full sm:w-1/2" // Adjust margin-right to create space between input and button
         onChange={(e) => setInput(e.target.value)}
         value={input}
       />

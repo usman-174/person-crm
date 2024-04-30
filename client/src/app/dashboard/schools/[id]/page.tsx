@@ -1,12 +1,11 @@
-import { getPerson } from "@/actions/person";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Separator } from "@/components/ui/separator";
-import { USER } from "@/types/USER";
 import { getServerSession } from "next-auth";
-import Image from "next/image";
 
 import { QUERY_KEYS } from "@/actions/contants";
+import { getSchool } from "@/actions/school";
 import { Button } from "@/components/ui/button";
+import { SCHOOL } from "@/types/COMMON";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 import { DeleteDialog } from "@/components/dashboard/DeleteDialog";
@@ -18,33 +17,30 @@ type props = {
 
 const page = async ({ params }: props) => {
   const session = await getServerSession(authOptions);
-  let person: USER | null = null;
+  let school: SCHOOL | null = null;
   if (session?.user) {
-    person = await getPerson(params.id, session?.user.token);
+    school = await getSchool(params.id, session?.user.token);
   }
-  if (!person) return null;
+  if (!school) return null;
 
   return (
     <div className="container mx-auto">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-semibold text-3xl">
-            {person?.fullName}{" "}
-            <span className="text-muted-foreground text-xs">
-              {person?.username}
-            </span>{" "}
-          </h1>
+          <h1 className="font-semibold text-3xl">{school?.name} </h1>
           <p className="text-muted-foreground text-sm">
-            {new Date(person.createdAt!).toLocaleDateString()}
+            {new Date(school.createdAt!).toLocaleDateString()}
           </p>
-          <p className="text-accent-foreground text-sm mt-4">{person?.id}</p>
+          <p className="text-accent-foreground text-sm mt-4">{school?.id}</p>
         </div>
         {/* <OptionsDropDown/>
          */}
         <div className="flex flex-col gap-2 ">
           <div className="flex items-center gap-4">
-            <DeleteDialog queryKey={QUERY_KEYS.ALL_USERS} type="person" path="/dashboard/persons" />
-            <Link href={"/dashboard/persons/edit/" + person?.id}>
+            <DeleteDialog queryKey={QUERY_KEYS.ALL_SCHOOLS} type="school"
+            path="/dashboard/schools" />
+            
+            <Link href={"/dashboard/schools/edit/" + school?.id}>
               <Button variant={"outline"}>
                 <Pencil className="mr-2 h-4 w-4" />
                 <span>Edit</span>
@@ -52,92 +48,92 @@ const page = async ({ params }: props) => {
             </Link>
           </div>
           <p className="text-sm">
-            Last Modified by : {person?.lastModifiedBy?.username || "N/A"}
+            Last Modified by : {school?.lastModifiedBy?.username || "N/A"}
           </p>
           <p className="text-sm">
-            Created by : {person?.createdBy?.username || "N/A"}
+            Created by : {school?.createdBy?.username || "N/A"}
           </p>
         </div>
       </div>
 
       <div className="grid gap-2 grid-cols-1 md:grid-cols-2  mt-5">
-        <div className="relative w-full h-56 md:w-auto md:h-auto overflow-hidden">
+        {/* <div className="relative w-full h-56 md:w-auto md:h-auto overflow-hidden">
           <Image
             src={
-              person?.mainPhoto ||
+              school?.mainPhoto ||
               "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" ||
               "/profile.png"
             }
-            alt={person.fullName!}
+            alt={school.fullName!}
             fill
             className="sm:max-w-96 sm:max-h-96 md:mx-auto rounded-md"
           />
-        </div>
+        </div> */}
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-5">
             <div>
-              <h1 className="text-md font-semibold">Title</h1>
+              <h1 className="text-md font-semibold">Head</h1>
               <p className="text-muted-foreground text-sm">
-                {person?.title || "N/A"}
+                {school?.head?.name || "N/A"}
               </p>
             </div>
             <div>
-              <h1 className="text-md font-semibold">Username</h1>
+              <h1 className="text-md font-semibold">Gender</h1>
               <p className="text-muted-foreground text-sm">
-                {person?.username || "N/A"}
+                {school?.head?.gender || "N/A"}
               </p>
             </div>
           </div>
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
             <div>
-              <h1 className="text-md font-semibold">FirstName</h1>
+              <h1 className="text-md font-semibold">Organization</h1>
               <p className="text-muted-foreground text-sm">
-                {person?.fname || "N/A"}
+                {school?.organization?.name || "N/A"}
               </p>
             </div>
             <div>
-              <h1 className="text-md font-semibold">MiddleName</h1>
+              <h1 className="text-md font-semibold">Org's state</h1>
               <p className="text-muted-foreground text-sm">
-                {person?.mname || "N/A"}
+                {school?.state || "N/A"}
               </p>
             </div>
             <div>
-              <h1 className="text-md font-semibold">LastName</h1>
+              <h1 className="text-md font-semibold">Org's City</h1>
               <p className="text-muted-foreground text-sm">
-                {person?.lname || "N/A"}
+                {school?.city || "N/A"}
               </p>
             </div>
           </div>
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-5">
+          {/* <div className="flex flex-wrap sm:flex-nowrap items-center gap-5">
             <div>
               <h1 className="text-md font-semibold">Country</h1>
               <p className="text-muted-foreground text-sm">
-                {person?.country || "N/A"}
+                {school?.country || "N/A"}
               </p>
             </div>
             <div>
               <h1 className="text-md font-semibold">State</h1>
               <p className="text-muted-foreground text-sm">
-                {person?.state || "N/A"}
+                {school?.state || "N/A"}
               </p>
             </div>
             <div>
               <h1 className="text-md font-semibold">City</h1>
               <p className="text-muted-foreground text-sm">
-                {person?.city || "N/A"}
+                {school?.city || "N/A"}
               </p>
             </div>
           </div>
           <div>
             <h1 className="text-md font-semibold">Address1</h1>
             <p className="text-muted-foreground text-sm">
-              {person?.address || "N/A"}
+              {school?.address || "N/A"}
             </p>
           </div>
           <div>
             <h1 className="text-md font-semibold">Address2</h1>
             <p className="text-muted-foreground text-sm">
-              {person?.address2 || "N/A"}
+              {school?.address2 || "N/A"}
             </p>
           </div>
 
@@ -145,35 +141,35 @@ const page = async ({ params }: props) => {
             <div>
               <h1 className="text-md font-semibold">Type</h1>
               <p className="text-accent-foreground text-sm">
-                {person?.type || "N/A"}
+                {school?.type || "N/A"}
               </p>
             </div>
             <div>
               <h1 className="text-md font-semibold">Source</h1>
               <p className="text-accent-foreground text-sm">
-                {person?.source || "N/A"}
+                {school?.source || "N/A"}
               </p>
             </div>
             <div>
               <h1 className="text-md font-semibold">Date of Birth</h1>
               <p className="text-muted-foreground text-sm">
-                {new Date(person.DOB!).toLocaleDateString() || "N/A"}
+                {new Date(school.DOB!).toLocaleDateString() || "N/A"}
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <Separator className="my-5" />
       <div className="text-accent-foreground md:mx-10 mb-10">
         <h3 className="text-md font-semibold">Notes</h3>
-        <p className="leading-4 ">{person?.notes || "N/A"}</p>
+        <p className="leading-4 ">{school?.notes || "N/A"}</p>
       </div>
       <Separator className="my-5" />
-      <div className="text-accent-foreground md:mx-10 mb-10">
+      {/* <div className="text-accent-foreground md:mx-10 mb-10">
         <h3 className="text-md font-semibold">Socials</h3>
         <div className="flex items-center flex-wrap gap-4">
-          {person?.social?.length ? (
-            person?.social?.map((social) => (
+          {school?.social?.length ? (
+            school?.social?.map((social) => (
               <>
                 <div
                   key={social.id}
@@ -199,7 +195,7 @@ const page = async ({ params }: props) => {
             <p className="text-muted-foreground">No socials available</p>
           )}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

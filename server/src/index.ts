@@ -4,12 +4,18 @@ import prisma from "./db/index.js";
 import authRouter from "./routes/auth.js";
 import orgRouter from "./routes/organization.js";
 import personRouter from "./routes/users.js";
-
+import cors from "cors";
+import schoolRouter from "./routes/school.js";
 if (process.env.NODE_ENV !== "production") {
   config();
 }
 
 const app = express();
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 app.get("/", (_: Request, res: Response) => {
@@ -33,6 +39,8 @@ api.get("/all-counts", async (_: Request, res: Response) => {
 });
 api.use("/auth", authRouter);
 api.use("/person", personRouter);
+api.use("/school", schoolRouter);
+
 api.use("/organization", orgRouter);
 
 app.listen(PORT, () => {

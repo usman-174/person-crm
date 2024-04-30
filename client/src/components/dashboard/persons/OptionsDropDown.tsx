@@ -1,20 +1,18 @@
 import {
-    Menu,
-    Pencil,
-    Trash2
+  Menu,
+  Pencil
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { DeleteDialog } from "./DeletePerson";
 
 export function OptionsDropDown() {
   return (
@@ -37,7 +35,7 @@ export function OptionsDropDown() {
             {/* <Trash2 className="mr-2 h-4 w-4 text-destructive" />
             <span>Delete</span>
            */}
-            <DeleteDialog/>
+            {/* <DeleteDialog/> */}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
