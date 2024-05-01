@@ -19,6 +19,7 @@ import { API } from "@/constants";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
+import axiosInstance from "@/lib/axios";
 type props = {
   type: string;
   queryKey: string;
@@ -51,7 +52,7 @@ export function DeleteDialog({ type, queryKey, path }: props) {
     onSuccess: async () => {
       toast.success(`${type} deleted successfully`);
       queryClient.invalidateQueries({ queryKey: [queryKey] });
-      const { data } = await axios.post("/api/revalidate", {
+      const { data } = await axiosInstance.post("/api/revalidate", {
         tags:
           queryKey === QUERY_KEYS.ALL_PERSONS
             ? REAVALIDAION_TIME.PERSON.TAGS(String(params.id))

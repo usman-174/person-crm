@@ -40,6 +40,7 @@ import axios from "axios";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 import { AddSocialDialog } from "./AddSocialDialog";
 import { useState } from "react";
+import axiosInstance from "@/lib/axios";
 
 export function AddPerson() {
   const session = useSession();
@@ -70,7 +71,7 @@ export function AddPerson() {
           },
         });
 
-        const { data } = await axios.post(`${API}person`, payload, {
+        const { data } = await axiosInstance.post(`${API}person`, payload, {
           headers: {
             Authorization: `Bearer ${session.data?.user.token}`,
           },
@@ -82,7 +83,7 @@ export function AddPerson() {
     onSuccess: async () => {
       toast.success("User Added successfully");
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_PERSONS] });
-      let { data } = await axios.post("/api/revalidate", {
+      let { data } = await axiosInstance.post("/api/revalidate", {
         tags: REAVALIDAION_TIME.COUNT.TAGS,
       });
       if (data) {

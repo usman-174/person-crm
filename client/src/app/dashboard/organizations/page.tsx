@@ -8,7 +8,7 @@ const page = async () => {
   const user = session?.user;
 
   return (
-    <div className="container">
+    <div className="">
       <h1 className="text-center text-3xl font-semibold">Organizations</h1>
       <br />
 

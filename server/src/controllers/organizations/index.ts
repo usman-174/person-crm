@@ -27,9 +27,13 @@ export const createOrganization = async (
   res: Response
 ): Promise<void> => {
   try {
+    const { headIds, ...rest } = req.body;
     const organization = await prisma.organization.create({
       data: {
-        ...req.body,
+        ...rest,
+        ...(headIds?.length
+          ? { heads: { connect: headIds.map((id: string) => ({ id })) } }
+          : {}),
 
         createdBy: { connect: { id: res.locals.user.id } },
         lastModifiedBy: { connect: { id: res.locals.user.id } },
@@ -81,12 +85,15 @@ export const updateOrganization = async (
   res: Response
 ): Promise<void> => {
   const { id } = req.params;
-
+  const { headIds, ...rest } = req.body;
   try {
     const organization = await prisma.organization.update({
       where: { id: String(id) },
       data: {
-        ...req.body,
+        ...rest,
+        ...(headIds?.length
+          ? { heads: { set: headIds.map((id: string) => ({ id })) } }
+          : {}),
         lastModifiedBy: { connect: { id: res.locals.user.id } },
       },
     });

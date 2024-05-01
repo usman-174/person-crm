@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import axios from "axios";
-import { signIn } from "next-auth/react";
+import axiosInstance from "@/lib/axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
@@ -51,7 +50,7 @@ const page = () => {
     setLoading(true);
 
     try {
-      const {data} = await axios.post(process.env.NEXT_PUBLIC_API+"auth/register", formData);
+      const {data} = await axiosInstance.post(process.env.NEXT_PUBLIC_API+"auth/register", formData);
       if(data){
         toast.success(auth_constants.register.successMessage);
         router.push("/login");

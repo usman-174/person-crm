@@ -33,7 +33,7 @@ export const editSchoolSchema = z.object({
     .max(50, {
       message: "State must not exceed 50 characters.",
     }),
-  headId: z.string().optional(),
+  headIds: z.array(z.string()).optional(),
   organizationId: z.string().optional(),
 
   notes: z

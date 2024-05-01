@@ -24,10 +24,12 @@ const page = async ({ params }: props) => {
   if (!school) return null;
 
   return (
-    <div className="container mx-auto">
-      <div className="flex items-start justify-between">
+    <div>
+      <div className="flex md:items-start md:justify-between flex-col-reverse md:flex-row">
         <div>
-          <h1 className="font-semibold text-3xl">{school?.name} </h1>
+          <h1 className="font-semibold text-3xl mt-5 md:mt-0">
+            {school?.name}{" "}
+          </h1>
           <p className="text-muted-foreground text-sm">
             {new Date(school.createdAt!).toLocaleDateString()}
           </p>
@@ -37,9 +39,12 @@ const page = async ({ params }: props) => {
          */}
         <div className="flex flex-col gap-2 ">
           <div className="flex items-center gap-4">
-            <DeleteDialog queryKey={QUERY_KEYS.ALL_SCHOOLS} type="school"
-            path="/dashboard/schools" />
-            
+            <DeleteDialog
+              queryKey={QUERY_KEYS.ALL_SCHOOLS}
+              type="school"
+              path="/dashboard/schools"
+            />
+
             <Link href={"/dashboard/schools/edit/" + school?.id}>
               <Button variant={"outline"}>
                 <Pencil className="mr-2 h-4 w-4" />
@@ -56,37 +61,38 @@ const page = async ({ params }: props) => {
         </div>
       </div>
 
-      <div className="grid gap-2 grid-cols-1 md:grid-cols-2  mt-5">
-        {/* <div className="relative w-full h-56 md:w-auto md:h-auto overflow-hidden">
-          <Image
-            src={
-              school?.mainPhoto ||
-              "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" ||
-              "/profile.png"
-            }
-            alt={school.fullName!}
-            fill
-            className="sm:max-w-96 sm:max-h-96 md:mx-auto rounded-md"
-          />
-        </div> */}
+      <div className="grid gap-2 grid-cols-1 md:grid-cols-2 mt-4">
         <div className="flex flex-col gap-3">
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-5">
-            <div>
-              <h1 className="text-md font-semibold">Head</h1>
-              <p className="text-muted-foreground text-sm">
-                {school?.head?.name || "N/A"}
-              </p>
-            </div>
-            <div>
-              <h1 className="text-md font-semibold">Gender</h1>
-              <p className="text-muted-foreground text-sm">
-                {school?.head?.gender || "N/A"}
-              </p>
+          <div className="">
+            <h1 className="text-md font-semibold">
+              Heads :{" "}
+              <span className="text-sm text-muted-foreground">
+                {school.heads.length}
+              </span>
+            </h1>
+        
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-8">
+              {school.heads?.map((head) => (
+                <div key={head.id} className="p-2">
+                  <div>
+                    <p className="text-muted-foreground text-md uppercase">
+                      {head.fullName || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <h1 className="text-md font-semibold">
+                      <p className="text-muted-foreground text-sm">
+                        {head?.source || "N/A"}
+                      </p>
+                    </h1>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
             <div>
-              <h1 className="text-md font-semibold">Organization</h1>
+              <h1 className="text-md font-semibold">Org's name</h1>
               <p className="text-muted-foreground text-sm">
                 {school?.organization?.name || "N/A"}
               </p>

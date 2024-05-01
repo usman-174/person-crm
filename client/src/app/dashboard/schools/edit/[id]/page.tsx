@@ -3,7 +3,6 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { EditSchool } from "@/components/dashboard/schools/EditSchool";
 import { SCHOOL } from "@/types/COMMON";
 
-import { USER } from "@/types/USER";
 import { getServerSession } from "next-auth";
 type props = {
   params: {

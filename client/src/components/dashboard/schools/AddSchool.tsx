@@ -28,16 +28,19 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
-import axios from "axios";
 
 import axiosInstance from "@/lib/axios";
+import { PERSON } from "@/types/USER";
+import { useState } from "react";
 import { addSchoolSchema } from "./validations/addSchool";
+import { SelectHeads } from "../SelectHeads";
 
 export function AddSchool() {
   const session = useSession();
   const queryClient = new QueryClient();
 
   const router = useRouter();
+  const [headIds, setHeadIds] = useState<string[]>([]);
   const form = useForm<z.infer<typeof addSchoolSchema>>({
     mode: "onSubmit",
     resolver: zodResolver(addSchoolSchema),
@@ -46,25 +49,15 @@ export function AddSchool() {
       state: "",
       city: "",
       notes: "",
-      headId: "",
+      headIds: [],
       organizationId: "",
     },
   });
-  const { data: heads } = useQuery({
-    queryKey: [QUERY_KEYS.ALL_HEADS],
-    queryFn: async () => {
-      const { data } = await axios.get(`${API}${REAVALIDAION_TIME.HEAD.type}`, {
-        headers: {
-          Authorization: `Bearer ${session.data?.user.token}`,
-        },
-      });
-      return data;
-    },
-  });
+
   const { data: organizations } = useQuery({
     queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS],
     queryFn: async () => {
-      const { data } = await axios.get(
+      const { data } = await axiosInstance.get(
         `${API}${REAVALIDAION_TIME.ORGANIZATION.type}`,
         {
           headers: {
@@ -74,6 +67,7 @@ export function AddSchool() {
       );
       return data;
     },
+    enabled: !!session.data?.user?.token,
   });
 
   const mutation = useMutation({
@@ -110,8 +104,11 @@ export function AddSchool() {
     },
   });
   function onSubmit(values: z.infer<typeof addSchoolSchema>) {
+    console.log("values", values);
+
     mutation.mutate(values);
   }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -170,61 +167,11 @@ export function AddSchool() {
               </FormItem>
             )}
           />
-        </div>
-        <FormField
-          control={form.control}
-          name="notes"
-          render={({ field, formState }) => (
-            <FormItem className="w-full">
-              <FormLabel>
-                Notes
-                <span className="text-xs text-muted-foreground">
-                  {" "}
-                  (optional)
-                </span>{" "}
-              </FormLabel>
-              <FormControl>
-                <Textarea placeholder="Notes" {...field} autoComplete="false" />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-start ">
-          <FormField
-            control={form.control}
-            name="headId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Head</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a Soruce" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {heads?.map((item: any) => (
-                      <SelectItem key={item.id} value={item.id}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="organizationId"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:min-w-52">
                 <FormLabel>Organization</FormLabel>
                 <Select
                   onValueChange={field.onChange}
@@ -249,6 +196,28 @@ export function AddSchool() {
             )}
           />
         </div>
+        <FormField
+          control={form.control}
+          name="notes"
+          render={({ field, formState }) => (
+            <FormItem className="w-full">
+              <FormLabel>
+                Notes
+                <span className="text-xs text-muted-foreground">
+                  {" "}
+                  (optional)
+                </span>{" "}
+              </FormLabel>
+              <FormControl>
+                <Textarea placeholder="Notes" {...field} autoComplete="false" />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <SelectHeads token={session.data?.user.token} form={form} />
 
         <Button type="submit">Submit</Button>
       </form>

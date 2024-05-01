@@ -1,3 +1,4 @@
+import axiosInstance from "@/lib/axios";
 import axios from "axios";
 import NextAuth, { AuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -25,7 +26,7 @@ export const authOptions :AuthOptions ={
           return user;
         }
         try {
-          const { data } = await axios.post(
+          const { data } = await axiosInstance.post(
             `${process.env.NEXT_PUBLIC_API || process.env.API}/auth/login`,
             {
               username: credentials.username!,

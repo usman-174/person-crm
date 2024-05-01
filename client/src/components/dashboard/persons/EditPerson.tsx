@@ -46,6 +46,7 @@ import { z } from "zod";
 import { AddSocialDialog } from "./AddSocialDialog";
 import { useEffect, useState } from "react";
 import { editPersonSchema } from "./valdidations/EditPerson";
+import axiosInstance from "@/lib/axios";
 type props = {
   person: USER;
 };
@@ -76,7 +77,7 @@ export function EditPerson({ person }: props) {
   const deleteSocialMutation = useMutation({
     mutationFn: async (id: string) => {
       try {
-        const { data } = await axios.delete(`${API}person/social/${id}`, {
+        const { data } = await axiosInstance.delete(`${API}person/social/${id}`, {
           headers: {
             Authorization: `Bearer ${session.data?.user.token}`,
           },
@@ -88,7 +89,7 @@ export function EditPerson({ person }: props) {
       }
     },
     onSuccess: async () => {
-      let { data } = await axios.post("/api/revalidate", {
+      let { data } = await axiosInstance.post("/api/revalidate", {
         tags: [...REAVALIDAION_TIME.PERSON.TAGS(person.id)],
       });
       toast.success("Social deleted successfully");
@@ -99,7 +100,7 @@ export function EditPerson({ person }: props) {
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof editPersonSchema>) => {
       try {
-        const { data } = await axios.put(`${API}person/${person.id}`, payload, {
+        const { data } = await axiosInstance.put(`${API}person/${person.id}`, payload, {
           headers: {
             Authorization: `Bearer ${session.data?.user.token}`,
           },
@@ -111,7 +112,7 @@ export function EditPerson({ person }: props) {
       }
     },
     onSuccess: async () => {
-      let { data } = await axios.post("/api/revalidate", {
+      let { data } = await axiosInstance.post("/api/revalidate", {
         tags: [
           ...REAVALIDAION_TIME.COUNT.TAGS,
           ...REAVALIDAION_TIME.PERSON.TAGS(person.id),

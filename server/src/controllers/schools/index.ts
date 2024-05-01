@@ -7,12 +7,12 @@ export const createSchool = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { headId, organizationId, ...rest } = req.body;
+    const { headIds, organizationId, ...rest } = req.body;
     const school = await prisma.school.create({
       data: {
         ...rest,
-        ...(req.body.headId
-          ? { head: { connect: { id: req.body.headId } } }
+        ...(headIds?.length
+          ? { heads: { connect: headIds.map((id: string) => ({ id })) } }
           : {}),
         ...(req.body.organizationId
           ? { organization: { connect: { id: req.body.organizationId } } }
@@ -35,7 +35,7 @@ export const getAllSchools = async (
   try {
     const schools = await prisma.school.findMany({
       include: {
-        head: true,
+        heads: true,
         organization: true,
         createdBy: true,
         lastModifiedBy: true,
@@ -60,7 +60,7 @@ export const getSchoolbyId = async (
       include: {
         createdBy: true,
         lastModifiedBy: true,
-        head: true,
+        heads: true,
         organization: true,
       },
     });
@@ -81,15 +81,15 @@ export const updateSchool = async (
   res: Response
 ): Promise<void> => {
   const { id } = req.params;
-  const { headId, organizationId, ...rest } = req.body;
+  const { headIds, organizationId, ...rest } = req.body;
 
   try {
     const user = await prisma.school.update({
       where: { id: String(id) },
       data: {
         ...rest,
-        ...(req.body.headId
-          ? { head: { connect: { id: req.body.headId } } }
+        ...(headIds.length
+          ? { heads: { set: headIds.map((id: string) => ({ id })) } }
           : {}),
         ...(req.body.organizationId
           ? { organization: { connect: { id: req.body.organizationId } } }

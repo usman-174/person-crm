@@ -18,7 +18,7 @@ export const addSchoolSchema = z.object({
       message: "Please enter a valid City",
       required_error: "City is required",
     })
-   
+
     .optional(),
   state: z
     .string({
@@ -31,11 +31,11 @@ export const addSchoolSchema = z.object({
     .max(50, {
       message: "State must not exceed 50 characters.",
     }),
-  headId: z.string().optional(),
+  headIds: z.array(z.string()).optional(),
   organizationId: z.string().optional(),
 
   notes: z
     .string()
-   
+
     .optional(),
 });

@@ -28,6 +28,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { addSocialSchema } from "./socials/validation/addSocailSchema";
+import axiosInstance from "@/lib/axios";
 interface AddSocialDialogProps {
   token: string;
   personId: string;
@@ -60,7 +61,7 @@ export function AddSocialDialog({
           },
         });
 
-        const { data } = await axios.post(`${API}person/social`, payload, {
+        const { data } = await axiosInstance.post(`${API}person/social`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -78,7 +79,7 @@ export function AddSocialDialog({
     onSuccess: async () => {
       toast.success("Added  Social Platform");
       // queryClient.invalidateQueries({ queryKey: ["social-platforms"] });
-      let { data } = await axios.post("/api/revalidate", {
+      let { data } = await axiosInstance.post("/api/revalidate", {
         tags: [...REAVALIDAION_TIME.PERSON.TAGS(personId)],
       });
       if (data) {

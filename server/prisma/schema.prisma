@@ -14,63 +14,45 @@ model organization {
   notes     String?
   createdAt DateTime @default(now())
 
-  
   schools school[]
 
-  heads            head[]
   createdById      String?
   createdBy        user?    @relation("created_by", fields: [createdById], references: [id])
   lastModifiedById String?
   lastModifiedBy   user?    @relation("last_modified_by", fields: [lastModifiedById], references: [id])
   lastModified     DateTime @updatedAt
-}
-
-model head {
-  id               String  @id @default(uuid())
-  name             String?
-  gender           String?
-  organizationId   String?
-  createdById      String?
-  createdBy        user?   @relation("created_by", fields: [createdById], references: [id])
-  lastModifiedById String?
-  lastModifiedBy   user?   @relation("last_modified_by", fields: [lastModifiedById], references: [id])
-
-  createdAt    DateTime      @default(now())
-  lastModified DateTime      @updatedAt
-  organization organization? @relation(fields: [organizationId], references: [id], map: "Head_organizationId_fkey")
-  school       school?
-
-  @@index([organizationId], map: "Head_organizationId_fkey")
+  heads            person[] @relation("OrganizationHeads")
 }
 
 model person {
-  id        String       @id @default(uuid())
-  username  String       @unique(map: "User_username_key")
-  TFF_ID    String?      @default(dbgenerated("(concat(`id`,'-',`fname`,'-',`lname`))"))
-  fname     String?
-  mname     String?
-  password  String?
-  lname     String?
-  fullName  String?      @default(dbgenerated("(concat(`fname`,' ',`lname`))"))
-  address   String?
-  address2  String?
-  city      String?
-  state     String?
-  country   String?
-  DOB       DateTime?
-  role      String?
-  title     String?
-  type      user_type?   @default(USER)
-  mainPhoto String?
-  source    user_source?
-  notes     String?      @db.VarChar(800)
-  createdAt DateTime     @default(now())
-
-  lastModified     DateTime @updatedAt
+  id               String         @id @default(uuid())
+  username         String         @unique(map: "User_username_key")
+  TFF_ID           String?        @default(dbgenerated("(concat(`id`,'-',`fname`,'-',`lname`))"))
+  fname            String?
+  mname            String?
+  password         String?
+  lname            String?
+  fullName         String?        @default(dbgenerated("(concat(`fname`,' ',`lname`))"))
+  address          String?
+  address2         String?
+  city             String?
+  state            String?
+  country          String?
+  DOB              DateTime?
+  role             String?
+  title            String?
+  type             user_type?     @default(USER)
+  mainPhoto        String?
+  source           user_source?
+  notes            String?        @db.VarChar(800)
+  createdAt        DateTime       @default(now())
+  schools          school[]       @relation("SchoolHeads")
+  organizations    organization[] @relation("OrganizationHeads")
+  lastModified     DateTime       @updatedAt
   createdById      String?
-  createdBy        user?    @relation("created_by", fields: [createdById], references: [id])
+  createdBy        user?          @relation("created_by", fields: [createdById], references: [id])
   lastModifiedById String?
-  lastModifiedBy   user?    @relation("last_modified_by", fields: [lastModifiedById], references: [id])
+  lastModifiedBy   user?          @relation("last_modified_by", fields: [lastModifiedById], references: [id])
   social           social[]
 }
 
@@ -103,20 +85,16 @@ model user {
   modifiedSchools school[] @relation("last_modified_by")
   createdPersons  person[] @relation("created_by")
   modifiedPersons person[] @relation("last_modified_by")
-
-  createdHeads  head[] @relation("created_by")
-  modifiedHeads head[] @relation("last_modified_by")
 }
 
 model school {
-  id             String @id @default(uuid())
+  id             String   @id @default(uuid())
   name           String
   city           String
   state          String
   organizationId String?
+  heads          person[] @relation("SchoolHeads")
 
-  head      head?    @relation(fields: [headId], references: [id], map: "School_headId_fkey")
-  headId    String?  @unique(map: "School_headId_key")
   notes     String?
   createdAt DateTime @default(now())
   icon      Icon?    @relation(fields: [iconId], references: [id])
@@ -124,7 +102,7 @@ model school {
 
   organization organization? @relation(fields: [organizationId], references: [id], map: "School_organizationId_fkey")
   createdById  String?
-  createdBy    user?        @relation("created_by", fields: [createdById], references: [id])
+  createdBy    user?         @relation("created_by", fields: [createdById], references: [id])
 
   lastModified     DateTime @updatedAt
   lastModifiedById String?

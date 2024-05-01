@@ -1,3 +1,30 @@
+export interface PERSON {
+    id: string;
+    username: string;
+    TFF_ID?: string;
+    fname?: string;
+    mname?: string;
+  
+    lname?: string;
+    fullName: string;
+    address?: string;
+    address2?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    DOB?: Date;
+    
+    title?: string;
+    type: UserType;
+    mainPhoto?: string;
+    social?: Social[];
+    source?: SourceType;
+    notes?: string;
+    createdAt: Date;
+    lastModified: Date;
+    createdBy?: USER;
+    lastModifiedBy? : USER
+  }
 export interface USER {
     id: string;
     username: string;

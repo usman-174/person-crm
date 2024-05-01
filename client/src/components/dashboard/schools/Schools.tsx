@@ -1,17 +1,17 @@
 "use client";
+import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
+import SearchBar from "@/components/dashboard/SearchBar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { API } from "@/constants";
+import { SCHOOL } from "@/types/COMMON";
 import { USER } from "@/types/USER";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
-import SearchBar from "@/components/dashboard/SearchBar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { SCHOOL } from "@/types/COMMON";
-import { Button } from "@/components/ui/button";
 import { formatDistance } from "date-fns";
-import Link from "next/link";
-import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 import { Plus } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 type Props = {
   user: USER & {
@@ -45,6 +45,7 @@ const Schools = ({ user }: Props) => {
 
   return (
     <div>
+   
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <SearchBar
           query={query}
@@ -98,8 +99,8 @@ const Schools = ({ user }: Props) => {
                       </span>
                     </p>
                     <div className="text-muted-foreground text-xs md:text-sm">
-                      <span className="text-primary">Head</span> :{" "}
-                      {school.head?.name}
+                      <span className="text-primary">Heads</span> :{" "}
+                      {school.heads.length}
                     </div>
                     <div className="text-muted-foreground text-xs md:text-sm">
                       <span className="text-primary">Org</span> :{" "}

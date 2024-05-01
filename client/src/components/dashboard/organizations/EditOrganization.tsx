@@ -10,17 +10,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { API } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -30,51 +23,36 @@ import { z } from "zod";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
 import axiosInstance from "@/lib/axios";
-import { editSchoolSchema } from "./validations/editSchool";
-import { SCHOOL } from "@/types/COMMON";
+
 import { SelectHeads } from "../SelectHeads";
+import { editOrganizationSchema } from "./validations/editOrganizationSchema";
+import { ORGANIZATION } from "@/types/COMMON";
 type props = {
-  school: SCHOOL;
+  organization: ORGANIZATION;
 };
-export function EditSchool({ school }: props) {
+export function EditOrganization({ organization }: props) {
   const session = useSession();
   const queryClient = new QueryClient();
 
   const router = useRouter();
-  const form = useForm<z.infer<typeof editSchoolSchema>>({
+
+  const form = useForm<z.infer<typeof editOrganizationSchema>>({
     mode: "onSubmit",
-    resolver: zodResolver(editSchoolSchema),
+    resolver: zodResolver(editOrganizationSchema),
     defaultValues: {
-      id: school.id,
-      name: school.name,
-      state: school.state || "",
-      city: school.city || "",
-      notes: school.notes || "",
-      headIds: school.heads?.map((head) => head.id) || [],
-      organizationId: school.organizationId || "",
-    },
-  });
-  
-  const { data: organizations } = useQuery({
-    queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS],
-    queryFn: async () => {
-      const { data } = await axiosInstance.get(
-        `${API}${REAVALIDAION_TIME.ORGANIZATION.type}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.data?.user.token}`,
-          },
-        }
-      );
-      return data;
+      id: organization.id,
+      name: organization.name,
+      city: organization.city || "",
+      notes: organization.notes || "",
+      headIds: organization.heads?.map((head) => head.id) || [],
     },
   });
 
   const mutation = useMutation({
-    mutationFn: async (payload: z.infer<typeof editSchoolSchema>) => {
+    mutationFn: async (payload: z.infer<typeof editOrganizationSchema>) => {
       try {
         const { data } = await axiosInstance.put(
-          `${API}${REAVALIDAION_TIME.SCHOOL.type}/${school.id}`,
+          `${API}${REAVALIDAION_TIME.ORGANIZATION.type}/${organization.id}`,
           payload,
           {
             headers: {
@@ -85,31 +63,34 @@ export function EditSchool({ school }: props) {
       } catch (error: any) {
         throw new Error(
           error.response?.data?.message ||
-            `Failed to add ${REAVALIDAION_TIME.SCHOOL.type}`
+            `Failed to add ${REAVALIDAION_TIME.ORGANIZATION.type}`
         );
       }
     },
     onSuccess: async () => {
+      toast.success(
+        `${REAVALIDAION_TIME.ORGANIZATION.type} Edited successfully`
+      );
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS],
+      });
       let { data } = await axiosInstance.post("/api/revalidate", {
-        tags: [
-          ...REAVALIDAION_TIME.COUNT.TAGS,
-          ...REAVALIDAION_TIME.SCHOOL.TAGS(school.id),
-        ],
+        tags: REAVALIDAION_TIME.COUNT.TAGS,
       });
       if (data) {
-        router.refresh();
-        // router.push("/dashboard/persons");
+        router.push(`/dashboard/${QUERY_KEYS.ALL_ORGANIZATIONS}`);
       }
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_SCHOOLS] });
-      toast.success("School Updated successfully");
     },
     onError: (error: any) => {
       toast.error(error.message);
     },
   });
-  function onSubmit(values: z.infer<typeof editSchoolSchema>) {
+  function onSubmit(values: z.infer<typeof editOrganizationSchema>) {
+    console.log("values", values);
+
     mutation.mutate(values);
   }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -117,7 +98,7 @@ export function EditSchool({ school }: props) {
           <FormField
             control={form.control}
             name="name"
-            render={({ field, formState }) => (
+            render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel>Name</FormLabel>
                 <FormControl>
@@ -126,23 +107,6 @@ export function EditSchool({ school }: props) {
                     {...field}
                     autoComplete="false"
                   />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
-          <FormField
-            control={form.control}
-            name="state"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>State</FormLabel>
-                <FormControl>
-                  <Input placeholder="State" {...field} autoComplete="false" />
                 </FormControl>
 
                 <FormMessage />
@@ -168,35 +132,8 @@ export function EditSchool({ school }: props) {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="organizationId"
-            render={({ field }) => (
-              <FormItem className="md:min-w-52">
-                <FormLabel>Organization</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select an Organization" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {organizations?.map((item: any) => (
-                      <SelectItem key={item.id} value={item.id}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
+
         <FormField
           control={form.control}
           name="notes"
@@ -217,6 +154,7 @@ export function EditSchool({ school }: props) {
             </FormItem>
           )}
         />
+
         <SelectHeads token={session.data?.user.token} form={form} />
 
         <Button type="submit">Submit</Button>

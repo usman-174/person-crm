@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
+import { signOut } from "next-auth/react";
 
 const axiosInstance: AxiosInstance = axios.create({
   // Your default configuration here
@@ -9,9 +10,9 @@ axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
     console.log("Error: ", error.response?.data);
-    
+
     if (
       error.response &&
       (error.response.status === 401 ||
@@ -19,11 +20,13 @@ axiosInstance.interceptors.response.use(
         (error.response.data as any).message.includes("no token"))
     ) {
       // Redirect to signIn page
-      window.location.href = "/signIn"; // Change "/signIn" to your signIn page route
+      await signOut();
+      // const currentUrl = window.location.pathname;
+      // const loginUrl = `/login?callbackUrl=${encodeURIComponent(currentUrl)}`;
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
 );
-
 
 export default axiosInstance;
