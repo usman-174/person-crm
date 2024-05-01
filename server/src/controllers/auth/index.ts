@@ -52,7 +52,10 @@ export const registerController = async (
     // Generate token
     const token = jwt.sign(
       { id: user.id },
-      process.env.JWT_SECRET! || "secret"
+      process.env.JWT_SECRET! || "secret",
+      {
+        expiresIn: "7d",
+      }
     );
     return res.status(201).json({ token });
   } catch (error) {
@@ -93,7 +96,10 @@ export const loginController = async (
       return;
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || "secret");
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || "secret",{
+      expiresIn: "7d",
+    
+    });
     if (user.password) {
       delete (user as { password?: string }).password;
     }

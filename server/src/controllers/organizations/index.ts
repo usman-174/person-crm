@@ -7,7 +7,14 @@ export const getAllOrganizations = async (
   res: Response
 ): Promise<void> => {
   try {
-    const organizations = await prisma.organization.findMany();
+    const organizations = await prisma.organization.findMany({
+      include: {
+        createdBy: true,
+        lastModifiedBy: true,
+        heads: true,
+        schools: true,
+      },
+    });
     res.status(200).json(organizations);
   } catch (error) {
     console.error(error);
@@ -43,7 +50,12 @@ export const getOrganizationbyId = async (
   try {
     const organization = await prisma.organization.findUnique({
       where: { id: String(id) },
-      include: { createdBy: true, lastModifiedBy: true },
+      include: {
+        createdBy: true,
+        lastModifiedBy: true,
+        heads: true,
+        schools: true,
+      },
     });
     //delete passwords
     if (organization?.createdBy?.password) {

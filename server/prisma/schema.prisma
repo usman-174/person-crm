@@ -14,10 +14,10 @@ model organization {
   notes     String?
   createdAt DateTime @default(now())
 
-  heads  String?
-  school school[]
+  
+  schools school[]
 
-  head             head[]
+  heads            head[]
   createdById      String?
   createdBy        user?    @relation("created_by", fields: [createdById], references: [id])
   lastModifiedById String?
@@ -26,14 +26,19 @@ model organization {
 }
 
 model head {
-  id             String        @id @default(uuid())
-  name           String?
-  gender         String?
-  organizationId String?
-  createdAt      DateTime      @default(now())
-  lastModified   DateTime      @updatedAt
-  organization   organization? @relation(fields: [organizationId], references: [id], map: "Head_organizationId_fkey")
-  school         school?
+  id               String  @id @default(uuid())
+  name             String?
+  gender           String?
+  organizationId   String?
+  createdById      String?
+  createdBy        user?   @relation("created_by", fields: [createdById], references: [id])
+  lastModifiedById String?
+  lastModifiedBy   user?   @relation("last_modified_by", fields: [lastModifiedById], references: [id])
+
+  createdAt    DateTime      @default(now())
+  lastModified DateTime      @updatedAt
+  organization organization? @relation(fields: [organizationId], references: [id], map: "Head_organizationId_fkey")
+  school       school?
 
   @@index([organizationId], map: "Head_organizationId_fkey")
 }
@@ -46,7 +51,7 @@ model person {
   mname     String?
   password  String?
   lname     String?
-  fullName  String  ?     @default(dbgenerated("(concat(`fname`,' ',`lname`))"))
+  fullName  String?      @default(dbgenerated("(concat(`fname`,' ',`lname`))"))
   address   String?
   address2  String?
   city      String?
@@ -99,6 +104,8 @@ model user {
   createdPersons  person[] @relation("created_by")
   modifiedPersons person[] @relation("last_modified_by")
 
+  createdHeads  head[] @relation("created_by")
+  modifiedHeads head[] @relation("last_modified_by")
 }
 
 model school {
@@ -106,7 +113,7 @@ model school {
   name           String
   city           String
   state          String
-  organizationId String
+  organizationId String?
 
   head      head?    @relation(fields: [headId], references: [id], map: "School_headId_fkey")
   headId    String?  @unique(map: "School_headId_key")
@@ -115,7 +122,7 @@ model school {
   icon      Icon?    @relation(fields: [iconId], references: [id])
   iconId    String?
 
-  organization organization @relation(fields: [organizationId], references: [id], map: "School_organizationId_fkey")
+  organization organization? @relation(fields: [organizationId], references: [id], map: "School_organizationId_fkey")
   createdById  String?
   createdBy    user?        @relation("created_by", fields: [createdById], references: [id])
 
@@ -142,8 +149,6 @@ model social {
   // user     user            @relation(fields: [userId], references: [id], map: "Social_userId_fkey")
   person   person?         @relation(fields: [personId], references: [id])
   personId String?
-
-
 }
 
 enum social_platform {

@@ -11,6 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Plus } from "lucide-react";
 import { formatDistance } from "date-fns";
+import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
 type Props = {
   user: USER & {
@@ -21,14 +22,14 @@ type Props = {
 const Persons = ({ user }: Props) => {
   const [query, setQuery] = useState("");
   const { data, isFetching } = useQuery<USER[]>({
-    queryKey: ["persons", query],
+    queryKey: [QUERY_KEYS.ALL_PERSONS, query],
 
     queryFn: async () => {
       try {
         const url =
           query.length > 2
-            ? API + `person/search?query=${query}`
-            : API + `person`;
+            ? API + `${REAVALIDAION_TIME.PERSON.type}/search?query=${query}`
+            : API + `${REAVALIDAION_TIME.PERSON.type}`;
         const res = await fetch(url, {
           headers: {
             Authorization: "Bearer " + user.token,
@@ -87,9 +88,9 @@ const Persons = ({ user }: Props) => {
                       "/profile.png"
                     }
                     alt={person.fullName}
-                    width={100}
-                    height={100}
-                    className="rounded-full w-16  h-16"
+                    width={80}
+                    height={80}
+                    className="rounded-sm w-20  aspect-square "
                   />
                   <div className="flex gap-1 flex-col items-start justify-start">
                     <h1 className="text-sm md:text-lg font-semibold break-all">

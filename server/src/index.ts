@@ -6,6 +6,7 @@ import orgRouter from "./routes/organization.js";
 import personRouter from "./routes/users.js";
 import cors from "cors";
 import schoolRouter from "./routes/school.js";
+import headRouter from "./routes/head.js";
 if (process.env.NODE_ENV !== "production") {
   config();
 }
@@ -40,6 +41,7 @@ api.get("/all-counts", async (_: Request, res: Response) => {
 api.use("/auth", authRouter);
 api.use("/person", personRouter);
 api.use("/school", schoolRouter);
+api.use("/head", headRouter);
 
 api.use("/organization", orgRouter);
 

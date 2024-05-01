@@ -7,9 +7,16 @@ export const createSchool = async (
   res: Response
 ): Promise<void> => {
   try {
+    const { headId, organizationId, ...rest } = req.body;
     const school = await prisma.school.create({
       data: {
-        ...req.body,
+        ...rest,
+        ...(req.body.headId
+          ? { head: { connect: { id: req.body.headId } } }
+          : {}),
+        ...(req.body.organizationId
+          ? { organization: { connect: { id: req.body.organizationId } } }
+          : {}),
         createdBy: { connect: { id: res.locals.user.id } },
         lastModifiedBy: { connect: { id: res.locals.user.id } },
       },
@@ -27,12 +34,12 @@ export const getAllSchools = async (
 ): Promise<void> => {
   try {
     const schools = await prisma.school.findMany({
-      include:{
-        head:true,
-        organization:true,
-        createdBy:true,
-        lastModifiedBy:true
-      }
+      include: {
+        head: true,
+        organization: true,
+        createdBy: true,
+        lastModifiedBy: true,
+      },
     });
     res.status(200).json(schools);
   } catch (error) {
@@ -50,24 +57,18 @@ export const getSchoolbyId = async (
     const school = await prisma.school.findUnique({
       where: { id: String(id) },
 
-      include: { createdBy: true, lastModifiedBy: true 
-        ,
-        head:true,
-        organization:true,
-        
-
+      include: {
+        createdBy: true,
+        lastModifiedBy: true,
+        head: true,
+        organization: true,
       },
     });
     if (!school) {
       res.status(404).json({ message: constants.SCHOOL_NOT_FOUND });
       return;
     }
-    if (school?.createdBy?.password) {
-      school.createdBy.password = null;
-    }
-    if (school?.lastModifiedBy?.password) {
-      school.lastModifiedBy.password = null;
-    }
+
     res.status(200).json(school);
   } catch (error) {
     console.error(error);
@@ -80,12 +81,19 @@ export const updateSchool = async (
   res: Response
 ): Promise<void> => {
   const { id } = req.params;
+  const { headId, organizationId, ...rest } = req.body;
 
   try {
     const user = await prisma.school.update({
       where: { id: String(id) },
       data: {
-        ...req.body,
+        ...rest,
+        ...(req.body.headId
+          ? { head: { connect: { id: req.body.headId } } }
+          : {}),
+        ...(req.body.organizationId
+          ? { organization: { connect: { id: req.body.organizationId } } }
+          : {}),
         lastModifiedBy: { connect: { id: res.locals.user.id } },
       },
     });

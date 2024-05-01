@@ -1,5 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import Schools from "@/components/dashboard/schools/Schools";
+import Organizations from "@/components/dashboard/organizations/Organizations";
 
 import { getServerSession } from "next-auth";
 
@@ -9,10 +9,10 @@ const page = async () => {
 
   return (
     <div className="container">
-      <h1 className="text-center text-3xl font-semibold">Schools</h1>
+      <h1 className="text-center text-3xl font-semibold">Organizations</h1>
       <br />
 
-      <Schools user={user} />
+      <Organizations user={user} />
     </div>
   );
 };

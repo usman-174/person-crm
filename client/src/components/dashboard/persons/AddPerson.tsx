@@ -37,7 +37,7 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 import { addPersonSchema } from "./valdidations/addPerson";
 import axios from "axios";
-import { REAVALIDAION_TIME } from "@/actions/contants";
+import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 import { AddSocialDialog } from "./AddSocialDialog";
 import { useState } from "react";
 
@@ -81,7 +81,7 @@ export function AddPerson() {
     },
     onSuccess: async () => {
       toast.success("User Added successfully");
-      queryClient.invalidateQueries({ queryKey: ["persons"] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_PERSONS] });
       let { data } = await axios.post("/api/revalidate", {
         tags: REAVALIDAION_TIME.COUNT.TAGS,
       });

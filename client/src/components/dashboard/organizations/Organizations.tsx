@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import SearchBar from "@/components/dashboard/SearchBar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { SCHOOL } from "@/types/COMMON";
+import { ORGANIZATION, SCHOOL } from "@/types/COMMON";
 import { Button } from "@/components/ui/button";
 import { formatDistance } from "date-fns";
 import Link from "next/link";
@@ -19,17 +19,18 @@ type Props = {
   };
 };
 
-const Schools = ({ user }: Props) => {
+const Organizations = ({ user }: Props) => {
   const [query, setQuery] = useState("");
-  const { data, isFetching } = useQuery<SCHOOL[]>({
-    queryKey: [QUERY_KEYS.ALL_SCHOOLS, query],
+  const { data, isFetching } = useQuery<ORGANIZATION[]>({
+    queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS, query],
 
     queryFn: async () => {
       try {
         const url =
           query.length > 2
-            ? API + `${REAVALIDAION_TIME.SCHOOL.type}/search?query=${query}`
-            : API + `${REAVALIDAION_TIME.SCHOOL.type}`;
+            ? API +
+              `${REAVALIDAION_TIME.ORGANIZATION.type}/search?query=${query}`
+            : API + `${REAVALIDAION_TIME.ORGANIZATION.type}`;
         const res = await fetch(url, {
           headers: {
             Authorization: "Bearer " + user.token,
@@ -49,13 +50,13 @@ const Schools = ({ user }: Props) => {
         <SearchBar
           query={query}
           setQuery={setQuery}
-          placeholder="Search Schools"
+          placeholder="Search Organizations"
         />
         <div className="text-right w-full">
-          <Link href={"/dashboard/schools/add"}>
+          <Link href={"/dashboard/organizations/add"}>
             <Button variant={"link"} className="text-lg">
               <Plus size={"25"} />
-              Add School
+              Add Organization
             </Button>
           </Link>
         </div>
@@ -78,32 +79,28 @@ const Schools = ({ user }: Props) => {
         </div>
       ) : null}
       <div className="grid grid-cols-1 gap-2 justify-items-stretch sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10 mx-auto">
-        {data?.length &&
-          data.map((school) => (
-            <center key={school.id}>
+        {data?.length ? (
+          data.map((organization) => (
+            <center key={organization.id}>
               <Card className=" ">
                 <CardContent>
                   <div className="flex flex-col items-start justify-center gap-2 mt-3">
                     <span className="text-md md:text-lg font-semibold">
-                      {school.name}
+                      {organization.name}
                     </span>
                     <p className=" flex flex-wrap gap-4 md:flex-nowrap text-muted-foreground text-xs md:text-sm">
                       <span>
                         <span className="text-primary">City</span> :{" "}
-                        {school.city}
-                      </span>
-                      <span>
-                        <span className="text-primary">State</span> :{" "}
-                        {school.state}
+                        {organization.city}
                       </span>
                     </p>
                     <div className="text-muted-foreground text-xs md:text-sm">
-                      <span className="text-primary">Head</span> :{" "}
-                      {school.head?.name}
+                      <span className="text-primary">Heads</span> :{" "}
+                      {organization.heads?.length}
                     </div>
                     <div className="text-muted-foreground text-xs md:text-sm">
-                      <span className="text-primary">Org</span> :{" "}
-                      {school?.organization?.name}
+                      <span className="text-primary">Schools</span> :{" "}
+                      {organization.schools?.length}
                     </div>
                   </div>
                 </CardContent>
@@ -112,22 +109,36 @@ const Schools = ({ user }: Props) => {
                   <span className="text-xs text-muted-foreground mr-1">
                     Modified :{" "}
                     {formatDistance(
-                      new Date(school.lastModified),
+                      new Date(organization.lastModified),
 
                       new Date(),
                       { addSuffix: true }
                     )}
                   </span>
-                  <Link href={"/dashboard/schools/" + school.id}>
+                  <Link href={"/dashboard/organizations/" + organization.id}>
                     <Button variant={"outline"}>Details</Button>
                   </Link>
                 </CardFooter>
               </Card>
             </center>
-          ))}
+          ))
+        ) : (
+          <p
+            className="
+            mx-auto
+            w-full
+            text-center
+            text-lg
+            text-muted-foreground
+            mt-10
+          "
+          >
+            No Organizations Found
+          </p>
+        )}
       </div>
     </div>
   );
 };
 
-export default Schools;
+export default Organizations;

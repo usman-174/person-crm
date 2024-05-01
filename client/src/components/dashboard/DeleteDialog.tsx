@@ -22,10 +22,10 @@ import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 type props = {
   type: string;
   queryKey: string;
-  path:string
+  path: string;
 };
 
-export function DeleteDialog({ type, queryKey,path }: props) {
+export function DeleteDialog({ type, queryKey, path }: props) {
   const session = useSession();
   const queryClient = new QueryClient();
 
@@ -53,8 +53,8 @@ export function DeleteDialog({ type, queryKey,path }: props) {
       queryClient.invalidateQueries({ queryKey: [queryKey] });
       const { data } = await axios.post("/api/revalidate", {
         tags:
-          queryKey === QUERY_KEYS.ALL_USERS
-            ? REAVALIDAION_TIME.USER.TAGS(String(params.id))
+          queryKey === QUERY_KEYS.ALL_PERSONS
+            ? REAVALIDAION_TIME.PERSON.TAGS(String(params.id))
             : REAVALIDAION_TIME.SCHOOL.TAGS(String(params.id)),
         path: "/dashboard",
       });
@@ -76,9 +76,9 @@ export function DeleteDialog({ type, queryKey,path }: props) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Delete Person</DialogTitle>
+          <DialogTitle>Delete</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this Person? This action cannot be
+            Are you sure you want to delete this Data? This action cannot be
             undone.
           </DialogDescription>
         </DialogHeader>

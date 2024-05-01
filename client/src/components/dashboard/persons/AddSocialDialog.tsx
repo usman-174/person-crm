@@ -79,14 +79,14 @@ export function AddSocialDialog({
       toast.success("Added  Social Platform");
       // queryClient.invalidateQueries({ queryKey: ["social-platforms"] });
       let { data } = await axios.post("/api/revalidate", {
-        tags: [
-          ...REAVALIDAION_TIME.COUNT.TAGS,
-          ...REAVALIDAION_TIME.USER.TAGS(personId),
-        ],
+        tags: [...REAVALIDAION_TIME.PERSON.TAGS(personId)],
       });
+      if (data) {
+        console.log("refreshing");
 
-      router.refresh();
-      setOpen(false);
+        router.refresh();
+        setOpen(false);
+      }
     },
     onError: (error: any) => {
       toast.error(error.message);
