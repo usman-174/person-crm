@@ -1,6 +1,6 @@
 import { getCount } from "@/actions/dashboard";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { PersonStanding, School, User2 } from "lucide-react";
+import { PersonStanding, School, User2, Workflow } from "lucide-react";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import React from "react";
@@ -18,6 +18,7 @@ interface Counts {
   personCount: number;
   schoolCount: number;
   organizationCount: number;
+  incidentCount: number;
 }
 
 const dataModels: DataModel[] = [
@@ -41,6 +42,13 @@ const dataModels: DataModel[] = [
     Icon: PersonStanding,
     url: "/dashboard/organizations",
     key: "organizationCount",
+  },
+  {
+    name: "Incidents",
+    description: "Manage Incidents data",
+    Icon: Workflow,
+    url: "/dashboard/incidents",
+    key: "incidentCount",
   },
 ];
 const page = async () => {

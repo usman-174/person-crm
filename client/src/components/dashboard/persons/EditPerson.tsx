@@ -31,10 +31,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { API } from "@/constants";
 import { cn } from "@/lib/utils";
-import { USER } from "@/types/USER";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { format } from "date-fns";
 import { CalendarIcon, Delete } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -43,12 +41,13 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-import { AddSocialDialog } from "./AddSocialDialog";
-import { useEffect, useState } from "react";
-import { editPersonSchema } from "./valdidations/EditPerson";
 import axiosInstance from "@/lib/axios";
+import { PERSON } from "@/types/COMMON";
+import { useEffect, useState } from "react";
+import { AddSocialDialog } from "./AddSocialDialog";
+import { editPersonSchema } from "./valdidations/EditPerson";
 type props = {
-  person: USER;
+  person: PERSON;
 };
 export function EditPerson({ person }: props) {
   const session = useSession();

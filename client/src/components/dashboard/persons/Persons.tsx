@@ -12,6 +12,7 @@ import Image from "next/image";
 import { Plus } from "lucide-react";
 import { formatDistance } from "date-fns";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
+import { PERSON } from "@/types/COMMON";
 
 type Props = {
   user: USER & {
@@ -21,7 +22,7 @@ type Props = {
 
 const Persons = ({ user }: Props) => {
   const [query, setQuery] = useState("");
-  const { data, isFetching } = useQuery<USER[]>({
+  const { data, isFetching } = useQuery<PERSON[]>({
     queryKey: [QUERY_KEYS.ALL_PERSONS, query],
 
     queryFn: async () => {

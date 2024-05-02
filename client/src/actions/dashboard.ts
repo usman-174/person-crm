@@ -14,8 +14,9 @@ export const getCount = async (token:string): Promise<any> => {
     });
 
     const data = await res.json();
-    console.log("Data: ", data);
-    
+
+      console.log("Data: ", data);
+      
     return data;
   } catch (error:any) {
     console.log("Error: ", error.message);

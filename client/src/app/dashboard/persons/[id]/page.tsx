@@ -1,15 +1,15 @@
 import { getPerson } from "@/actions/person";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Separator } from "@/components/ui/separator";
-import { USER } from "@/types/USER";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 
 import { QUERY_KEYS } from "@/actions/contants";
+import { DeleteDialog } from "@/components/dashboard/DeleteDialog";
 import { Button } from "@/components/ui/button";
+import { PERSON } from "@/types/COMMON";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
-import { DeleteDialog } from "@/components/dashboard/DeleteDialog";
 type props = {
   params: {
     id: string;
@@ -18,7 +18,7 @@ type props = {
 
 const page = async ({ params }: props) => {
   const session = await getServerSession(authOptions);
-  let person: USER | null = null;
+  let person: PERSON | null = null;
   if (session?.user) {
     person = await getPerson(params.id, session?.user.token);
   }

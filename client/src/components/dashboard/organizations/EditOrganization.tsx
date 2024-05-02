@@ -75,7 +75,10 @@ export function EditOrganization({ organization }: props) {
         queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS],
       });
       let { data } = await axiosInstance.post("/api/revalidate", {
-        tags: REAVALIDAION_TIME.COUNT.TAGS,
+        tags: [
+          ...REAVALIDAION_TIME.COUNT.TAGS,
+          ...REAVALIDAION_TIME.ORGANIZATION.TAGS(organization.id),
+        ],
       });
       if (data) {
         router.push(`/dashboard/${QUERY_KEYS.ALL_ORGANIZATIONS}`);

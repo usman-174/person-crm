@@ -3,12 +3,18 @@ export const QUERY_KEYS = {
   ALL_PERSONS: "persons",
   ALL_HEADS: "heads",
   ALL_ORGANIZATIONS: "organizations",
+  ALL_INCIDENTS: "incidents",
 };
 export const REAVALIDAION_TIME = {
   COUNT: {
     TIME: 500,
     TAGS: ["counts"],
     type: "count",
+  },
+  INCIDENT: {
+    TIME: 500,
+    TAGS: (id: string) => [QUERY_KEYS.ALL_INCIDENTS + "-" + id],
+    type: "incident",
   },
   PERSON: {
     TIME: 500,
