@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
       "target": "es6",
+      "types": ["node", "express"],
       "module": "commonjs",
       "lib": [
         "dom",
