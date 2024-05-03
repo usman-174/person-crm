@@ -391,7 +391,7 @@ export function EditPerson({ person }: props) {
               </div>
 
               <div>
-                {person?.social?.length &&
+                {person?.social?.length ?
                   person.social!.map((social, ind) => (
                     <div
                       key={social.id}
@@ -457,7 +457,7 @@ export function EditPerson({ person }: props) {
                         }}
                       />
                     </div>
-                  ))}
+                  )): null}
               </div>
               <Button type="submit">Save</Button>
             </form>

@@ -47,8 +47,8 @@ model Incident {
 }
 
 model Person {
-  id           String    @id @default(uuid())
-  username     String    @unique
+  id           String      @id @default(uuid())
+  username     String      @unique
   TFF_ID       String?
   fname        String?
   mname        String?
@@ -62,12 +62,13 @@ model Person {
   country      String?
   DOB          DateTime?
   role         String?
+  source       UserSource?
   title        String?
-  type         UserType  @default(USER)
+  type         UserType    @default(USER)
   mainPhoto    String?
   notes        String?
-  createdAt    DateTime  @default(now())
-  lastModified DateTime  @updatedAt
+  createdAt    DateTime    @default(now())
+  lastModified DateTime    @updatedAt
 
   schools          School[]       @relation("SchoolHeads")
   organizations    Organization[] @relation("OrganizationHeads")
