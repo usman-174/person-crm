@@ -8,6 +8,7 @@ const page = () => {
 
       <br />
       <AddSchool />
+      <br />
     </div>
   );
 };

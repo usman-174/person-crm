@@ -85,6 +85,6 @@ export const addPersonSchema = z.object({
     account: z.string().optional(),
     platform: z.string().optional(),
     personId: z.string().optional(),
-  }))
+  })).optional()
 
 });

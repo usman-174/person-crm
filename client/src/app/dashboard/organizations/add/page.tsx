@@ -7,7 +7,7 @@ const page = () => {
 
       <br />
       <AddOrganization />
-    </div>
+      <br />    </div>
   );
 };
 

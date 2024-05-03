@@ -1,5 +1,6 @@
 "use client";
 
+import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -25,28 +26,23 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { API } from "@/constants";
+import axiosInstance from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
-import {  useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { addPersonSchema } from "./valdidations/addPerson";
-import axios from "axios";
-import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
-import { AddSocialDialog } from "./AddSocialDialog";
-import { useState } from "react";
-import axiosInstance from "@/lib/axios";
 
 export function AddPerson() {
   const session = useSession();
   const queryClient = new QueryClient();
 
-  
   const router = useRouter();
   const form = useForm<z.infer<typeof addPersonSchema>>({
     mode: "onSubmit",
@@ -59,9 +55,11 @@ export function AddPerson() {
       title: "",
       city: "",
       notes: "",
+      DOB: new Date(),
     },
   });
-
+  console.log({state:form.formState.errors});
+  
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addPersonSchema>) => {
       try {
@@ -77,7 +75,7 @@ export function AddPerson() {
           },
         });
       } catch (error: any) {
-        throw new Error(error.response?.data?.message || "Failed to add user");
+        throw new Error(error.response?.data?.message || "Failed to add Person");
       }
     },
     onSuccess: async () => {
@@ -94,7 +92,8 @@ export function AddPerson() {
       toast.error(error.message);
     },
   });
-  function onSubmit(values: z.infer<typeof addPersonSchema>) {
+  function onSubmitx(values: z.infer<typeof addPersonSchema>) {
+  
     mutation.mutate({
       ...values,
       DOB: new Date(format(values.DOB, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")),
@@ -102,7 +101,7 @@ export function AddPerson() {
   }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmitx)} className="space-y-8">
         <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
           <FormField
             control={form.control}
@@ -316,10 +315,9 @@ export function AddPerson() {
               </FormItem>
             )}
           />
-          
         </div>
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Add</Button>
       </form>
     </Form>
   );

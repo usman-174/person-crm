@@ -9,6 +9,7 @@ const page = () => {
 
       <br />
       <AddPerson />
+      <br />
     </div>
   );
 };
