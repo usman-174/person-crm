@@ -10,6 +10,7 @@ declare module "next-auth" {
     // error : String | null;
     // User
     token: string| null;
+    error?: string | null;
 
   }
 }

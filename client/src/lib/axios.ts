@@ -11,7 +11,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
-    console.log("Error: ", error.response?.data);
+    // console.log("Error: ", error.response?.data);
 
     if (
       error.response &&

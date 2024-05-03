@@ -45,7 +45,6 @@ const Schools = ({ user }: Props) => {
 
   return (
     <div>
-   
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <SearchBar
           query={query}
@@ -78,9 +77,9 @@ const Schools = ({ user }: Props) => {
             ))}
         </div>
       ) : null}
-      <div className="grid grid-cols-1 gap-2 justify-items-stretch sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10 mx-auto">
-        {data?.length &&
-          data.map((school) => (
+      {data?.length ? (
+        <div className="grid grid-cols-1 gap-2 justify-items-stretch sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10 mx-auto">
+          {data.map((school) => (
             <center key={school.id}>
               <Card className=" ">
                 <CardContent>
@@ -91,20 +90,20 @@ const Schools = ({ user }: Props) => {
                     <p className=" flex flex-wrap gap-4 md:flex-nowrap text-muted-foreground text-xs md:text-sm">
                       <span>
                         <span className="text-primary">City</span> :{" "}
-                        {school.city}
+                        {school.city|| "N/A"}
                       </span>
                       <span>
                         <span className="text-primary">State</span> :{" "}
-                        {school.state}
+                        {school.state|| "N/A"}
                       </span>
                     </p>
                     <div className="text-muted-foreground text-xs md:text-sm">
                       <span className="text-primary">Heads</span> :{" "}
-                      {school.heads.length}
+                      {school.heads.length }
                     </div>
                     <div className="text-muted-foreground text-xs md:text-sm">
                       <span className="text-primary">Org</span> :{" "}
-                      {school?.organization?.name}
+                      {school?.organization?.name || "N/A"}
                     </div>
                   </div>
                 </CardContent>
@@ -126,7 +125,12 @@ const Schools = ({ user }: Props) => {
               </Card>
             </center>
           ))}
-      </div>
+        </div>
+      ) : !isFetching ? (
+        // <center>
+        <h2 className="my-10 text-2xl text-center">No Schools available</h2>
+      ) : // </center>
+      null}
     </div>
   );
 };

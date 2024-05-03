@@ -25,7 +25,7 @@ const page = () => {
     username: "",
     password: "",
   });
-  const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState("");
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
@@ -42,19 +42,18 @@ const page = () => {
         color: "#fff",
       },
     });
-    setLoading(true);
 
     try {
       const res = await signIn("credentials", {
         username: formData.username,
         password: formData.password,
-        // redirect: false,
-        redirect: true,
+        redirect: false,
+        // redirect: true,
         callbackUrl: callbackUrl || "/",
       });
       console.log({ res });
 
-      if (!res?.ok && res?.error) {
+      if (res?.error) {
         setError(res.error);
       } else if (res?.ok) {
         toast.success(auth_constants.login.ToastLoginSuccess);
@@ -64,7 +63,6 @@ const page = () => {
       setError(auth_constants.login.ErrorInvalidCredentials);
     }
 
-    setLoading(false);
     toast.dismiss(toastId);
   };
 
@@ -118,13 +116,13 @@ const page = () => {
             <Button className="w-full" type="submit">
               {auth_constants.login.ButtonLogin}
             </Button>
-
-            <span className="mt-3">
+                
+            <div className="mt-3">
               {auth_constants.login.LinkRegisterText}
-              <Link href={"/register"}>
+              <Link href={"/register"} className="mx-1  text-accent-foreground">
                 {auth_constants.login.LinkRegister}
               </Link>
-            </span>
+          </div>
           </form>
         </CardContent>
       </Card>

@@ -18,27 +18,27 @@ import toast from "react-hot-toast";
 import { auth_constants } from "../auth_constants";
 
 const page = () => {
-    const router = useRouter();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     username: "",
     confirmPassword: "",
     fName: "",
-    lName:"",
+    lName: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      setError("");
+    e.preventDefault();
+    setError("");
     if (!formData.username || !formData.password || !formData.confirmPassword) {
       setError(auth_constants.register.errorMessage);
       return;
     }
-    if(formData.password !== formData.confirmPassword){
-        setError(auth_constants.register.passwordMismatchMessage);
-        return;
+    if (formData.password !== formData.confirmPassword) {
+      setError(auth_constants.register.passwordMismatchMessage);
+      return;
     }
     const toastId = toast.loading(auth_constants.register.loadingMessage, {
       style: {
@@ -50,12 +50,15 @@ const page = () => {
     setLoading(true);
 
     try {
-      const {data} = await axiosInstance.post(process.env.NEXT_PUBLIC_API+"auth/register", formData);
-      if(data){
+      const { data } = await axiosInstance.post(
+        process.env.NEXT_PUBLIC_API + "auth/register",
+        formData
+      );
+      if (data) {
         toast.success(auth_constants.register.successMessage);
         router.push("/login");
       }
-    } catch (error:any) {
+    } catch (error: any) {
       setError(error.response.data.message);
     }
 
@@ -66,7 +69,9 @@ const page = () => {
     <div>
       <Card className="mx-auto max-w-sm">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">{auth_constants.register.pageTitle}</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            {auth_constants.register.pageTitle}
+          </CardTitle>
           <CardDescription>
             {auth_constants.register.pageDescription}
           </CardDescription>
@@ -77,7 +82,9 @@ const page = () => {
 
             <div className="text-red-500 text-md h-5">{error}</div>
             <div className="space-y-2">
-              <Label htmlFor="fName">{auth_constants.register.firstNameLabel}</Label>
+              <Label htmlFor="fName">
+                {auth_constants.register.firstNameLabel}
+              </Label>
               <Input
                 id="fName"
                 name="fName"
@@ -90,7 +97,9 @@ const page = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lName">{auth_constants.register.lastNameLabel}</Label>
+              <Label htmlFor="lName">
+                {auth_constants.register.lastNameLabel}
+              </Label>
               <Input
                 id="lName"
                 name="lName"
@@ -103,7 +112,9 @@ const page = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="username">{auth_constants.register.usernameLabel}</Label>
+              <Label htmlFor="username">
+                {auth_constants.register.usernameLabel}
+              </Label>
               <Input
                 id="username"
                 name="username"
@@ -116,7 +127,9 @@ const page = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">{auth_constants.register.passwordLabel}</Label>
+              <Label htmlFor="password">
+                {auth_constants.register.passwordLabel}
+              </Label>
               <Input
                 id="password"
                 name="password"
@@ -129,7 +142,9 @@ const page = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="Cpassword">{auth_constants.register.confirmPasswordLabel}</Label>
+              <Label htmlFor="Cpassword">
+                {auth_constants.register.confirmPasswordLabel}
+              </Label>
               <Input
                 id="Cpassword"
                 name="Cpassword"
@@ -145,10 +160,12 @@ const page = () => {
               {auth_constants.register.registerButton}
             </Button>
 
-            <span className="mt-3">
-                
-              {auth_constants.register.LinkRegisterText}<Link href={"/login"}>Login</Link>
-            </span>
+            <div className="mt-3">
+              {auth_constants.register.LinkRegisterText}{" "}
+              <Link href={"/login"} className="mx-1  text-accent-foreground">
+                Login
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>

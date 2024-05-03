@@ -45,7 +45,7 @@ const Organizations = ({ user }: Props) => {
   console.log({ data });
 
   return (
-    <div>
+    <>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <SearchBar
           query={query}
@@ -78,9 +78,9 @@ const Organizations = ({ user }: Props) => {
             ))}
         </div>
       ) : null}
-      <div className="grid grid-cols-1 gap-2 justify-items-stretch sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10 mx-auto">
-        {data?.length ? (
-          data.map((organization) => (
+      {data?.length ? (
+        <div className="grid grid-cols-1 gap-2 justify-items-stretch sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10 mx-auto">
+          {data.map((organization) => (
             <center key={organization.id}>
               <Card className=" ">
                 <CardContent>
@@ -121,23 +121,14 @@ const Organizations = ({ user }: Props) => {
                 </CardFooter>
               </Card>
             </center>
-          ))
-        ) : (
-          <p
-            className="
-            mx-auto
-            w-full
-            text-center
-            text-lg
-            text-muted-foreground
-            mt-10
-          "
-          >
-            No Organizations Found
-          </p>
-        )}
-      </div>
-    </div>
+          ))}
+        </div>
+      ) : !isFetching ? (
+        // <center>
+        <h2 className="my-10 text-2xl text-center">No Organizations available</h2>
+      ) : // </center>
+      null}
+    </>
   );
 };
 

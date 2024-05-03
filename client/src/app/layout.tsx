@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <NextTopLoader/>
         <QueryProvider>
-          `
+          
           <AuthProvider>
             <Toaster
               toastOptions={{

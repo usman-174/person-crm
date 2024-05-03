@@ -77,9 +77,9 @@ const Incidents = ({ user }: Props) => {
             ))}
         </div>
       ) : null}
-      <div className="grid grid-cols-1 gap-2 justify-items-stretch sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10 mx-auto">
-        {data?.length ? (
-          data.map((incident) => (
+      {data?.length ? (
+        <div className="grid grid-cols-1 gap-2 justify-items-stretch sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10 mx-auto">
+          {data.map((incident) => (
             <center key={incident.id}>
               <Card className=" ">
                 <CardContent>
@@ -134,13 +134,15 @@ const Incidents = ({ user }: Props) => {
                 </CardFooter>
               </Card>
             </center>
-          ))
-        ) : !isFetching ? (
-          <div className="text-center w-full">
-            <h1 className="text-2xl font-semibold">No Incidents Found</h1>
-          </div>
-        ) : null}
-      </div>
+          ))}
+        </div>
+      ) : !isFetching ? (
+        // <center>
+        <h2 className="my-10 text-2xl text-center">
+          No Incidents available
+        </h2>
+      ) : // </center>
+      null}
     </div>
   );
 };

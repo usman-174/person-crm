@@ -47,7 +47,7 @@ model incident {
 
 model person {
   id               String         @id @default(uuid())
-  username         String         @unique(map: "User_username_key")
+  username         String         @unique()
   TFF_ID           String?        @default(dbgenerated("(concat(`id`,'-',`fname`,'-',`lname`))"))
   fname            String?
   mname            String?
@@ -124,7 +124,7 @@ model school {
   icon           Icon?      @relation(fields: [iconId], references: [id])
   iconId         String?
 
-  organization organization? @relation(fields: [organizationId], references: [id], map: "School_organizationId_fkey")
+  organization organization? @relation(fields: [organizationId], references: [id])
   createdById  String?
   createdBy    user?         @relation("created_by", fields: [createdById], references: [id])
 
@@ -132,7 +132,7 @@ model school {
   lastModifiedById String?
   lastModifiedBy   user?    @relation("last_modified_by", fields: [lastModifiedById], references: [id])
 
-  @@index([organizationId], map: "School_organizationId_fkey")
+ 
 }
 
 model Icon {
