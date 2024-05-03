@@ -12,11 +12,18 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const app = express();
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? JSON.parse(process.env.ALLOWED_ORIGINS)
+  : ["*"];
+
+// Configure CORS middleware
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 app.get("/", (_: Request, res: Response) => {
@@ -32,7 +39,9 @@ api.get("/all-counts", async (_: Request, res: Response) => {
     const organizationCount = await prisma.organization.count();
     const incidentCount = await prisma.incident.count();
 
-    res.status(200).json({ personCount, schoolCount, incidentCount,organizationCount });
+    res
+      .status(200)
+      .json({ personCount, schoolCount, incidentCount, organizationCount });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -42,7 +51,6 @@ api.use("/auth", authRouter);
 api.use("/person", personRouter);
 api.use("/school", schoolRouter);
 api.use("/incident", incidentRouter);
-
 
 api.use("/organization", orgRouter);
 
