@@ -1,4 +1,3 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Separator } from "@/components/ui/separator";
 import { getServerSession } from "next-auth";
 
@@ -9,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { INCIDENT } from "@/types/COMMON";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
+import { authOptions } from "@/utils/authOptions";
 type props = {
   params: {
     id: string;

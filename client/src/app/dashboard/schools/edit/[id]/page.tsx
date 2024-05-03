@@ -1,5 +1,5 @@
 import { getSchool } from "@/actions/school";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/utils/authOptions";
 import { EditSchool } from "@/components/dashboard/schools/EditSchool";
 import { SCHOOL } from "@/types/COMMON";
 

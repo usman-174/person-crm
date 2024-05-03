@@ -10,17 +10,19 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { auth_constants } from "@/constants";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 // @ts-ignore
 import toast from "react-hot-toast";
-import { auth_constants } from "../auth_constants";
+
 
 const page = () => {
   const router = useRouter();
-  const callbackUrl = useSearchParams().get("callbackUrl") || "";
+  const searchParam = useSearchParams()
+  const callbackUrl = searchParam.get("callbackUrl")
   const [formData, setFormData] = useState({
     username: "",
     password: "",

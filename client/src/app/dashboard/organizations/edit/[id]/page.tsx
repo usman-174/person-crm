@@ -1,5 +1,5 @@
 import { getOrganization } from "@/actions/organization";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/utils/authOptions";
 import { EditOrganization } from "@/components/dashboard/organizations/EditOrganization";
 import { ORGANIZATION } from "@/types/COMMON";
 

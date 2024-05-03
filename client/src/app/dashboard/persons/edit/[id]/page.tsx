@@ -1,5 +1,5 @@
 import { getPerson } from "@/actions/person";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/utils/authOptions";
 import { EditPerson } from "@/components/dashboard/persons/EditPerson";
 import { PERSON } from "@/types/COMMON";
 import { getServerSession } from "next-auth";

@@ -7,9 +7,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { API } from "@/constants";
 import axiosInstance from "@/lib/axios";
-import { PERSON } from "@/types/USER";
+
 import { useQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
+import { PERSON } from "@/types/COMMON";
 
 export function SelectHeads({ token, form }: { token: string; form: any }) {
   const [headIds, setHeadIds] = React.useState<string[]>(
@@ -64,7 +65,7 @@ export function SelectHeads({ token, form }: { token: string; form: any }) {
           placeholder="Person name"
           value={searchQuery}
           onChange={handleInputChange}
-          autocomplete="off"
+          autoComplete="off"
         />
       </div>
       <ScrollArea className="h-auto max-w-80 min-w-64 rounded-md border mt-1">

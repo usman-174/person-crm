@@ -159,7 +159,7 @@ export function IncidentSelects({ token, form }: { token: string; form: any }) {
             placeholder="Person name"
             value={searchPeronQuery}
             onChange={(e) => handleChange(e, setSearchPeronQuery)}
-            autocomplete="off"
+            autoComplete="off"
           />
         </div>
         <ScrollArea className="h-auto max-w-80 min-w-64 rounded-md border mt-1">
@@ -195,7 +195,7 @@ export function IncidentSelects({ token, form }: { token: string; form: any }) {
             placeholder="School name"
             value={searchSchoolQuery}
             onChange={(e) => handleChange(e, setSearchSchoolQuery)}
-            autocomplete="off"
+            autoComplete="off"
           />
         </div>
         <ScrollArea className="h-auto max-w-80 min-w-64 rounded-md border mt-1">
@@ -231,7 +231,7 @@ export function IncidentSelects({ token, form }: { token: string; form: any }) {
             placeholder="Organization name"
             value={searchOrganizationQuery as any}
             onChange={(e) => handleChange(e, setSearchOrganizationQuery)}
-            autocomplete="off"
+            autoComplete="off"
           />
         </div>
         <ScrollArea className="h-auto max-w-80 min-w-64 rounded-md border mt-1">

@@ -1,7 +1,7 @@
 import { getIncident } from "@/actions/incident";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { EditIncident } from "@/components/dashboard/incidents/EditIncident";
 import { INCIDENT } from "@/types/COMMON";
+import { authOptions } from "@/utils/authOptions";
 
 import { getServerSession } from "next-auth";
 type props = {

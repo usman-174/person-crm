@@ -30,17 +30,15 @@ import { z } from "zod";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
 import axiosInstance from "@/lib/axios";
-import { PERSON } from "@/types/USER";
 import { useState } from "react";
-import { addSchoolSchema } from "./validations/addSchool";
 import { SelectHeads } from "../SelectHeads";
+import { addSchoolSchema } from "./validations/addSchool";
 
 export function AddSchool() {
   const session = useSession();
   const queryClient = new QueryClient();
 
   const router = useRouter();
-  const [headIds, setHeadIds] = useState<string[]>([]);
   const form = useForm<z.infer<typeof addSchoolSchema>>({
     mode: "onSubmit",
     resolver: zodResolver(addSchoolSchema),
