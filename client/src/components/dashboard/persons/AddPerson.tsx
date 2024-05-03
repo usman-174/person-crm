@@ -96,6 +96,7 @@ export function AddPerson() {
   
     mutation.mutate({
       ...values,
+      fullName: `${values.fname} ${values.lname}`,
       DOB: new Date(format(values.DOB, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")),
     });
   }

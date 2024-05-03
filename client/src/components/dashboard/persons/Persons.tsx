@@ -95,7 +95,7 @@ const Persons = ({ user }: Props) => {
                   />
                   <div className="flex gap-1 flex-col items-start justify-start">
                     <h1 className="text-sm md:text-lg font-semibold break-all">
-                      {person.fullName}
+                      {person.fname + " "+ person.lname}
                     </h1>
                     <span className="text-muted-foreground text-xs md:text-sm">
                       {person.username}
