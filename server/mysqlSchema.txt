@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model organization {
+  id        String   @id @default(uuid())
+  name      String
+  city      String?
+  notes     String?
+  createdAt DateTime @default(now())
+
+  schools          school[]
+  incidents        incident[] @relation("involved_organizations")
+  createdById      String?
+  createdBy        user?      @relation("created_by", fields: [createdById], references: [id])
+  lastModifiedById String?
+  lastModifiedBy   user?      @relation("last_modified_by", fields: [lastModifiedById], references: [id])
+  lastModified     DateTime   @updatedAt
+  heads            person[]   @relation("OrganizationHeads")
+}
+
+model incident {
+  id               String         @id @default(uuid())
+  title            String
+  type             String
+  targeted         String
+  date             DateTime
+  time             String
+  source           user_source?
+  persons          person[]       @relation("involved_persons")
+  schools          school[]       @relation("involved_schools")
+  organizations    organization[] @relation("involved_organizations")
+  location         String
+  notes            String?
+  createdAt        DateTime       @default(now())
+  createdBy        user?          @relation("created_by", fields: [createdById], references: [id])
+  createdById      String?
+  lastModified     DateTime       @updatedAt
+  lastModifiedById String?
+  lastModifiedBy   user?          @relation("last_modified_by", fields: [lastModifiedById], references: [id])
+}
+
+model person {
+  id               String         @id @default(uuid())
+  username         String         @unique()
+  TFF_ID           String?        @default(dbgenerated("(concat(`id`,'-',`fname`,'-',`lname`))"))
+  fname            String?
+  mname            String?
+  password         String?
+  lname            String?
+  fullName         String?        @default(dbgenerated("(concat(`fname`,' ',`lname`))"))
+  address          String?
+  address2         String?
+  city             String?
+  state            String?
+  country          String?
+  DOB              DateTime?
+  role             String?
+  title            String?
+  type             user_type?     @default(USER)
+  mainPhoto        String?
+  source           user_source?
+  notes            String?        @db.VarChar(800)
+  createdAt        DateTime       @default(now())
+  schools          school[]       @relation("SchoolHeads")
+  organizations    organization[] @relation("OrganizationHeads")
+  incidents        incident[]     @relation("involved_persons")
+  lastModified     DateTime       @updatedAt
+  createdById      String?
+  createdBy        user?          @relation("created_by", fields: [createdById], references: [id])
+  lastModifiedById String?
+  lastModifiedBy   user?          @relation("last_modified_by", fields: [lastModifiedById], references: [id])
+  social           social[]
+}
+
+model user {
+  id       String @id @default(uuid())
+  username String @unique(map: "User_username_key")
+
+  fname    String?
+  mname    String?
+  password String?
+  lname    String?
+  fullName String  @default(dbgenerated("(concat(`fname`,' ',`lname`))"))
+  address  String?
+
+  city    String?
+  state   String?
+  country String?
+  DOB     DateTime?
+
+  title String?
+  role  user_type? @default(USER)
+
+  createdAt DateTime @default(now())
+
+  lastModified          DateTime       @updatedAt
+  createdOrganizations  organization[] @relation("created_by")
+  modifiedOrganizations organization[] @relation("last_modified_by")
+
+  createdschools    school[]   @relation("created_by")
+  modifiedSchools   school[]   @relation("last_modified_by")
+  createdPersons    person[]   @relation("created_by")
+  modifiedPersons   person[]   @relation("last_modified_by")
+  createdIncidents  incident[] @relation("created_by")
+  modifiedIncidents incident[] @relation("last_modified_by")
+}
+
+model school {
+  id             String     @id @default(uuid())
+  name           String
+  city           String
+  state          String
+  organizationId String?
+  heads          person[]   @relation("SchoolHeads")
+  incidents      incident[] @relation("involved_schools")
+  notes          String?
+  createdAt      DateTime   @default(now())
+  icon           Icon?      @relation(fields: [iconId], references: [id])
+  iconId         String?
+
+  organization organization? @relation(fields: [organizationId], references: [id])
+  createdById  String?
+  createdBy    user?         @relation("created_by", fields: [createdById], references: [id])
+
+  lastModified     DateTime @updatedAt
+  lastModifiedById String?
+  lastModifiedBy   user?    @relation("last_modified_by", fields: [lastModifiedById], references: [id])
+
+ 
+}
+
+model Icon {
+  id       String   @id @default(uuid())
+  name     String
+  iconLink String
+  school   school[]
+  notes    String?
+}
+
+model social {
+  id       String          @id @default(uuid())
+  platform social_platform
+  account  String
+  // userId   String
+  // user     user            @relation(fields: [userId], references: [id], map: "Social_userId_fkey")
+  person   person?         @relation(fields: [personId], references: [id])
+  personId String?
+}
+
+enum social_platform {
+  LINKEDIN
+  FB
+  TWITTER
+  IG
+}
+
+enum user_type {
+  ADMIN
+  REPORTER
+  USER
+}
+
+enum user_source {
+  SOCIAL_MEDIA
+  PERSON
+}
