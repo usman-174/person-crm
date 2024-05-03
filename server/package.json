@@ -10,7 +10,7 @@
     "start": "node dist/src/index.js",
     "client": "cd client && npm start",
     "generate": "npx prisma generate",
-    "prod": "npm run generate && npm run start"
+    "prod": "npm run generate && npm run build && npm run start"
   },
   "author": "",
   "license": "ISC",
