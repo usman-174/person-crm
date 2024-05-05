@@ -7,8 +7,7 @@ import UserButton from "./UserButton";
 
 const Navbar = () => {
   const session = useSession();
-  
-  
+
   const user = session.data?.user;
   return (
     <header className="sticky z-20 top-0 bg-background px-3 shadow-sm">
@@ -16,15 +15,21 @@ const Navbar = () => {
         <Link href="/" className="font-bold text-3xl">
           PERSON-CRM
         </Link>
-    
-        {user && <UserButton user={user} />}
-     {!user && session.status !== "loading" && <SignInButton />}
+        <div className="flex items-center gap-10 ">
+          {user && user.role === "ADMIN" && (
+            <Link href="/dashboard" className="font-semibold text-md">
+              Dashboard
+            </Link>
+          )}
+          {user && <UserButton user={user} />}
+          {!user && session.status !== "loading" && <SignInButton />}
+        </div>
       </nav>
     </header>
   );
 };
 function SignInButton() {
-    const router = useRouter();
+  const router = useRouter();
   return <Button onClick={() => router.push("/login")}>Sign in</Button>;
 }
 export default Navbar;

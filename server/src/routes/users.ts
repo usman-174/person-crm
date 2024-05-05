@@ -21,8 +21,8 @@ const personRouter = express.Router();
 personRouter.get(
   "/",
   checkToken,
-  requireAuth,
-  allowRoles("ADMIN"),
+  // requireAuth,
+  // allowRoles("ADMIN"),
   getAllUsers
 );
 personRouter.delete(

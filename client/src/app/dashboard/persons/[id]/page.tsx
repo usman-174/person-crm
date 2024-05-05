@@ -23,7 +23,7 @@ const page = async ({ params }: props) => {
     person = await getPerson(params.id, session?.user.token);
   }
   if (!person) return null;
-
+  const user = session?.user;
   return (
     <div className="">
       <div className="flex md:items-start md:justify-between flex-col-reverse md:flex-row">
@@ -42,15 +42,21 @@ const page = async ({ params }: props) => {
         {/* <OptionsDropDown/>
          */}
         <div className="flex flex-col gap-2 ">
-          <div className="flex items-center gap-4">
-            <DeleteDialog queryKey={QUERY_KEYS.ALL_PERSONS} type="person" path="/dashboard/persons" />
-            <Link href={"/dashboard/persons/edit/" + person?.id}>
-              <Button variant={"outline"}>
-                <Pencil className="mr-2 h-4 w-4" />
-                <span>Edit</span>
-              </Button>
-            </Link>
-          </div>
+          {user.role === "ADMIN" ? (
+            <div className="flex items-center gap-4">
+              <DeleteDialog
+                queryKey={QUERY_KEYS.ALL_PERSONS}
+                type="person"
+                path="/dashboard/persons"
+              />
+              <Link href={"/dashboard/persons/edit/" + person?.id}>
+                <Button variant={"outline"}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  <span>Edit</span>
+                </Button>
+              </Link>
+            </div>
+          ) : null}
           <p className="text-sm">
             Last Modified by : {person?.lastModifiedBy?.username || "N/A"}
           </p>

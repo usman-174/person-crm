@@ -24,8 +24,8 @@ incidentRouter.post(
 incidentRouter.get(
   "/", 
   checkToken,
-  requireAuth,
-  allowRoles("ADMIN"),
+  // requireAuth,
+  // allowRoles("ADMIN"),
   getAllIncidents
 );
 incidentRouter.get(

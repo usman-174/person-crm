@@ -60,6 +60,7 @@ const page = () => {
       } else if (res?.ok) {
         toast.success(auth_constants.login.ToastLoginSuccess);
         router.push(callbackUrl || "/");
+        window.location.href = callbackUrl || "/";
       }
     } catch (error) {
       setError(auth_constants.login.ErrorInvalidCredentials);

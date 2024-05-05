@@ -22,7 +22,7 @@ const page = async ({ params }: props) => {
     incident = await getIncident(params.id, session?.user.token);
   }
   if (!incident) return null;
-
+  const user = session?.user;
   return (
     <div>
       <div className="flex md:items-start md:justify-between flex-col-reverse md:flex-row">
@@ -38,20 +38,22 @@ const page = async ({ params }: props) => {
         {/* <OptionsDropDown/>
          */}
         <div className="flex flex-col gap-2 ">
-          <div className="flex items-center gap-4">
-            <DeleteDialog
-              queryKey={QUERY_KEYS.ALL_INCIDENTS}
-              type={REAVALIDAION_TIME.INCIDENT.type}
-              path="/dashboard/incidents"
-            />
+          {user.role === "ADMIN" ? (
+            <div className="flex items-center gap-4">
+              <DeleteDialog
+                queryKey={QUERY_KEYS.ALL_INCIDENTS}
+                type={REAVALIDAION_TIME.INCIDENT.type}
+                path="/dashboard/incidents"
+              />
 
-            <Link href={"/dashboard/incidents/edit/" + incident?.id}>
-              <Button variant={"outline"}>
-                <Pencil className="mr-2 h-4 w-4" />
-                <span>Edit</span>
-              </Button>
-            </Link>
-          </div>
+              <Link href={"/dashboard/incidents/edit/" + incident?.id}>
+                <Button variant={"outline"}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  <span>Edit</span>
+                </Button>
+              </Link>
+            </div>
+          ) : null}
           <p className="text-sm">
             Last Modified by : {incident?.lastModifiedBy?.username || "N/A"}
           </p>
@@ -76,7 +78,7 @@ const page = async ({ params }: props) => {
                 <div key={person.id} className="p-2">
                   <div>
                     <p className="text-muted-foreground text-md uppercase">
-                      {person.fullName || "N/A"}
+                      {person?.fullName || "N/A"}
                     </p>
                   </div>
                   <div>

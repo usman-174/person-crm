@@ -42,6 +42,7 @@ export interface PERSON {
   mainPhoto?: string;
   social?: Social[];
   source?: SourceType;
+  incidents: INCIDENT[];
   notes?: string;
   createdAt: Date;
   lastModified: Date;

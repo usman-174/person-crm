@@ -38,7 +38,12 @@ export const getAllSocialPlatforms = async (
 
 export const getAllUsers = async (_: Request, res: Response): Promise<void> => {
   try {
-    const users = await prisma.person.findMany({ include: { social: true } });
+    console.log("Asking Users");
+    
+    const users = await prisma.person.findMany({
+      include: { social: true, incidents: { orderBy: { createdAt: "desc" } } },
+      // orderBy: {  incidents: { createdAt: "desc" }},
+    });
     res.status(200).json(users);
   } catch (error) {
     console.error(error);

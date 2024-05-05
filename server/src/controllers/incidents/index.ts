@@ -6,6 +6,8 @@ export const getAllIncidents = async (
   _: Request,
   res: Response
 ): Promise<void> => {
+  console.log("yeaa");
+  
   try {
     const incidents = await prisma.incident.findMany({
       include: {
@@ -17,6 +19,8 @@ export const getAllIncidents = async (
       },
       orderBy: { createdAt: "desc" }, // Sort by createdAt in descending order
     });
+    console.log(incidents);
+    
     res.status(200).json(incidents);
   } catch (error) {
     console.error(error);

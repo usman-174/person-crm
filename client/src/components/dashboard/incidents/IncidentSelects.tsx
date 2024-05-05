@@ -130,7 +130,9 @@ export function IncidentSelects({ token, form }: { token: string; form: any }) {
   });
 
   const filteredPersons: PERSON[] = persons?.filter((person: PERSON) =>
-    person.fullName.toLowerCase().includes(searchPeronQuery.toLowerCase())
+    (person?.fullName || person?.fname + " " + person?.lname)
+      ?.toLowerCase()
+      .includes(searchPeronQuery.toLowerCase())
   );
   const filteredSchools: SCHOOL[] = schools?.filter((school: SCHOOL) =>
     school.name.toLowerCase().includes(searchSchoolQuery.toLowerCase())
@@ -175,12 +177,10 @@ export function IncidentSelects({ token, form }: { token: string; form: any }) {
                   {personIds?.includes(person.id) ? (
                     <Check className="w-4 h-4 mr-2" />
                   ) : null}{" "}
-                  {person.fullName}
+                  {(person?.fullName || person?.fname + " " + person?.lname)}
                 </span>
 
-               
-                  <Separator className="my-1" />
-                
+                <Separator className="my-1" />
               </div>
             ))}
           </div>
@@ -214,9 +214,7 @@ export function IncidentSelects({ token, form }: { token: string; form: any }) {
                   {school.name}
                 </span>
 
-               
-                  <Separator className="my-1" />
-              
+                <Separator className="my-1" />
               </div>
             ))}
           </div>
@@ -250,9 +248,7 @@ export function IncidentSelects({ token, form }: { token: string; form: any }) {
                   {org.name}
                 </span>
 
-                
-                  <Separator className="my-1" />
-              
+                <Separator className="my-1" />
               </div>
             ))}
           </div>

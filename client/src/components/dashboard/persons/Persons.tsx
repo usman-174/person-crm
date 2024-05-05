@@ -95,11 +95,29 @@ const Persons = ({ user }: Props) => {
                   />
                   <div className="flex gap-1 flex-col items-start justify-start">
                     <h1 className="text-sm md:text-lg font-semibold break-all">
-                      {person.fname + " "+ person.lname}
+                      {person.fname + " " + person.lname}
                     </h1>
                     <span className="text-muted-foreground text-xs md:text-sm">
                       {person.username}
                     </span>
+                  </div>
+                </div>
+                <br />
+                <div>
+                  <span className="text-sm font-semibold">
+                    Recent Incidents:
+                  </span>
+                  <div className="flex flex-col items-start gap-3">
+                    {person.incidents?.slice(0, 2).map((incident) => (
+                      <Link key={incident.id} href={"/dashboard/incidents/"+incident.id}>
+                      <div >
+                        <div className="text-accent-foreground uppercase cursor-pointer text-xs md:text-sm">
+                          {incident.title}
+                        </div>
+                        
+                      </div>
+                      </Link>
+                    ))}
                   </div>
                 </div>
               </CardContent>
