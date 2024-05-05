@@ -45,6 +45,8 @@ This project consists of two main folders: `client` and `server`. The `client` f
     provider = "postgres"
     ```
 
+5. Update the DATABASE_URL variable in .env:
+
 4. Generate Prisma client:
 
     ```bash
@@ -80,6 +82,36 @@ This project consists of two main folders: `client` and `server`. The `client` f
     ```bash
     npm run dev
     ```
+
+
+## Deployment
+
+### Server
+
+1. The path to server will me :
+
+    ```bash
+    ./server
+    ```
+
+2. Specify this as the start command in you cloud:
+
+    ```bash
+    npm run prod
+    ```
+
+
+
+### Client
+
+
+1. The path to client will me :
+
+    ```bash
+    ./server
+    ```
+
+2 Vercel will automatically deploy nextjs app
 
 ## Additional Notes
 

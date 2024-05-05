@@ -108,7 +108,8 @@ export function AddIncidents() {
       toast.success(`${REAVALIDAION_TIME.INCIDENT.type} Added successfully`);
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_INCIDENTS] });
       let { data } = await axiosInstance.post("/api/revalidate", {
-        tags: REAVALIDAION_TIME.COUNT.TAGS,
+        tags: [...REAVALIDAION_TIME.COUNT.TAGS, QUERY_KEYS.ALL_PERSONS],
+       
       });
       if (data) {
         router.push(`/dashboard/${QUERY_KEYS.ALL_INCIDENTS}`);

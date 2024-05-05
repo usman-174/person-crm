@@ -219,7 +219,8 @@ export function EditSchool({ school }: props) {
         />
         <SelectHeads token={session.data?.user.token} form={form} />
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={mutation.isPending}
+        aria-disabled={mutation.isPending}>Submit</Button>
       </form>
     </Form>
   );

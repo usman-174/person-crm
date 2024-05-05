@@ -113,7 +113,9 @@ export function EditIncident({ incident }: props) {
         tags: [
             ...REAVALIDAION_TIME.COUNT.TAGS,
             ...REAVALIDAION_TIME.INCIDENT.TAGS(incident.id),
+            QUERY_KEYS.ALL_PERSONS
           ],
+          // path:"/"
       });
     //   if (data) {
     //     router.push(`/dashboard/${QUERY_KEYS.ALL_INCIDENTS}`);
@@ -315,7 +317,8 @@ export function EditIncident({ incident }: props) {
         </div>
         <IncidentSelects token={session.data?.user.token} form={form} />
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={mutation.isPending}
+        aria-disabled={mutation.isPending}>Submit</Button>
       </form>
     </Form>
   );

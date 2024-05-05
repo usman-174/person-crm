@@ -57,8 +57,8 @@ personRouter.get(
 personRouter.get(
   "/:id",
   checkToken,
-  requireAuth,
-  allowRoles("ADMIN"),
+  // requireAuth,
+  // allowRoles("ADMIN"),
   getUserbyId
 );
 personRouter.put(

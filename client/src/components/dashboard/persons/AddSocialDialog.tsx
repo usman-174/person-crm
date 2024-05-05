@@ -162,7 +162,8 @@ export function AddSocialDialog({
               />
             </div>
 
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={mutation.isPending}
+        aria-disabled={mutation.isPending}>Submit</Button>
           </form>
         </Form>
       </DialogContent>

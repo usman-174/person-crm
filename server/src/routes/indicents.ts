@@ -31,15 +31,15 @@ incidentRouter.get(
 incidentRouter.get(
   "/search",
   checkToken,
-  requireAuth,
-  allowRoles("ADMIN"),
+  // requireAuth,
+  // allowRoles("ADMIN"),
   searchIncidents
 );
 incidentRouter.get(
   "/:id",
   checkToken,
-  requireAuth,
-  allowRoles("ADMIN"),
+  // requireAuth,
+  // allowRoles("ADMIN"),
   getIncidentbyId
 );
 incidentRouter.put(

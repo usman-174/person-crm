@@ -2,15 +2,13 @@ import { getAllPersons } from "@/actions/person";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { PERSON } from "@/types/COMMON";
-import { authOptions } from "@/utils/authOptions";
 import { formatDistance } from "date-fns";
-import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
-  const persons: PERSON[] = await getAllPersons(session?.user?.token);
+ 
+  const persons: PERSON[] = await getAllPersons();
   if (!persons) return <div>loading...</div>;
 
   return (

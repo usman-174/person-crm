@@ -82,7 +82,8 @@ export function AddPerson() {
       toast.success("User Added successfully");
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_PERSONS] });
       let { data } = await axiosInstance.post("/api/revalidate", {
-        tags: REAVALIDAION_TIME.COUNT.TAGS,
+        tags: [...REAVALIDAION_TIME.COUNT.TAGS, QUERY_KEYS.ALL_PERSONS],
+     
       });
       if (data) {
         router.push("/dashboard/persons");
@@ -318,7 +319,8 @@ export function AddPerson() {
           />
         </div>
 
-        <Button type="submit">Add</Button>
+        <Button type="submit" disabled={mutation.isPending}
+        aria-disabled={mutation.isPending}>Add</Button>
       </form>
     </Form>
   );

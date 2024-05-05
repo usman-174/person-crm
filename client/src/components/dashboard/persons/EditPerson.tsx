@@ -115,7 +115,10 @@ export function EditPerson({ person }: props) {
         tags: [
           ...REAVALIDAION_TIME.COUNT.TAGS,
           ...REAVALIDAION_TIME.PERSON.TAGS(person.id),
+          QUERY_KEYS.ALL_PERSONS
+          
         ],
+    
       });
       if (data) {
         router.refresh();
@@ -459,7 +462,8 @@ export function EditPerson({ person }: props) {
                     </div>
                   )): null}
               </div>
-              <Button type="submit">Save</Button>
+              <Button type="submit" disabled={mutation.isPending}
+        aria-disabled={mutation.isPending}>Save</Button>
             </form>
           </Form>
         </div>
