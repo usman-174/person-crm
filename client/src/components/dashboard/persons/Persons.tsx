@@ -1,18 +1,17 @@
 "use client";
-import { API } from "@/constants";
+import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
+import SearchBar from "@/components/dashboard/SearchBar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PERSON } from "@/types/COMMON";
 import { USER } from "@/types/USER";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
-import SearchBar from "@/components/dashboard/SearchBar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Image from "next/image";
-import { Plus } from "lucide-react";
 import { formatDistance } from "date-fns";
-import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
-import { PERSON } from "@/types/COMMON";
+import { Plus } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 type Props = {
   user: USER & {

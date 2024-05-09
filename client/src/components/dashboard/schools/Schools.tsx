@@ -4,7 +4,6 @@ import SearchBar from "@/components/dashboard/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { API } from "@/constants";
 import { SCHOOL } from "@/types/COMMON";
 import { USER } from "@/types/USER";
 import { useQuery } from "@tanstack/react-query";

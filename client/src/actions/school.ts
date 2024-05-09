@@ -1,8 +1,7 @@
-import { API } from "@/constants";
-import { REAVALIDAION_TIME } from "./contants";
 import prisma from "@/lib/prisma";
-import { unstable_cache as cache } from "next/cache";
 import { SCHOOL } from "@/types/COMMON";
+import { unstable_cache as cache } from "next/cache";
+import { REAVALIDAION_TIME } from "./contants";
 
 export const getSchool = async (id: string) :Promise<SCHOOL|any>=> {
   return await cache(

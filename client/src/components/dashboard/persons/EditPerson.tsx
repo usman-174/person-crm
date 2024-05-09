@@ -29,7 +29,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { API } from "@/constants";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
@@ -41,8 +40,8 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-import axios from "axios";
 import { PERSON } from "@/types/COMMON";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { AddSocialDialog } from "./AddSocialDialog";
 import { editPersonSchema } from "./valdidations/EditPerson";
@@ -78,12 +77,8 @@ export function EditPerson({ person }: props) {
     mutationFn: async (id: string) => {
       try {
         const { data } = await axios.delete(
-          `${API}person/social/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${session.data?.user.token}`,
-            },
-          }
+          `/api/person/social/${id}`,
+          
         );
       } catch (error: any) {
         throw new Error(

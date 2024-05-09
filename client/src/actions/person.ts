@@ -1,8 +1,7 @@
-import { API } from "@/constants";
-import { QUERY_KEYS, REAVALIDAION_TIME } from "./contants";
 import prisma from "@/lib/prisma";
 import { PERSON } from "@/types/COMMON";
 import { unstable_cache as cache } from "next/cache";
+import { QUERY_KEYS, REAVALIDAION_TIME } from "./contants";
 
 export const getPerson = async (id: string): Promise<PERSON | any> => {
   return await cache(

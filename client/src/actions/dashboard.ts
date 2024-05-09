@@ -1,6 +1,5 @@
-import { API } from "@/constants";
-import { QUERY_KEYS, REAVALIDAION_TIME } from "./contants";
 import { unstable_cache as cache } from "next/cache";
+import { QUERY_KEYS } from "./contants";
 
 import prisma from "@/lib/prisma";
 export const getCount = async (): Promise<any> => {

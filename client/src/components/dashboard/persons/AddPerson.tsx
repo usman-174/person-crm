@@ -25,7 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { API } from "@/constants";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
@@ -58,24 +57,15 @@ export function AddPerson() {
       DOB: new Date(),
     },
   });
-  console.log({state:form.formState.errors});
-  
+
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addPersonSchema>) => {
       try {
-        console.log({
-          headers: {
-            Authorization: `Bearer ${session.data?.user.token}`,
-          },
-        });
-
-        const { data } = await axios.post(`${API}person`, payload, {
-          headers: {
-            Authorization: `Bearer ${session.data?.user.token}`,
-          },
-        });
+        await axios.post(`/api/person`, payload);
       } catch (error: any) {
-        throw new Error(error.response?.data?.message || "Failed to add Person");
+        throw new Error(
+          error.response?.data?.message || "Failed to add Person"
+        );
       }
     },
     onSuccess: async () => {
@@ -83,7 +73,6 @@ export function AddPerson() {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_PERSONS] });
       let { data } = await axios.post("/api/revalidate", {
         tags: [...REAVALIDAION_TIME.COUNT.TAGS, QUERY_KEYS.ALL_PERSONS],
-     
       });
       if (data) {
         router.push("/dashboard/persons");
@@ -94,7 +83,6 @@ export function AddPerson() {
     },
   });
   function onSubmitx(values: z.infer<typeof addPersonSchema>) {
-  
     mutation.mutate({
       ...values,
       fullName: `${values.fname} ${values.lname}`,
@@ -319,8 +307,13 @@ export function AddPerson() {
           />
         </div>
 
-        <Button type="submit" disabled={mutation.isPending}
-        aria-disabled={mutation.isPending}>Add</Button>
+        <Button
+          type="submit"
+          disabled={mutation.isPending}
+          aria-disabled={mutation.isPending}
+        >
+          Add
+        </Button>
       </form>
     </Form>
   );

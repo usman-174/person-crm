@@ -1,6 +1,5 @@
-import { API } from "@/constants";
-import { QUERY_KEYS, REAVALIDAION_TIME } from "./contants";
 import { unstable_cache as cache } from "next/cache";
+import { REAVALIDAION_TIME } from "./contants";
 
 import prisma from "@/lib/prisma";
 
@@ -39,24 +38,3 @@ export const getIncident = async (id: string):Promise<any> => {
     }
   )();
 };
-
-// export const getAllIncidents = async (token: string) => {
-//   try {
-//     const res = await fetch(API + REAVALIDAION_TIME.INCIDENT.type, {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//       next: {
-//         revalidate: REAVALIDAION_TIME.INCIDENT.TIME,
-//         tags: [QUERY_KEYS.ALL_INCIDENTS],
-//       },
-//     });
-//     const data = await res.json();
-
-//     return data;
-//   } catch (error: any) {
-//     console.log("Error: ", error.message);
-//     return { error: "Failed to fetch Incident data" };
-//   }
-// };
