@@ -25,7 +25,7 @@ type props = {
 };
 
 export function DeleteDialog({ type, queryKey, path }: props) {
-  const session = useSession();
+
   const queryClient = new QueryClient();
 
   const params = useParams();
@@ -48,6 +48,10 @@ export function DeleteDialog({ type, queryKey, path }: props) {
             ? REAVALIDAION_TIME.PERSON.TAGS(String(params.id))
             : REAVALIDAION_TIME.SCHOOL.TAGS(String(params.id)),
         path: "/dashboard",
+      });
+      await axios.post("/api/revalidate", {
+        
+        path: "/",
       });
       if (data) {
         router.push(path);
