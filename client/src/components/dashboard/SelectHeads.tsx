@@ -5,12 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { API } from "@/constants";
-import axiosInstance from "@/lib/axios";
 
-import { useQuery } from "@tanstack/react-query";
-import { Check } from "lucide-react";
 import { PERSON } from "@/types/COMMON";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { Check } from "lucide-react";
 
 export function SelectHeads({ token, form }: { token: string; form: any }) {
   const [headIds, setHeadIds] = React.useState<string[]>(
@@ -28,24 +27,16 @@ export function SelectHeads({ token, form }: { token: string; form: any }) {
       setHeadIds(headIds.filter((headId) => headId !== id));
       form.setValue(
         "headIds",
-        form.getValues().headIds?.filter((headId:string) => headId !== id)
+        form.getValues().headIds?.filter((headId: string) => headId !== id)
       );
     }
   };
   const { data: heads } = useQuery({
     queryKey: [QUERY_KEYS.ALL_PERSONS],
     queryFn: async () => {
-      const { data } = await axiosInstance.get(
-        `${API}${REAVALIDAION_TIME.PERSON.type}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const { data } = await axios.get(`/api/${REAVALIDAION_TIME.PERSON.type}`);
       return data;
     },
-    enabled: !!token,
   });
 
   const filteredHeads: PERSON[] = heads?.filter((head: PERSON) =>

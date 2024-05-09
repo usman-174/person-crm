@@ -2,25 +2,24 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { API } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -29,14 +28,14 @@ import { z } from "zod";
 
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
-import axiosInstance from "@/lib/axios";
+import axios from "axios";
 
 
 import { Calendar } from "@/components/ui/calendar";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { INCIDENT } from "@/types/COMMON";
@@ -70,28 +69,14 @@ export function EditIncident({ incident }: props) {
       schoolIds: incident.schools.map((school) => school.id) || [],
     },
   });
+ 
 
-  const { data: organizations } = useQuery({
-    queryKey: [QUERY_KEYS.ALL_INCIDENTS],
-    queryFn: async () => {
-      const { data } = await axiosInstance.get(
-        `${API}${REAVALIDAION_TIME.INCIDENT.type}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.data?.user.token}`,
-          },
-        }
-      );
-      return data;
-    },
-    enabled: !!session.data?.user?.token,
-  });
 
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addIncidentSchema>) => {
       try {
-        const { data } = await axiosInstance.put(
-          `${API}${REAVALIDAION_TIME.INCIDENT.type}/${incident.id}`,
+        const { data } = await axios.put(
+          `/api/${REAVALIDAION_TIME.INCIDENT.type}/${incident.id}`,
           payload,
           {
             headers: {
@@ -109,7 +94,7 @@ export function EditIncident({ incident }: props) {
     onSuccess: async () => {
       toast.success(`${REAVALIDAION_TIME.INCIDENT.type} Edited successfully`);
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_INCIDENTS] });
-      let { data } = await axiosInstance.post("/api/revalidate", {
+      let { data } = await axios.post("/api/revalidate", {
         tags: [
             ...REAVALIDAION_TIME.COUNT.TAGS,
             ...REAVALIDAION_TIME.INCIDENT.TAGS(incident.id),
@@ -315,7 +300,7 @@ export function EditIncident({ incident }: props) {
             )}
           />
         </div>
-        <IncidentSelects token={session.data?.user.token} form={form} />
+        <IncidentSelects form={form} />
 
         <Button type="submit" disabled={mutation.isPending}
         aria-disabled={mutation.isPending}>Submit</Button>

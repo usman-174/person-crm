@@ -5,13 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { API } from "@/constants";
-import axiosInstance from "@/lib/axios";
 import { ORGANIZATION, PERSON, SCHOOL } from "@/types/COMMON";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { Check } from "lucide-react";
 
-export function IncidentSelects({ token, form }: { token: string; form: any }) {
+export function IncidentSelects({ form }: { form: any }) {
   const [personIds, setPersonIds] = React.useState<string[]>(
     form.getValues().personIds || []
   );
@@ -86,47 +85,25 @@ export function IncidentSelects({ token, form }: { token: string; form: any }) {
   const { data: persons } = useQuery({
     queryKey: [QUERY_KEYS.ALL_PERSONS],
     queryFn: async () => {
-      const { data } = await axiosInstance.get(
-        `${API}${REAVALIDAION_TIME.PERSON.type}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const { data } = await axios.get(`/api/${REAVALIDAION_TIME.PERSON.type}`);
       return data;
     },
-    enabled: !!token,
   });
   const { data: schools } = useQuery({
     queryKey: [QUERY_KEYS.ALL_SCHOOLS],
     queryFn: async () => {
-      const { data } = await axiosInstance.get(
-        `${API}${REAVALIDAION_TIME.SCHOOL.type}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const { data } = await axios.get(`/api/${REAVALIDAION_TIME.SCHOOL.type}`);
       return data;
     },
-    enabled: !!token,
   });
   const { data: organizations } = useQuery({
     queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS],
     queryFn: async () => {
-      const { data } = await axiosInstance.get(
-        `${API}${REAVALIDAION_TIME.ORGANIZATION.type}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const { data } = await axios.get(
+        `/api/${REAVALIDAION_TIME.ORGANIZATION.type}`
       );
       return data;
     },
-    enabled: !!token,
   });
 
   const filteredPersons: PERSON[] = persons?.filter((person: PERSON) =>
@@ -150,6 +127,21 @@ export function IncidentSelects({ token, form }: { token: string; form: any }) {
   ) => {
     set(event.target.value);
   };
+  // console.log(
+  //   "contains=>",
+  //   organizationIds.find((x) => {
+  //     console.log(typeof x);
+
+  //     return x === String("d377ef06-905c-4496-8d5a-2de93601805a");
+  //   }),
+  //   ...organizationIds,
+  //   typeof 22
+  // );
+  // for (let index = 0; index < organizationIds.length; index++) {
+  //   const element = organizationIds[index];
+  //   organizationIds[index] = String(element);
+  // }
+
   return (
     <div className="flex  flex-wrap md:flex-nowrap md:items-start md:justify-start gap-10">
       <div>
@@ -177,7 +169,7 @@ export function IncidentSelects({ token, form }: { token: string; form: any }) {
                   {personIds?.includes(person.id) ? (
                     <Check className="w-4 h-4 mr-2" />
                   ) : null}{" "}
-                  {(person?.fullName || person?.fname + " " + person?.lname)}
+                  {person?.fullName || person?.fname + " " + person?.lname}
                 </span>
 
                 <Separator className="my-1" />
@@ -241,11 +233,11 @@ export function IncidentSelects({ token, form }: { token: string; form: any }) {
                 onClick={() => addOrganizationId(org.id)}
                 className="hover:bg-gray-100 cursor-pointer  px-2 py-1 rounded-md transition-colors"
               >
-                <span className="text-sm truncate flex overflow-hidden">
-                  {organizationIds?.includes(org.id) ? (
+                <span className="text-sm truncate flex overflow-hidden break-all">
+                  {organizationIds.flat().includes(org.id) ? (
                     <Check className="w-4 h-4 mr-2" />
                   ) : null}{" "}
-                  {org.name}
+                  {org.id} {org.name}
                 </span>
 
                 <Separator className="my-1" />

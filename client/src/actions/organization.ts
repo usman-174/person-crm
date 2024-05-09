@@ -1,24 +1,39 @@
-import { API } from "@/constants";
+import prisma from "@/lib/prisma";
+import { unstable_cache as cache } from "next/cache";
 import { REAVALIDAION_TIME } from "./contants";
+import { ORGANIZATION } from "@/types/COMMON";
 
-export const getOrganization = async (id: string, token: string) => {
-  try {
-   
-    const res = await fetch(API + "organization/" + id, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      next: {
-        revalidate: REAVALIDAION_TIME.ORGANIZATION.TIME,
-        tags: REAVALIDAION_TIME.ORGANIZATION.TAGS(id),
-      },
-    });
-    const data = await res.json();
+export const getOrganization = async (id: string):Promise<ORGANIZATION | any> => {
+  return await cache(
+    async () => {
+      try {
+        const organization = await prisma.organization.findUnique({
+          where: { id: String(id) },
+          include: {
+            createdBy: true,
+            lastModifiedBy: true,
+            heads: true,
+            schools: true,
+          },
+        });
+        //delete passwords
+        if (organization?.createdBy?.password) {
+          organization.createdBy.password = null;
+        }
+        if (organization?.lastModifiedBy?.password) {
+          organization.lastModifiedBy.password = null;
+        }
 
-    return data;
-  } catch (error: any) {
-    console.log("Error: ", error.message);
-    return { error: "Faled to fetch ORGANIZATION data" };
-  }
+        return organization;
+      } catch (error: any) {
+        console.log("Error: ", error.message);
+        return { error: "Faled to fetch ORGANIZATION data" };
+      }
+    },
+    REAVALIDAION_TIME.ORGANIZATION.TAGS(id),
+    {
+      revalidate: 400,
+      tags: REAVALIDAION_TIME.ORGANIZATION.TAGS(id),
+    }
+  )();
 };

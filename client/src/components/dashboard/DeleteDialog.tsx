@@ -1,6 +1,7 @@
 "use client";
 import { Trash2 } from "lucide-react";
 
+import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,14 +13,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { API } from "@/constants";
 import { QueryClient, useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { API } from "@/constants";
-import { useSession } from "next-auth/react";
-import axios from "axios";
-import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
-import axiosInstance from "@/lib/axios";
 type props = {
   type: string;
   queryKey: string;
@@ -35,16 +34,8 @@ export function DeleteDialog({ type, queryKey, path }: props) {
   const mutation = useMutation({
     mutationFn: async () => {
       try {
-        const res = await fetch(API + `${type}/${params.id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: "Bearer " + session!.data!.user.token || "",
-          },
-        });
-        if (!res.ok) {
-          throw new Error(`Failed to delete ${type}`);
-        }
-        return res.json();
+        const {data} = await axios.delete(`/api/${type}/${params.id}`);
+        return data
       } catch (error: any) {
         throw new Error(error.response.data.message);
       }
@@ -52,7 +43,7 @@ export function DeleteDialog({ type, queryKey, path }: props) {
     onSuccess: async () => {
       toast.success(`${type} deleted successfully`);
       queryClient.invalidateQueries({ queryKey: [queryKey] });
-      const { data } = await axiosInstance.post("/api/revalidate", {
+      const { data } = await axios.post("/api/revalidate", {
         tags:
           queryKey === QUERY_KEYS.ALL_PERSONS
             ? REAVALIDAION_TIME.PERSON.TAGS(String(params.id))

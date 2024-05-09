@@ -17,10 +17,8 @@ type props = {
 
 const page = async ({ params }: props) => {
   const session = await getServerSession(authOptions);
-  let incident: INCIDENT | null = null;
-  if (session?.user) {
-    incident = await getIncident(params.id, session?.user.token);
-  }
+  let incident: INCIDENT | null = await getIncident(params.id);
+
   if (!incident) return null;
   const user = session?.user;
   return (

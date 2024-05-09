@@ -1,44 +1,62 @@
 import { API } from "@/constants";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "./contants";
+import { unstable_cache as cache } from "next/cache";
 
-export const getIncident = async (id: string, token: string) => {
-  try {
-    const res = await fetch(API + REAVALIDAION_TIME.INCIDENT.type + "/" + id, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      next: {
-        revalidate: REAVALIDAION_TIME.INCIDENT.TIME,
-        tags: REAVALIDAION_TIME.INCIDENT.TAGS(id),
-      },
-    });
-    const data = await res.json();
+import prisma from "@/lib/prisma";
 
-    return data;
-  } catch (error: any) {
-    console.log("Error: ", error.message);
-    return { error: "Failed to fetch Incident data" };
-  }
+export const getIncident = async (id: string):Promise<any> => {
+  return await cache(
+    async () => {
+      try {
+        const incidents = await prisma.incident.findUnique({
+          where: { id: String(id) },
+          include: {
+            createdBy: true,
+            lastModifiedBy: true,
+            organizations: true,
+            persons: true,
+            schools: true,
+          },
+        });
+        //delete passwords
+        if (incidents?.createdBy?.password) {
+          incidents.createdBy.password = null;
+        }
+        if (incidents?.lastModifiedBy?.password) {
+          incidents.lastModifiedBy.password = null;
+        }
+
+        return incidents;
+      } catch (error: any) {
+        console.log("Error: ", error.message);
+        return { error: "Failed to fetch Incident data" };
+      }
+    },
+    REAVALIDAION_TIME.INCIDENT.TAGS(id),
+    {
+      revalidate: 400,
+      tags: REAVALIDAION_TIME.INCIDENT.TAGS(id),
+    }
+  )();
 };
 
-export const getAllIncidents = async (token: string) => {
-  try {
-    const res = await fetch(API + REAVALIDAION_TIME.INCIDENT.type, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      next: {
-        revalidate: REAVALIDAION_TIME.INCIDENT.TIME,
-        tags: [QUERY_KEYS.ALL_INCIDENTS],
-      },
-    });
-    const data = await res.json();
+// export const getAllIncidents = async (token: string) => {
+//   try {
+//     const res = await fetch(API + REAVALIDAION_TIME.INCIDENT.type, {
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//       next: {
+//         revalidate: REAVALIDAION_TIME.INCIDENT.TIME,
+//         tags: [QUERY_KEYS.ALL_INCIDENTS],
+//       },
+//     });
+//     const data = await res.json();
 
-    return data;
-  } catch (error: any) {
-    console.log("Error: ", error.message);
-    return { error: "Failed to fetch Incident data" };
-  }
-};
+//     return data;
+//   } catch (error: any) {
+//     console.log("Error: ", error.message);
+//     return { error: "Failed to fetch Incident data" };
+//   }
+// };

@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { API } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -28,7 +27,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { addSocialSchema } from "./socials/validation/addSocailSchema";
-import axiosInstance from "@/lib/axios";
+
 interface AddSocialDialogProps {
   token: string;
   personId: string;
@@ -61,11 +60,15 @@ export function AddSocialDialog({
           },
         });
 
-        const { data } = await axiosInstance.post(`${API}person/social`, payload, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data } = await axios.post(
+          `/api/${REAVALIDAION_TIME.PERSON.type}/social`,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       } catch (error: any) {
         console.log(
           error.response?.data?.message || "Failed to add Social Platform"
@@ -79,7 +82,7 @@ export function AddSocialDialog({
     onSuccess: async () => {
       toast.success("Added  Social Platform");
       // queryClient.invalidateQueries({ queryKey: ["social-platforms"] });
-      let { data } = await axiosInstance.post("/api/revalidate", {
+      let { data } = await axios.post("/api/revalidate", {
         tags: [...REAVALIDAION_TIME.PERSON.TAGS(personId)],
       });
       if (data) {
@@ -162,8 +165,13 @@ export function AddSocialDialog({
               />
             </div>
 
-            <Button type="submit" disabled={mutation.isPending}
-        aria-disabled={mutation.isPending}>Submit</Button>
+            <Button
+              type="submit"
+              disabled={mutation.isPending}
+              aria-disabled={mutation.isPending}
+            >
+              Submit
+            </Button>
           </form>
         </Form>
       </DialogContent>

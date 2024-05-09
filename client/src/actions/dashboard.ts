@@ -1,26 +1,33 @@
 import { API } from "@/constants";
-import { REAVALIDAION_TIME } from "./contants";
-export const getCount = async (token:string): Promise<any> => {
-  try {
-    const res = await fetch(API + "all-counts", {
-      headers:{
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      next: {
-        revalidate: REAVALIDAION_TIME.COUNT.TIME,
-        tags: REAVALIDAION_TIME.COUNT.TAGS,
-      },
-    });
+import { QUERY_KEYS, REAVALIDAION_TIME } from "./contants";
+import { unstable_cache as cache } from "next/cache";
 
-    const data = await res.json();
+import prisma from "@/lib/prisma";
+export const getCount = async (): Promise<any> => {
+  return await cache(
+    async () => {
+      try {
+        const personCount = await prisma.person.count();
 
-      console.log("Data: ", data);
-      
-    return data;
-  } catch (error:any) {
-    console.log("Error: ", error.message);
-    
-    return null;
-  }
+        const schoolCount = await prisma.school.count();
+        const organizationCount = await prisma.organization.count();
+        const incidentCount = await prisma.incident.count();
+
+        return {
+          personCount,
+          schoolCount,
+          organizationCount,
+          incidentCount,
+        };
+      } catch (error) {
+        console.log(error);
+        return { error: "Internal Server Error" };
+      }
+    },
+    [QUERY_KEYS.ALL_COUNT],
+    {
+      revalidate: 400,
+      tags: [QUERY_KEYS.ALL_COUNT],
+    }
+  )();
 };

@@ -1,48 +1,59 @@
 import { API } from "@/constants";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "./contants";
+import prisma from "@/lib/prisma";
+import { PERSON } from "@/types/COMMON";
+import { unstable_cache as cache } from "next/cache";
 
-export const getPerson = async (id: string, token: string) => {
-  try {
-    const res = await fetch(API + "person/" + id, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      next: {
-        revalidate: REAVALIDAION_TIME.PERSON.TIME,
-        tags: REAVALIDAION_TIME.PERSON.TAGS(id),
-      },
-    });
-    const data = await res.json();
+export const getPerson = async (id: string): Promise<PERSON | any> => {
+  return await cache(
+    async () => {
+      try {
+        const person = await prisma.person.findUnique({
+          where: { id: String(id) },
+          include: {
+            social: true,
+            createdBy: true,
+            lastModifiedBy: true,
+          },
+        });
 
-    return data;
-  } catch (error: any) {
-    console.log("Error: ", error.message);
-    return { error: "Faled to fetch user data" };
-  }
+        return person;
+      } catch (error: any) {
+        console.log("Error: ", error.message);
+        return { error: "Failed to fetch user data" };
+      }
+    },
+    REAVALIDAION_TIME.PERSON.TAGS(id),
+    {
+      revalidate: 400,
+      tags: REAVALIDAION_TIME.PERSON.TAGS(id),
+    }
+  )();
 };
 
-export const getAllPersons = async () => {
-  try {
-    const res = await Promise.race([
-      fetch(API + "person", {
-        next: {
-          revalidate: REAVALIDAION_TIME.PERSON.TIME,
-          tags: [QUERY_KEYS.ALL_PERSONS],
-        },
-      }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
-    ]);
+export const getAllPersons = async (): Promise<PERSON[] | any> => {
+  return await cache(
+    async () => {
+      try {
+        console.log("Fetching all persons");
 
-    if (res instanceof Response) {
-      const data = await res.json();
-      return data;
-    } else {
-      console.log("Timeout exceeded");
-      return []; // Return empty array if timeout exceeded
+        const res = await prisma.person.findMany({
+          include: {
+            social: true,
+            incidents: { orderBy: { createdAt: "desc" } },
+          },
+        });
+
+        return res;
+      } catch (error: any) {
+        console.log("Error: ", error.message);
+        return { error: "Failed to fetch user data" };
+      }
+    },
+    [QUERY_KEYS.ALL_PERSONS],
+    {
+      revalidate: 400,
+      tags: [QUERY_KEYS.ALL_PERSONS],
     }
-  } catch (error: any) {
-    console.log("Error: ", error.message);
-    return { error: "Failed to fetch user data" };
-  }
+  )();
 };

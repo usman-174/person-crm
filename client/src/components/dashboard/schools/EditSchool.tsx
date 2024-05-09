@@ -18,10 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { API } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -29,15 +27,15 @@ import { z } from "zod";
 
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
-import axiosInstance from "@/lib/axios";
-import { editSchoolSchema } from "./validations/editSchool";
 import { SCHOOL } from "@/types/COMMON";
-import { SelectHeads } from "../SelectHeads";
+import axios from "axios";
+import { editSchoolSchema } from "./validations/editSchool";
 type props = {
   school: SCHOOL;
 };
 export function EditSchool({ school }: props) {
-  const session = useSession();
+  // const session = useSession();
+
   const queryClient = new QueryClient();
 
   const router = useRouter();
@@ -46,7 +44,7 @@ export function EditSchool({ school }: props) {
     resolver: zodResolver(editSchoolSchema),
     defaultValues: {
       id: school.id,
-      name: school.name,
+      name: school.name || "",
       state: school.state || "",
       city: school.city || "",
       notes: school.notes || "",
@@ -54,33 +52,24 @@ export function EditSchool({ school }: props) {
       organizationId: school.organizationId || "",
     },
   });
-  
+
   const { data: organizations } = useQuery({
     queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS],
     queryFn: async () => {
-      const { data } = await axiosInstance.get(
-        `${API}${REAVALIDAION_TIME.ORGANIZATION.type}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.data?.user.token}`,
-          },
-        }
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/${REAVALIDAION_TIME.ORGANIZATION.type}`
       );
       return data;
     },
   });
-
+  console.log({organizations});
+  
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof editSchoolSchema>) => {
       try {
-        const { data } = await axiosInstance.put(
-          `${API}${REAVALIDAION_TIME.SCHOOL.type}/${school.id}`,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${session.data?.user.token}`,
-            },
-          }
+        const { data } = await axios.put(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/${REAVALIDAION_TIME.SCHOOL.type}/${school.id}`,
+          payload
         );
       } catch (error: any) {
         throw new Error(
@@ -90,7 +79,7 @@ export function EditSchool({ school }: props) {
       }
     },
     onSuccess: async () => {
-      let { data } = await axiosInstance.post("/api/revalidate", {
+      let { data } = await axios.post("/api/revalidate", {
         tags: [
           ...REAVALIDAION_TIME.COUNT.TAGS,
           ...REAVALIDAION_TIME.SCHOOL.TAGS(school.id),
@@ -217,10 +206,15 @@ export function EditSchool({ school }: props) {
             </FormItem>
           )}
         />
-        <SelectHeads token={session.data?.user.token} form={form} />
+        {/* <SelectHeads token={session.data?.user.token} form={form} /> */}
 
-        <Button type="submit" disabled={mutation.isPending}
-        aria-disabled={mutation.isPending}>Submit</Button>
+        <Button
+          type="submit"
+          disabled={mutation.isPending}
+          aria-disabled={mutation.isPending}
+        >
+          Submit
+        </Button>
       </form>
     </Form>
   );

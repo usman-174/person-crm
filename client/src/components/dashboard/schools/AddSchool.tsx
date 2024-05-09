@@ -18,7 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { API } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
@@ -29,8 +28,7 @@ import { z } from "zod";
 
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
-import axiosInstance from "@/lib/axios";
-import { useState } from "react";
+import axios from "axios";
 import { SelectHeads } from "../SelectHeads";
 import { addSchoolSchema } from "./validations/addSchool";
 
@@ -55,30 +53,19 @@ export function AddSchool() {
   const { data: organizations } = useQuery({
     queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS],
     queryFn: async () => {
-      const { data } = await axiosInstance.get(
-        `${API}${REAVALIDAION_TIME.ORGANIZATION.type}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.data?.user.token}`,
-          },
-        }
+      const { data } = await axios.get(
+        `/api/${REAVALIDAION_TIME.ORGANIZATION.type}`
       );
       return data;
     },
-    enabled: !!session.data?.user?.token,
   });
 
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addSchoolSchema>) => {
       try {
-        const { data } = await axiosInstance.post(
-          `${API}${REAVALIDAION_TIME.SCHOOL.type}`,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${session.data?.user.token}`,
-            },
-          }
+        const { data } = await axios.post(
+          `/api/${REAVALIDAION_TIME.SCHOOL.type}`,
+          payload
         );
       } catch (error: any) {
         throw new Error(
@@ -90,7 +77,7 @@ export function AddSchool() {
     onSuccess: async () => {
       toast.success(`${REAVALIDAION_TIME.SCHOOL.type} Added successfully`);
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_SCHOOLS] });
-      let { data } = await axiosInstance.post("/api/revalidate", {
+      let { data } = await axios.post("/api/revalidate", {
         tags: REAVALIDAION_TIME.COUNT.TAGS,
       });
       if (data) {
@@ -217,8 +204,13 @@ export function AddSchool() {
 
         <SelectHeads token={session.data?.user.token} form={form} />
 
-        <Button type="submit" disabled={mutation.isPending}
-        aria-disabled={mutation.isPending}>Submit</Button>
+        <Button
+          type="submit"
+          disabled={mutation.isPending}
+          aria-disabled={mutation.isPending}
+        >
+          Submit
+        </Button>
       </form>
     </Form>
   );

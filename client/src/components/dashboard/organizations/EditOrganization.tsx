@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { API } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
@@ -22,11 +21,11 @@ import { z } from "zod";
 
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
-import axiosInstance from "@/lib/axios";
 
+import { ORGANIZATION } from "@/types/COMMON";
+import axios from "axios";
 import { SelectHeads } from "../SelectHeads";
 import { editOrganizationSchema } from "./validations/editOrganizationSchema";
-import { ORGANIZATION } from "@/types/COMMON";
 type props = {
   organization: ORGANIZATION;
 };
@@ -51,8 +50,8 @@ export function EditOrganization({ organization }: props) {
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof editOrganizationSchema>) => {
       try {
-        const { data } = await axiosInstance.put(
-          `${API}${REAVALIDAION_TIME.ORGANIZATION.type}/${organization.id}`,
+        const { data } = await axios.put(
+          `/api/${REAVALIDAION_TIME.ORGANIZATION.type}/${organization.id}`,
           payload,
           {
             headers: {
@@ -74,7 +73,7 @@ export function EditOrganization({ organization }: props) {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS],
       });
-      let { data } = await axiosInstance.post("/api/revalidate", {
+      let { data } = await axios.post("/api/revalidate", {
         tags: [
           ...REAVALIDAION_TIME.COUNT.TAGS,
           ...REAVALIDAION_TIME.ORGANIZATION.TAGS(organization.id),

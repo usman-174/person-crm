@@ -8,18 +8,15 @@ import { API } from "@/constants";
 import { INCIDENT } from "@/types/COMMON";
 import { USER } from "@/types/USER";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { formatDistanceToNow, format } from "date-fns";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-type Props = {
-  user: USER & {
-    token: string;
-  };
-};
 
-const Incidents = ({ user }: Props) => {
+
+const Incidents = () => {
   const [query, setQuery] = useState("");
   const { data, isFetching } = useQuery<INCIDENT[]>({
     queryKey: [QUERY_KEYS.ALL_INCIDENTS, query],
@@ -28,20 +25,15 @@ const Incidents = ({ user }: Props) => {
       try {
         const url =
           query.length > 2
-            ? API + `${REAVALIDAION_TIME.INCIDENT.type}/search?query=${query}`
-            : API + `${REAVALIDAION_TIME.INCIDENT.type}`;
-        const res = await fetch(url, {
-          headers: {
-            Authorization: "Bearer " + user.token,
-          },
-        });
-        return res.json();
+            ? `/api/${REAVALIDAION_TIME.INCIDENT.type}/search?query=${query}`
+            : `/api/${REAVALIDAION_TIME.INCIDENT.type}`;
+        const { data } = await axios.get(url);
+        return data;
       } catch (error) {
         return [];
       }
     },
   });
-  console.log({ data });
 
   return (
     <div>
@@ -85,7 +77,7 @@ const Incidents = ({ user }: Props) => {
                 <CardContent>
                   <div className="flex flex-col items-start justify-center gap-2 mt-3">
                     <span className="text-md md:text-lg font-semibold">
-                      {incident?.location}
+                      {incident?.title}
                     </span>
                     {/* <p className=" flex flex-wrap gap-4 md:flex-nowrap text-muted-foreground text-xs md:text-sm">
                       <span>
@@ -138,9 +130,7 @@ const Incidents = ({ user }: Props) => {
         </div>
       ) : !isFetching ? (
         // <center>
-        <h2 className="my-10 text-2xl text-center">
-          No Incidents available
-        </h2>
+        <h2 className="my-10 text-2xl text-center">No Incidents available</h2>
       ) : // </center>
       null}
     </div>

@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default async function Home() {
  
-  const persons: PERSON[] = await getAllPersons();
+  const persons :PERSON[]= await getAllPersons() ;
   if (!persons) return <div>loading...</div>;
 
   return (

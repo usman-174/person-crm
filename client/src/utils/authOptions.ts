@@ -1,6 +1,9 @@
+import prisma from "@/lib/prisma";
 import axios from "axios";
 import { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+
 export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
@@ -24,20 +27,26 @@ export const authOptions: NextAuthOptions = {
           return user;
         }
         try {
-          const { data } = await axios.post(
-            `${process.env.NEXT_PUBLIC_API || process.env.API}/auth/login`,
-            {
-              username: credentials.username!,
-              password: credentials.password!,
-            }
+          const user = await prisma.user.findUnique({
+            where: { username: credentials.username },
+          });
+          if (!user) {
+            return {
+              error: "User not found",
+            };
+          }
+
+          const passwordMatch = await bcrypt.compare(
+            credentials.password,
+            user.password!
           );
+          if (!passwordMatch) {
+            return {
+              error: "Invalid Credentials",
+            };
+          }
 
-          user = {
-            user: data.user,
-            token: data.token,
-          };
-
-          return user as any;
+          return {user} as any;
         } catch (error: any) {
           return {
             error: error?.response?.data?.message || error.message,
@@ -56,16 +65,19 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async session({ session, token }) {
+      
+      
       if (!token) return session;
       session.user = token.user as User;
-      session.user.token = String(token.token);
+      // session.user.token = String(token.token);
       return session;
     },
     async jwt({ trigger, token, user, session }) {
       if (token.error) {
         return token;
       }
-
+      // console.log({token,user});
+      
       return { ...token, ...user };
     },
   },

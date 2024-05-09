@@ -26,10 +26,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { API } from "@/constants";
-import axiosInstance from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -69,7 +69,7 @@ export function AddPerson() {
           },
         });
 
-        const { data } = await axiosInstance.post(`${API}person`, payload, {
+        const { data } = await axios.post(`${API}person`, payload, {
           headers: {
             Authorization: `Bearer ${session.data?.user.token}`,
           },
@@ -81,7 +81,7 @@ export function AddPerson() {
     onSuccess: async () => {
       toast.success("User Added successfully");
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_PERSONS] });
-      let { data } = await axiosInstance.post("/api/revalidate", {
+      let { data } = await axios.post("/api/revalidate", {
         tags: [...REAVALIDAION_TIME.COUNT.TAGS, QUERY_KEYS.ALL_PERSONS],
      
       });

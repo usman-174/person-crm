@@ -8,6 +8,7 @@ import { API } from "@/constants";
 import { SCHOOL } from "@/types/COMMON";
 import { USER } from "@/types/USER";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { formatDistance } from "date-fns";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -19,7 +20,7 @@ type Props = {
   };
 };
 
-const Schools = ({ user }: Props) => {
+const Schools = () => {
   const [query, setQuery] = useState("");
   const { data, isFetching } = useQuery<SCHOOL[]>({
     queryKey: [QUERY_KEYS.ALL_SCHOOLS, query],
@@ -28,14 +29,10 @@ const Schools = ({ user }: Props) => {
       try {
         const url =
           query.length > 2
-            ? API + `${REAVALIDAION_TIME.SCHOOL.type}/search?query=${query}`
-            : API + `${REAVALIDAION_TIME.SCHOOL.type}`;
-        const res = await fetch(url, {
-          headers: {
-            Authorization: "Bearer " + user.token,
-          },
-        });
-        return res.json();
+            ? `/api/${REAVALIDAION_TIME.SCHOOL.type}/search?query=${query}`
+            : `/api/${REAVALIDAION_TIME.SCHOOL.type}`;
+        const { data } = await axios.get(url);
+        return data;
       } catch (error) {
         return [];
       }
@@ -90,16 +87,16 @@ const Schools = ({ user }: Props) => {
                     <p className=" flex flex-wrap gap-4 md:flex-nowrap text-muted-foreground text-xs md:text-sm">
                       <span>
                         <span className="text-primary">City</span> :{" "}
-                        {school.city|| "N/A"}
+                        {school.city || "N/A"}
                       </span>
                       <span>
                         <span className="text-primary">State</span> :{" "}
-                        {school.state|| "N/A"}
+                        {school.state || "N/A"}
                       </span>
                     </p>
                     <div className="text-muted-foreground text-xs md:text-sm">
                       <span className="text-primary">Heads</span> :{" "}
-                      {school.heads.length }
+                      {school.heads.length}
                     </div>
                     <div className="text-muted-foreground text-xs md:text-sm">
                       <span className="text-primary">Org</span> :{" "}

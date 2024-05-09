@@ -10,6 +10,8 @@ const layout = ({ children }: { children: React.ReactNode }) => {
       <br />
 
       {children}
+      <br />
+      <br />
     </div>
   );
 };

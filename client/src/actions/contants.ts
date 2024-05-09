@@ -4,6 +4,7 @@ export const QUERY_KEYS = {
   ALL_HEADS: "heads",
   ALL_ORGANIZATIONS: "organizations",
   ALL_INCIDENTS: "incidents",
+  ALL_COUNT:"counts"
 };
 export const REAVALIDAION_TIME = {
   COUNT: {

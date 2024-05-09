@@ -20,7 +20,7 @@ const page = async ({ params }: props) => {
   const session = await getServerSession(authOptions);
   let person: PERSON | null = null;
   if (session?.user) {
-    person = await getPerson(params.id, session?.user.token);
+    person = await getPerson(params.id);
   }
   if (!person) return null;
   const user = session?.user;
@@ -74,7 +74,7 @@ const page = async ({ params }: props) => {
               "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" ||
               "/profile.png"
             }
-            alt={person.fullName||"Profile Image"}
+            alt={person.fullName || "Profile Image"}
             fill
             className="sm:max-w-96 sm:max-h-96 md:mx-auto rounded-md"
           />
@@ -179,8 +179,8 @@ const page = async ({ params }: props) => {
         <h3 className="text-md font-semibold">Socials</h3>
         <div className="flex items-center flex-wrap gap-4">
           {person?.social?.length ? (
-            person?.social?.map((social) => (
-              <>
+            person?.social?.map((social,i) => (
+              <div key={social?.id + i}>
                 <div
                   key={social.id}
                   className="flex flex-row items-center gap-2"
@@ -199,7 +199,7 @@ const page = async ({ params }: props) => {
                   </h1>
                 </div>
                 <Separator orientation="vertical" />
-              </>
+              </div>
             ))
           ) : (
             <p className="text-muted-foreground">No socials available</p>

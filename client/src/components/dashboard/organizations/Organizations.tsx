@@ -1,25 +1,18 @@
 "use client";
-import { API } from "@/constants";
-import { USER } from "@/types/USER";
-import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
-import SearchBar from "@/components/dashboard/SearchBar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { ORGANIZATION, SCHOOL } from "@/types/COMMON";
-import { Button } from "@/components/ui/button";
-import { formatDistance } from "date-fns";
-import Link from "next/link";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
+import SearchBar from "@/components/dashboard/SearchBar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ORGANIZATION } from "@/types/COMMON";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { formatDistance } from "date-fns";
 import { Plus } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
-type Props = {
-  user: USER & {
-    token: string;
-  };
-};
-
-const Organizations = ({ user }: Props) => {
+const Organizations = () => {
   const [query, setQuery] = useState("");
   const { data, isFetching } = useQuery<ORGANIZATION[]>({
     queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS, query],
@@ -28,15 +21,10 @@ const Organizations = ({ user }: Props) => {
       try {
         const url =
           query.length > 2
-            ? API +
-              `${REAVALIDAION_TIME.ORGANIZATION.type}/search?query=${query}`
-            : API + `${REAVALIDAION_TIME.ORGANIZATION.type}`;
-        const res = await fetch(url, {
-          headers: {
-            Authorization: "Bearer " + user.token,
-          },
-        });
-        return res.json();
+            ? `/api/${REAVALIDAION_TIME.ORGANIZATION.type}/search?query=${query}`
+            : `/api/${REAVALIDAION_TIME.ORGANIZATION.type}`;
+        const { data } = await axios.get(url);
+        return data;
       } catch (error) {
         return [];
       }
@@ -125,7 +113,9 @@ const Organizations = ({ user }: Props) => {
         </div>
       ) : !isFetching ? (
         // <center>
-        <h2 className="my-10 text-2xl text-center">No Organizations available</h2>
+        <h2 className="my-10 text-2xl text-center">
+          No Organizations available
+        </h2>
       ) : // </center>
       null}
     </>

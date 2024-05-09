@@ -1,8 +1,6 @@
 import { getPerson } from "@/actions/person";
-import { authOptions } from "@/utils/authOptions";
 import { EditPerson } from "@/components/dashboard/persons/EditPerson";
 import { PERSON } from "@/types/COMMON";
-import { getServerSession } from "next-auth";
 type props = {
   params: {
     id: string;
@@ -10,11 +8,11 @@ type props = {
 };
 
 const page = async ({ params }: props) => {
-  const session = await getServerSession(authOptions);
+ 
   let person: PERSON | null = null;
-  if (session?.user) {
-    person = await getPerson(params.id, session?.user.token);
-  }
+  
+    person = await getPerson(params.id);
+  
   if (!person) return null;
   
   

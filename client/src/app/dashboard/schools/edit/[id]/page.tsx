@@ -14,7 +14,7 @@ const page = async ({ params }: props) => {
   const session = await getServerSession(authOptions);
   let school: SCHOOL | null = null;
   if (session?.user) {
-    school = await getSchool(params.id, session?.user.token);
+    school = await getSchool(params.id);
   }
   if (!school) return null;
 

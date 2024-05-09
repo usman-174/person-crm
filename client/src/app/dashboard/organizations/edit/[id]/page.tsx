@@ -11,11 +11,11 @@ type props = {
 };
 
 const page = async ({ params }: props) => {
-  const session = await getServerSession(authOptions);
+ 
   let organization: ORGANIZATION | null = null;
-  if (session?.user) {
-    organization = await getOrganization(params.id, session?.user.token);
-  }
+
+    organization = await getOrganization(params.id);
+  
   if (!organization) return null;
 
   return (

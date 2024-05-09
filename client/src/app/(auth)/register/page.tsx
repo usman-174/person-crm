@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth_constants } from "@/constants";
-import axiosInstance from "@/lib/axios";
+import axios from "axios"
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
@@ -50,8 +50,7 @@ const page = () => {
     setLoading(true);
 
     try {
-      const { data } = await axiosInstance.post(
-        process.env.NEXT_PUBLIC_API + "auth/register",
+      const { data } = await axios.post("/api/auth/register",
         formData
       );
       if (data) {

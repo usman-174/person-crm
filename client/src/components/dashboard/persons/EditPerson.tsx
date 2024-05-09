@@ -41,11 +41,12 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-import axiosInstance from "@/lib/axios";
+import axios from "axios";
 import { PERSON } from "@/types/COMMON";
 import { useEffect, useState } from "react";
 import { AddSocialDialog } from "./AddSocialDialog";
 import { editPersonSchema } from "./valdidations/EditPerson";
+
 type props = {
   person: PERSON;
 };
@@ -69,18 +70,21 @@ export function EditPerson({ person }: props) {
       state: person.state || "",
       source: person.source || undefined,
       social: person.social,
-      DOB: new Date(person.DOB!),
+      DOB: new Date(person.DOB! || Date.now()),
     },
   });
 
   const deleteSocialMutation = useMutation({
     mutationFn: async (id: string) => {
       try {
-        const { data } = await axiosInstance.delete(`${API}person/social/${id}`, {
-          headers: {
-            Authorization: `Bearer ${session.data?.user.token}`,
-          },
-        });
+        const { data } = await axios.delete(
+          `${API}person/social/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.data?.user.token}`,
+            },
+          }
+        );
       } catch (error: any) {
         throw new Error(
           error.response?.data?.message || "Failed to delete social"
@@ -88,7 +92,7 @@ export function EditPerson({ person }: props) {
       }
     },
     onSuccess: async () => {
-      let { data } = await axiosInstance.post("/api/revalidate", {
+      let { data } = await axios.post("/api/revalidate", {
         tags: [...REAVALIDAION_TIME.PERSON.TAGS(person.id)],
       });
       toast.success("Social deleted successfully");
@@ -99,11 +103,11 @@ export function EditPerson({ person }: props) {
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof editPersonSchema>) => {
       try {
-        const { data } = await axiosInstance.put(`${API}person/${person.id}`, payload, {
-          headers: {
-            Authorization: `Bearer ${session.data?.user.token}`,
-          },
-        });
+        const { data } = await axios.put(
+          `/api/${REAVALIDAION_TIME.PERSON.type}/${person.id}`,
+          payload
+        );
+        return data;
       } catch (error: any) {
         throw new Error(
           error.response?.data?.message || "Failed to updated user"
@@ -111,14 +115,12 @@ export function EditPerson({ person }: props) {
       }
     },
     onSuccess: async () => {
-      let { data } = await axiosInstance.post("/api/revalidate", {
+      let { data } = await axios.post("/api/revalidate", {
         tags: [
           ...REAVALIDAION_TIME.COUNT.TAGS,
           ...REAVALIDAION_TIME.PERSON.TAGS(person.id),
-          QUERY_KEYS.ALL_PERSONS
-          
+          QUERY_KEYS.ALL_PERSONS,
         ],
-    
       });
       if (data) {
         router.refresh();
@@ -132,6 +134,8 @@ export function EditPerson({ person }: props) {
     },
   });
   function onSubmit(values: z.infer<typeof editPersonSchema>) {
+    console.log({values});
+    
     mutation.mutate({
       ...values,
       fullName: `${values.fname} ${values.lname}`,
@@ -365,8 +369,8 @@ export function EditPerson({ person }: props) {
                                 !field.value && "text-muted-foreground"
                               )}
                             >
-                              {field.value ? (
-                                format(field.value, "PPP")
+                              {field?.value ? (
+                                format(field?.value, "PPP")
                               ) : (
                                 <span>Pick a date</span>
                               )}
@@ -394,76 +398,82 @@ export function EditPerson({ person }: props) {
               </div>
 
               <div>
-                {person?.social?.length ?
-                  person.social!.map((social, ind) => (
-                    <div
-                      key={social.id}
-                      className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between "
-                    >
-                      <FormField
-                        control={form.control}
-                        name={`social.${ind}.account`}
-                        render={({ field, formState }) => (
-                          <FormItem className="w-full">
-                            <FormLabel>Account</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Account..."
-                                {...field}
-                                autoComplete="false"
-                              />
-                            </FormControl>
-
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`social.${ind}.platform`}
-                        render={({ field }) => (
-                          <FormItem className="w-2/6">
-                            <FormLabel>Platform</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value as string}
-                            >
+                {person?.social?.length
+                  ? person.social!.map((social, ind) => (
+                      <div
+                        key={social.id}
+                        className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between "
+                      >
+                        <FormField
+                          control={form.control}
+                          name={`social.${ind}.account`}
+                          render={({ field, formState }) => (
+                            <FormItem className="w-full">
+                              <FormLabel>Account</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a Platform" />
-                                </SelectTrigger>
+                                <Input
+                                  placeholder="Account..."
+                                  {...field}
+                                  autoComplete="false"
+                                />
                               </FormControl>
-                              <SelectContent>
-                                {SOCIAL_PLATFORMS.map((platform) => (
-                                  <SelectItem
-                                    key={platform.value}
-                                    value={platform.value}
-                                  >
-                                    {platform.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
 
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`social.${ind}.platform`}
+                          render={({ field }) => (
+                            <FormItem className="w-2/6">
+                              <FormLabel>Platform</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value as string}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a Platform" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {SOCIAL_PLATFORMS.map((platform) => (
+                                    <SelectItem
+                                      key={platform.value}
+                                      value={platform.value}
+                                    >
+                                      {platform.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
 
-                      <Delete
-                        size="30"
-                        className="text-lg text-destructive mt-7 cursor-pointer"
-                        onClick={() => {
-                          confirm(
-                            "Are you sure you want to delete this social?"
-                          ) && deleteSocialMutation.mutate(social.id);
-                        }}
-                      />
-                    </div>
-                  )): null}
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <Delete
+                          size="30"
+                          className="text-lg text-destructive mt-7 cursor-pointer"
+                          onClick={() => {
+                            confirm(
+                              "Are you sure you want to delete this social?"
+                            ) && deleteSocialMutation.mutate(social.id);
+                          }}
+                        />
+                      </div>
+                    ))
+                  : null}
               </div>
-              <Button type="submit" disabled={mutation.isPending}
-        aria-disabled={mutation.isPending}>Save</Button>
+              <Button
+                type="submit"
+                disabled={mutation.isPending}
+                aria-disabled={mutation.isPending}
+              >
+                Save
+              </Button>
             </form>
           </Form>
         </div>

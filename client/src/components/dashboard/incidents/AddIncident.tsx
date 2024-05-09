@@ -18,9 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { API } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -29,23 +28,19 @@ import { z } from "zod";
 
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
-import axiosInstance from "@/lib/axios";
 
-import { useState } from "react";
-
-import { SelectHeads } from "../SelectHeads";
-import { addIncidentSchema } from "./validations/addIncident";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import axios from "axios";
+import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { IncidentSelects } from "./IncidentSelects";
-
+import { addIncidentSchema } from "./validations/addIncident";
 export function AddIncidents() {
   const session = useSession();
   const queryClient = new QueryClient();
@@ -69,33 +64,14 @@ export function AddIncidents() {
     },
   });
 
-  const { data: organizations } = useQuery({
-    queryKey: [QUERY_KEYS.ALL_INCIDENTS],
-    queryFn: async () => {
-      const { data } = await axiosInstance.get(
-        `${API}${REAVALIDAION_TIME.INCIDENT.type}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.data?.user.token}`,
-          },
-        }
-      );
-      return data;
-    },
-    enabled: !!session.data?.user?.token,
-  });
+  
 
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addIncidentSchema>) => {
       try {
-        const { data } = await axiosInstance.post(
-          `${API}${REAVALIDAION_TIME.INCIDENT.type}`,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${session.data?.user.token}`,
-            },
-          }
+        const { data } = await axios.post(
+          `/api/${REAVALIDAION_TIME.INCIDENT.type}`,
+          payload
         );
       } catch (error: any) {
         throw new Error(
@@ -107,9 +83,8 @@ export function AddIncidents() {
     onSuccess: async () => {
       toast.success(`${REAVALIDAION_TIME.INCIDENT.type} Added successfully`);
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_INCIDENTS] });
-      let { data } = await axiosInstance.post("/api/revalidate", {
+      let { data } = await axios.post("/api/revalidate", {
         tags: [...REAVALIDAION_TIME.COUNT.TAGS, QUERY_KEYS.ALL_PERSONS],
-       
       });
       if (data) {
         router.push(`/dashboard/${QUERY_KEYS.ALL_INCIDENTS}`);
@@ -309,11 +284,15 @@ export function AddIncidents() {
             )}
           />
         </div>
-        <IncidentSelects token={session.data?.user.token} form={form} />
+        <IncidentSelects  form={form} />
 
-        <Button type="submit" disabled={mutation.isPending}
-        aria-disabled={mutation.isPending}
-        >Submit</Button>
+        <Button
+          type="submit"
+          disabled={mutation.isPending}
+          aria-disabled={mutation.isPending}
+        >
+          Submit
+        </Button>
       </form>
     </Form>
   );

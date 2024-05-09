@@ -29,8 +29,8 @@ const Persons = ({ user }: Props) => {
       try {
         const url =
           query.length > 2
-            ? API + `${REAVALIDAION_TIME.PERSON.type}/search?query=${query}`
-            : API + `${REAVALIDAION_TIME.PERSON.type}`;
+            ?`/api/${REAVALIDAION_TIME.PERSON.type}/search?query=${query}`
+            :`/api/${REAVALIDAION_TIME.PERSON.type}`;
         const res = await fetch(url, {
           headers: {
             Authorization: "Bearer " + user.token,
@@ -78,8 +78,8 @@ const Persons = ({ user }: Props) => {
       ) : null}
       {data?.length ? (
         <div className="grid grid-cols-1 gap-2 justify-items-stretch sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10 mx-auto">
-          {data.map((person) => (
-            <Card key={person.id}>
+          {data.map((person,i) => (
+            <Card key={person.id+i}>
               <CardContent>
                 <div className="flex items-center justify-start gap-2 mt-3">
                   <Image
@@ -108,8 +108,8 @@ const Persons = ({ user }: Props) => {
                     Recent Incidents:
                   </span>
                   <div className="flex flex-col items-start gap-3">
-                    {person.incidents?.slice(0, 2).map((incident) => (
-                      <Link key={incident.id} href={"/dashboard/incidents/"+incident.id}>
+                    {person.incidents?.slice(0, 2).map((incident,i) => (
+                      <Link key={incident.id+i} href={"/dashboard/incidents/"+incident.id}>
                       <div >
                         <div className="text-accent-foreground uppercase cursor-pointer text-xs md:text-sm">
                           {incident.title}

@@ -17,15 +17,9 @@ type props = {
 };
 
 const page = async ({ params }: props) => {
-  const session = await getServerSession(authOptions);
-  let organization: ORGANIZATION | null = null;
-  if (session?.user) {
-    organization = await getOrganization(params.id, session?.user.token);
-  }
+  let organization: ORGANIZATION | null = await getOrganization(params.id);
+
   if (!organization) return null;
-  console.log({
-    organization,
-  });
 
   return (
     <div>

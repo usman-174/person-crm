@@ -53,11 +53,11 @@ const dataModels: DataModel[] = [
   },
 ];
 const page = async () => {
-  const session = await getServerSession(authOptions);
+  // const session = await getServerSession(authOptions);
   let counts = null;
-  if (session?.user) {
-    counts = await getCount(session?.user.token);
-  }
+  // if (session?.user) {
+    counts = await getCount();
+  // }
 
   return (
     <div className="container mx-auto">

@@ -2,16 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { API } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
@@ -22,8 +21,8 @@ import { z } from "zod";
 
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
-import axiosInstance from "@/lib/axios";
 
+import axios from "axios";
 import { SelectHeads } from "../SelectHeads";
 import { addOrganizationSchema } from "./validations/addOrganizationSchema";
 
@@ -48,8 +47,8 @@ export function AddOrganization() {
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addOrganizationSchema>) => {
       try {
-        const { data } = await axiosInstance.post(
-          `${API}${REAVALIDAION_TIME.ORGANIZATION.type}`,
+        const { data } = await axios.post(
+          `/api/${REAVALIDAION_TIME.ORGANIZATION.type}`,
           payload,
           {
             headers: {
@@ -58,6 +57,8 @@ export function AddOrganization() {
           }
         );
       } catch (error: any) {
+        console.log("error", error.response?.data?.message|| error.message);
+        
         throw new Error(
           error.response?.data?.message ||
             `Failed to add ${REAVALIDAION_TIME.ORGANIZATION.type}`
@@ -67,7 +68,7 @@ export function AddOrganization() {
     onSuccess: async () => {
       toast.success(`${REAVALIDAION_TIME.ORGANIZATION.type} Added successfully`);
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS] });
-      let { data } = await axiosInstance.post("/api/revalidate", {
+      let { data } = await axios.post("/api/revalidate", {
         tags: REAVALIDAION_TIME.COUNT.TAGS,
       });
       if (data) {
