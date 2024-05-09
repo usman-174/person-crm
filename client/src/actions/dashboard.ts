@@ -1,8 +1,9 @@
-import { unstable_cache as cache } from "next/cache";
+import { unstable_cache as cache, unstable_noStore } from "next/cache";
 import { QUERY_KEYS } from "./contants";
 
 import prisma from "@/lib/prisma";
 export const getCount = async (): Promise<any> => {
+  unstable_noStore();
   return await cache(
     async () => {
       try {
@@ -25,7 +26,7 @@ export const getCount = async (): Promise<any> => {
     },
     [QUERY_KEYS.ALL_COUNT],
     {
-      revalidate: 400,
+      revalidate: 60,
       tags: [QUERY_KEYS.ALL_COUNT],
     }
   )();

@@ -32,7 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { CalendarIcon, Delete } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -45,6 +45,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { AddSocialDialog } from "./AddSocialDialog";
 import { editPersonSchema } from "./valdidations/EditPerson";
+import { Label } from "@/components/ui/label";
+import Image from "next/image";
 
 type props = {
   person: PERSON;
@@ -52,9 +54,12 @@ type props = {
 export function EditPerson({ person }: props) {
   const session = useSession();
   const [mounted, setMounted] = useState(false);
+  const [files, setFiles] = useState<FileList | any>([]);
+  const [filesPreview, setFilesPreview] = useState<string[]>([]);
   const queryClient = new QueryClient();
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const [imgError, setImgError] = useState<String>("");
   const form = useForm<z.infer<typeof editPersonSchema>>({
     mode: "onSubmit",
     resolver: zodResolver(editPersonSchema),
@@ -76,10 +81,7 @@ export function EditPerson({ person }: props) {
   const deleteSocialMutation = useMutation({
     mutationFn: async (id: string) => {
       try {
-        const { data } = await axios.delete(
-          `/api/person/social/${id}`,
-          
-        );
+        await axios.delete(`/api/person/social/${id}`);
       } catch (error: any) {
         throw new Error(
           error.response?.data?.message || "Failed to delete social"
@@ -87,7 +89,7 @@ export function EditPerson({ person }: props) {
       }
     },
     onSuccess: async () => {
-      let { data } = await axios.post("/api/revalidate", {
+      await axios.post("/api/revalidate", {
         tags: [...REAVALIDAION_TIME.PERSON.TAGS(person.id)],
       });
       toast.success("Social deleted successfully");
@@ -98,6 +100,8 @@ export function EditPerson({ person }: props) {
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof editPersonSchema>) => {
       try {
+     
+        
         const { data } = await axios.put(
           `/api/${REAVALIDAION_TIME.PERSON.type}/${person.id}`,
           payload
@@ -129,14 +133,34 @@ export function EditPerson({ person }: props) {
     },
   });
   function onSubmit(values: z.infer<typeof editPersonSchema>) {
-    console.log({values});
     
+    // return;
     mutation.mutate({
       ...values,
       fullName: `${values.fname} ${values.lname}`,
       DOB: new Date(format(values.DOB, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")),
     });
   }
+
+
+  const handleImages = (e: any) => {
+    setImgError("");
+    //only accept image
+    const files = e.target.files;
+
+    if (files.length > 3) {
+      setImgError("You can only upload 3 images");
+      return;
+    }
+    setFiles(files);
+    let filesArray = Array.from(files).map((file) =>
+      URL.createObjectURL(file as Blob)
+    );
+    setFilesPreview(filesArray);
+    
+
+    // form.setValue("files", files);
+  };
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -163,7 +187,7 @@ export function EditPerson({ person }: props) {
                 <FormField
                   control={form.control}
                   name="username"
-                  render={({ field, formState }) => (
+                  render={({ field }) => (
                     <FormItem className="w-full">
                       <FormLabel>Email</FormLabel>
                       <FormControl>
@@ -201,7 +225,7 @@ export function EditPerson({ person }: props) {
                 <FormField
                   control={form.control}
                   name="fname"
-                  render={({ field, formState }) => (
+                  render={({ field }) => (
                     <FormItem className="w-full">
                       <FormLabel>FirstName</FormLabel>
                       <FormControl>
@@ -219,7 +243,7 @@ export function EditPerson({ person }: props) {
                 <FormField
                   control={form.control}
                   name="lname"
-                  render={({ field, formState }) => (
+                  render={({ field }) => (
                     <FormItem className="w-full">
                       <FormLabel>LastName</FormLabel>
                       <FormControl>
@@ -239,7 +263,7 @@ export function EditPerson({ person }: props) {
                 <FormField
                   control={form.control}
                   name="country"
-                  render={({ field, formState }) => (
+                  render={({ field }) => (
                     <FormItem className="w-full">
                       <FormLabel>Country</FormLabel>
                       <FormControl>
@@ -299,7 +323,7 @@ export function EditPerson({ person }: props) {
               <FormField
                 control={form.control}
                 name="notes"
-                render={({ field, formState }) => (
+                render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>
                       Notes
@@ -402,7 +426,7 @@ export function EditPerson({ person }: props) {
                         <FormField
                           control={form.control}
                           name={`social.${ind}.account`}
-                          render={({ field, formState }) => (
+                          render={({ field }) => (
                             <FormItem className="w-full">
                               <FormLabel>Account</FormLabel>
                               <FormControl>
@@ -461,6 +485,51 @@ export function EditPerson({ person }: props) {
                       </div>
                     ))
                   : null}
+              </div>
+              <div className=" w-full gap-1.5 hidden ">
+                <Label htmlFor="picture">
+                  Pictures <span className="text-xs">{files?.length}/3</span>
+                </Label>
+                {imgError && (
+                  <p className="text-xs text-destructive">{imgError}</p>
+                )}
+                <Input
+                  id="picture"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className=" max-w-sm "
+                  onChange={handleImages}
+                />
+
+                <div className="flex gap-2 my-2">
+                  {filesPreview.map((file) => (
+                    <Image
+                      key={file}
+                      src={file}
+                      alt="preview"
+                      width={176}
+                      onClick={() => {
+                        //remove image
+                        let newFiles = Array.from(files);
+                        newFiles.splice(newFiles.indexOf(file), 1);
+                        setFiles((prev: any) => {
+                          let newFiles2 = Array.from(prev);
+                          newFiles2.splice(newFiles2.indexOf(file), 1);
+                          return newFiles2;
+                        });
+                        setFilesPreview((prev) => {
+                          let newFiles2 = Array.from(prev);
+                          newFiles2.splice(newFiles2.indexOf(file), 1);
+                          return newFiles2;
+                        });
+                        // form.setValue("files", newFiles as any);
+                      }}
+                      height={176}
+                      className="w-44 aspect-square object-contain hover:opacity-70 cursor-pointer "
+                    />
+                  ))}
+                </div>
               </div>
               <Button
                 type="submit"

@@ -65,8 +65,8 @@ export function EditIncident({ incident }: props) {
         type: incident.type || "",
       notes: incident.notes || "",
       personIds: incident.persons.map((person) => person.id) || [],
-      organizationIds: incident.organizations.map((org) => org.id) || [],
       schoolIds: incident.schools.map((school) => school.id) || [],
+      organizationIds: incident.organizations.map((org) => org.id).flat() || [],
     },
   });
  

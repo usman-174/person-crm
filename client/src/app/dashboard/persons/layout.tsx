@@ -5,8 +5,8 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="md:container">
       {/* {Go Back Link with icon} */}
-      <GoBack />
-      <br />
+      {/* <GoBack /> */}
+      {/* <br /> */}
       <br />
 
       {children}

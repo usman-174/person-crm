@@ -53,11 +53,7 @@ const dataModels: DataModel[] = [
   },
 ];
 const page = async () => {
-  // const session = await getServerSession(authOptions);
-  let counts = null;
-  // if (session?.user) {
-    counts = await getCount();
-  // }
+  const counts = await getCount();
 
   return (
     <div className="container mx-auto">
@@ -80,7 +76,7 @@ const page = async () => {
                 <p className="text-muted-foreground text-xs md:text-sm">
                   Total:{" "}
                   <span className="text-accent-foreground">
-                    {counts[model.key]}
+                    {counts[model.key]||0}
                   </span>
                 </p>
               </CardFooter>

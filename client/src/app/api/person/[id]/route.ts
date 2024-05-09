@@ -11,7 +11,7 @@ export async function PUT(
     const { id } = params;
     const session = await getServerSession(authOptions);
     const { social, ...rest } = await req.json();
-
+    
     const person = await prisma.person.update({
       where: { id: String(id) },
       data: {

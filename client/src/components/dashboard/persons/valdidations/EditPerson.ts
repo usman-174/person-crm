@@ -1,16 +1,17 @@
 import { z } from "zod";
 
 export const editPersonSchema = z.object({
-    id: z.string().optional(),
+  id: z.string().optional(),
   username: z
     .string({
       message: "Please enter a valid Email",
       required_error: "Email is required",
-    }).email({
+    })
+    .email({
       message: "Please enter a valid email address",
     }),
-    fullName: z.string().optional(),
-    fname: z
+  fullName: z.string().optional(),
+  fname: z
     .string({
       message: "Please enter a valid firstname",
       required_error: "Firstname is required",
@@ -82,11 +83,14 @@ export const editPersonSchema = z.object({
   DOB: z.date({
     required_error: "Select a Date of Birth.",
   }),
-  social : z.array(z.object({
-    id: z.string().optional(),
-    account: z.string().optional(),
-    platform: z.string().optional(),
-    personId: z.string().optional(),
-  }))
+  // files: z.object({}).optional(),
 
+  social: z.array(
+    z.object({
+      id: z.string().optional(),
+      account: z.string().optional(),
+      platform: z.string().optional(),
+      personId: z.string().optional(),
+    })
+  ),
 });

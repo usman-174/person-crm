@@ -18,8 +18,10 @@ export function IncidentSelects({ form }: { form: any }) {
     form.getValues().schoolIds || []
   );
   const [organizationIds, setOrganizationIds] = React.useState<string[]>([
-    form.getValues().organizationIds || [],
+    ...form.getValues().organizationIds || [],
   ]);
+  console.log("organizationIds", organizationIds);
+ 
 
   const [searchPeronQuery, setSearchPeronQuery] = React.useState<string>("");
   const [searchSchoolQuery, setSearchSchoolQuery] = React.useState<string>("");
@@ -234,10 +236,10 @@ export function IncidentSelects({ form }: { form: any }) {
                 className="hover:bg-gray-100 cursor-pointer  px-2 py-1 rounded-md transition-colors"
               >
                 <span className="text-sm truncate flex overflow-hidden break-all">
-                  {organizationIds.flat().includes(org.id) ? (
+                  {organizationIds.includes(org.id) ? (
                     <Check className="w-4 h-4 mr-2" />
                   ) : null}{" "}
-                  {org.id} {org.name}
+                  {org.name}
                 </span>
 
                 <Separator className="my-1" />

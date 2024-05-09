@@ -104,7 +104,7 @@ const Persons = ({ user }: Props) => {
                 <br />
                 <div>
                   <span className="text-sm font-semibold">
-                    Recent Incidents:
+                    Recent Incidents: {person.incidents?.length}
                   </span>
                   <div className="flex flex-col items-start gap-3">
                     {person.incidents?.slice(0, 2).map((incident,i) => (

@@ -30,7 +30,7 @@ const Organizations = () => {
       }
     },
   });
-  console.log({ data });
+
 
   return (
     <>

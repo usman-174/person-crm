@@ -37,7 +37,7 @@ const Schools = () => {
       }
     },
   });
-  console.log({ data });
+  
 
   return (
     <div>
