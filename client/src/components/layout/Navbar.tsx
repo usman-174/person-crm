@@ -12,12 +12,15 @@ const Navbar = () => {
   return (
     <header className="sticky z-20 top-0 bg-background px-3 shadow-sm">
       <nav className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-3">
-        <Link href="/" className="font-bold text-3xl">
+        <Link href="/" className="font-bold text-lg sm:text-xl md:text-3xl">
           PERSON-CRM
         </Link>
-        <div className="flex items-center gap-10 ">
+        <div className="flex items-center gap-3 md:gap-10 ">
           {user && user.role === "ADMIN" && (
-            <Link href="/dashboard" className="font-semibold text-md">
+            <Link
+              href="/dashboard"
+              className="font-semibold text-sm md:text-md"
+            >
               Dashboard
             </Link>
           )}

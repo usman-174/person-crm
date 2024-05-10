@@ -3,6 +3,15 @@ import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 import SearchBar from "@/components/dashboard/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PERSON } from "@/types/COMMON";
 import { USER } from "@/types/USER";
@@ -11,7 +20,7 @@ import { formatDistance } from "date-fns";
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type Props = {
   user: USER & {
@@ -20,16 +29,33 @@ type Props = {
 };
 
 const Persons = ({ user }: Props) => {
-  const [query, setQuery] = useState("");
+  const searchParams = useSearchParams();
+
+  const query = searchParams.get("query") || "";
+  const pathname = usePathname();
+
+  const { replace } = useRouter();
+  const sort = searchParams.get("sort") || "";
+  const handleSelect = (e: string | Date, key: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (e) {
+      params.set(key, e as string);
+    } else {
+      params.delete(key);
+    }
+    replace(`${pathname}?${params.toString()}`);
+  };
+
   const { data, isFetching } = useQuery<PERSON[]>({
-    queryKey: [QUERY_KEYS.ALL_PERSONS, query],
+    queryKey: [QUERY_KEYS.ALL_PERSONS, query, sort],
 
     queryFn: async () => {
       try {
-        const url =
-          query.length > 2
-            ?`/api/${REAVALIDAION_TIME.PERSON.type}/search?query=${query}`
-            :`/api/${REAVALIDAION_TIME.PERSON.type}`;
+        const params = new URLSearchParams(searchParams);
+        const url = `/api/${
+          REAVALIDAION_TIME.PERSON.type
+        }/search?${params.toString()}`;
+
         const res = await fetch(url, {
           headers: {
             Authorization: "Bearer " + user.token,
@@ -45,16 +71,36 @@ const Persons = ({ user }: Props) => {
   return (
     <div>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <SearchBar
-          query={query}
-          setQuery={setQuery}
-          placeholder="Search Persons..."
-        />
-        <div className="text-right w-full">
+        <div>
+          <SearchBar
+            handleSelect={handleSelect}
+            placeholder="Search Persons..."
+          />
+        </div>
+        <div className="flex items-center justify-end gap-4">
+          <Select
+            onValueChange={(e) => handleSelect(e, "sort")}
+            defaultValue={sort}
+            key={sort}
+          >
+            <SelectTrigger className="w-fit">
+              <SelectValue placeholder="Sort By" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel onClick={() => handleSelect("", "sort")}>
+                  Sort by
+                </SelectLabel>
+                <SelectItem value="createdAt-desc">Newest</SelectItem>
+                <SelectItem value="createdAt-asc">Oldest</SelectItem>
+                <SelectItem value="lastModified-desc">Modified</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
           <Link href={"/dashboard/persons/add"}>
             <Button variant={"link"} className="text-lg">
               <Plus size={"25"} />
-              Add Peron
+              Add Person
             </Button>
           </Link>
         </div>
@@ -77,8 +123,8 @@ const Persons = ({ user }: Props) => {
       ) : null}
       {data?.length ? (
         <div className="grid grid-cols-1 gap-2 justify-items-stretch sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10 mx-auto">
-          {data.map((person,i) => (
-            <Card key={person.id+i}>
+          {data.map((person, i) => (
+            <Card key={person.id + i} className="flex flex-col justify-between">
               <CardContent>
                 <div className="flex items-center justify-start gap-2 mt-3">
                   <Image
@@ -87,26 +133,29 @@ const Persons = ({ user }: Props) => {
                       "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" ||
                       "/profile.png"
                     }
-                    alt={person.fullName||"Profile Image"}
+                    alt={person.fullName || "Profile Image"}
                     width={80}
                     height={80}
                     className="rounded-sm w-20  aspect-square "
                   />
                   <div className="flex gap-1 flex-col items-start justify-start">
                     <h1 className="text-sm md:text-lg font-semibold break-all">
-                      {person.fname + " " + person.lname}
+                      {person.fullName}
                     </h1>
                     <span className="text-muted-foreground text-xs md:text-sm">
-                      {person.username}
+                      {person.city} , {person.state}
                     </span>
                   </div>
                 </div>
                 <br />
-                <div>
-                  <span className="text-sm font-semibold">
-                    Recent Incidents: {person.incidents?.length}
+                <div className="flex flex-col gap-2">
+                  <span className="text-sm ">
+                    No. of Organizations: {person.organizations?.length}
                   </span>
-                  <div className="flex flex-col items-start gap-3">
+                  <span className="text-sm ">
+                    No. of Incidents: {person.incidents?.length}
+                  </span>
+                  {/* <div className="flex flex-col items-start gap-3">
                     {person.incidents?.slice(0, 2).map((incident,i) => (
                       <Link key={incident.id+i} href={"/dashboard/incidents/"+incident.id}>
                       <div >
@@ -117,20 +166,40 @@ const Persons = ({ user }: Props) => {
                       </div>
                       </Link>
                     ))}
-                  </div>
+                  </div> */}
+                </div>
+                <div className="flex flex-col gap-2 mt-3">
+                  {person.social?.map((social, i) => (
+                    <div key={social.id + i} className="flex gap-2">
+                      <span className="text-xs text-muted-foreground cursor-pointer">
+                        {social.platform}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
               <br />
               <CardFooter className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
-                  Modified :{" "}
-                  {formatDistance(
-                    new Date(person.lastModified),
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-muted-foreground">
+                    CreatedAt :{" "}
+                    {formatDistance(
+                      new Date(person.createdAt),
 
-                    new Date(),
-                    { addSuffix: true }
-                  )}
-                </span>
+                      new Date(),
+                      { addSuffix: true }
+                    )}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Modified :{" "}
+                    {formatDistance(
+                      new Date(person.lastModified),
+
+                      new Date(),
+                      { addSuffix: true }
+                    )}
+                  </span>
+                </div>
                 <Link href={`/dashboard/persons/${person.id}`}>
                   <Button
                     variant={"outline"}

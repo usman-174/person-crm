@@ -14,6 +14,8 @@ export const editIncidentSchema = z.object({
     .max(50, {
       message: "Title must not exceed 50 characters.",
     }),
+  city: z.string().optional(),
+  state: z.string().optional(),
   location: z.string(),
   type: z
     .string({
@@ -35,12 +37,12 @@ export const editIncidentSchema = z.object({
     .max(50, {
       message: "Targeted must not exceed 50 characters.",
     }),
-    source: z.enum(["SOCIAL_MEDIA", "PERSON"], {
-      message: "Please select a valid source",
-      required_error: "Source is required",
-      invalid_type_error: "Invalid source type",
-    }),
-    personIds: z.array(z.string()).optional(),
+  source: z.enum(["SOCIAL_MEDIA", "PERSON"], {
+    message: "Please select a valid source",
+    required_error: "Source is required",
+    invalid_type_error: "Invalid source type",
+  }),
+  personIds: z.array(z.string()).optional(),
   organizationId: z.string().optional(),
   schoolIds: z.array(z.string()).optional(),
 

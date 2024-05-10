@@ -20,7 +20,6 @@ export function IncidentSelects({ form }: { form: any }) {
   const [organizationIds, setOrganizationIds] = React.useState<string[]>([
     ...form.getValues().organizationIds || [],
   ]);
-  console.log("organizationIds", organizationIds);
  
 
   const [searchPeronQuery, setSearchPeronQuery] = React.useState<string>("");
@@ -129,21 +128,7 @@ export function IncidentSelects({ form }: { form: any }) {
   ) => {
     set(event.target.value);
   };
-  // console.log(
-  //   "contains=>",
-  //   organizationIds.find((x) => {
-  //     console.log(typeof x);
-
-  //     return x === String("d377ef06-905c-4496-8d5a-2de93601805a");
-  //   }),
-  //   ...organizationIds,
-  //   typeof 22
-  // );
-  // for (let index = 0; index < organizationIds.length; index++) {
-  //   const element = organizationIds[index];
-  //   organizationIds[index] = String(element);
-  // }
-
+  
   return (
     <div className="flex  flex-wrap md:flex-nowrap md:items-start md:justify-start gap-10">
       <div>

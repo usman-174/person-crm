@@ -20,14 +20,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
-
 
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -42,7 +40,6 @@ import { CalendarIcon } from "lucide-react";
 import { IncidentSelects } from "./IncidentSelects";
 import { addIncidentSchema } from "./validations/addIncident";
 export function AddIncidents() {
-  const session = useSession();
   const queryClient = new QueryClient();
 
   const router = useRouter();
@@ -56,7 +53,8 @@ export function AddIncidents() {
       time: "",
       title: "",
       source: "SOCIAL_MEDIA",
-
+      city: "",
+      state: "",
       notes: "",
       personIds: [],
       organizationIds: [],
@@ -64,15 +62,13 @@ export function AddIncidents() {
     },
   });
 
-  
-
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addIncidentSchema>) => {
       try {
-        const { data } = await axios.post(
-          `/api/${REAVALIDAION_TIME.INCIDENT.type}`,
-          payload
-        );
+        await axios.post(`/api/${REAVALIDAION_TIME.INCIDENT.type}`, {
+          ...payload,
+          date: format(payload.date, "yyyy-MM-dd"),
+        });
       } catch (error: any) {
         throw new Error(
           error.response?.data?.message ||
@@ -141,7 +137,36 @@ export function AddIncidents() {
             )}
           />
         </div>
+        <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>City </FormLabel>
+                <FormControl>
+                  <Input placeholder="City" {...field} autoComplete="false" />
+                </FormControl>
 
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>State </FormLabel>
+                <FormControl>
+                  <Input placeholder="State" {...field} autoComplete="false" />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
           <FormField
             control={form.control}
@@ -204,7 +229,7 @@ export function AddIncidents() {
         <FormField
           control={form.control}
           name="notes"
-          render={({ field, formState }) => (
+          render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>
                 Notes
@@ -247,14 +272,14 @@ export function AddIncidents() {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent align="start" className=" w-auto p-0">
                     <Calendar
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
+                      captionLayout="dropdown"
+                      fromYear={1988}
+                      toYear={new Date().getFullYear() + 1}
                       initialFocus
                     />
                   </PopoverContent>
@@ -284,7 +309,7 @@ export function AddIncidents() {
             )}
           />
         </div>
-        <IncidentSelects  form={form} />
+        <IncidentSelects form={form} />
 
         <Button
           type="submit"

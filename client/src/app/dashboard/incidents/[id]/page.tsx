@@ -23,7 +23,7 @@ const page = async ({ params }: props) => {
   const user = session?.user;
   return (
     <div>
-      <div className="flex md:items-start md:justify-between flex-col-reverse md:flex-row">
+      <div className="flex md:items-start md:justify-between flex-col-reverse md:flex-row mb-5">
         <div>
           <h1 className="font-semibold text-3xl mt-5 md:mt-0">
             {incident?.title}{" "}
@@ -31,7 +31,17 @@ const page = async ({ params }: props) => {
           <p className="text-muted-foreground text-sm">
             {new Date(incident.createdAt!).toLocaleDateString()}
           </p>
-          <p className="text-accent-foreground text-sm mt-4">{incident?.id}</p>
+          <p className="text-accent-foreground text-sm mt-2">{incident?.id}</p>
+          <p className=" flex flex-wrap gap-4 md:flex-nowrap text-muted-foreground text-xs md:text-sm">
+            <span>
+              <span className="text-primary">City</span> :{" "}
+              {incident.city || "N/A"}
+            </span>
+            <span>
+              <span className="text-primary">State</span> :{" "}
+              {incident.state || "N/A"}
+            </span>
+          </p>
         </div>
         {/* <OptionsDropDown/>
          */}

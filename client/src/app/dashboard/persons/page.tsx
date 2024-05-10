@@ -1,7 +1,7 @@
-import { authOptions } from "@/utils/authOptions";
 import Persons from "@/components/dashboard/persons/Persons";
-import GoBack from "@/components/layout/GoBack";
+import { authOptions } from "@/utils/authOptions";
 import { getServerSession } from "next-auth";
+import { Suspense } from "react";
 
 const page = async () => {
   const session = await getServerSession(authOptions);
@@ -12,7 +12,9 @@ const page = async () => {
       <h1 className="text-center text-3xl font-semibold">Persons</h1>
       <br />
 
+      <Suspense>
       <Persons user={user} />
+      </Suspense>
     </div>
   );
 };

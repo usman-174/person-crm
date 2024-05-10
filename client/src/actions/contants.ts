@@ -1,10 +1,14 @@
+import { ALL } from "dns";
+
 export const QUERY_KEYS = {
   ALL_SCHOOLS: "schools",
   ALL_PERSONS: "persons",
   ALL_HEADS: "heads",
   ALL_ORGANIZATIONS: "organizations",
   ALL_INCIDENTS: "incidents",
-  ALL_COUNT:"counts"
+  ALL_COUNT: "counts",
+  ALL_CITIES: "cities",
+  ALL_STATES: "states",
 };
 export const REAVALIDAION_TIME = {
   COUNT: {
@@ -12,6 +16,17 @@ export const REAVALIDAION_TIME = {
     TAGS: ["counts"],
     type: "count",
   },
+  STATES: {
+    TIME: 200,
+    TAGS: ["states"],
+    type: "states",
+  },
+  CITIES: {
+    TIME: 200,
+    TAGS: ["cities"],
+    type: "cities",
+  },
+
   INCIDENT: {
     TIME: 500,
     TAGS: (id: string) => [QUERY_KEYS.ALL_INCIDENTS + "-" + id],

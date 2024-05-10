@@ -4,17 +4,31 @@ import { NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
   const url = new URL(request.url).searchParams;
   const query = url.get("query");
-
+  const sort = url.get("sort");
+  let orderBy = {};
+  if (sort?.length) {
+    orderBy = {
+      [sort.split("-")[0]]: sort.split("-")[1],
+    };
+  } else {
+    orderBy = {
+      createdAt: "desc",
+    };
+  }
   try {
     const schools = await prisma.organization.findMany({
       where: {
-        OR: [
-          { name: { contains: String(query) } },
+        ...(query
+          ? {
+              OR: [
+                { name: { contains: String(query) } },
 
-          { notes: { contains: String(query) } },
+                { notes: { contains: String(query) } },
 
-          // Add more fields as needed
-        ],
+                // Add more fields as needed
+              ],
+            }
+          : {}),
       },
       include: {
         heads: true,
@@ -22,9 +36,7 @@ export async function GET(request: NextRequest) {
         createdBy: true,
         lastModifiedBy: true,
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy,
     });
 
     return new Response(JSON.stringify(schools), {

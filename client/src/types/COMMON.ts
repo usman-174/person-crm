@@ -9,6 +9,8 @@ export interface INCIDENT {
   date: Date;
   time: string;
   source?: SourceType;
+  city?: string;
+  state?: string;
   persons: PERSON[];
   schools: SCHOOL[];
   organizations: ORGANIZATION[];
@@ -43,6 +45,7 @@ export interface PERSON {
   social?: Social[];
   source?: SourceType;
   incidents: INCIDENT[];
+  organizations: ORGANIZATION[];
   notes?: string;
   createdAt: Date;
   lastModified: Date;

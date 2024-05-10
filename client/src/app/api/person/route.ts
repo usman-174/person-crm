@@ -8,10 +8,13 @@ export async function GET() {
     console.log("Got request perons");
 
     const users = await prisma.person.findMany({
-      include: { social: true, incidents: { orderBy: { createdAt: "desc" } } },
+      // include: { social: true, organizations:true, incidents: { orderBy: { createdAt: "desc" } } },
+      include: { social: true, organizations:true, incidents:true },
+
       // orderBy: {  incidents: { createdAt: "desc" }},
     });
-
+ 
+    
     return new Response(JSON.stringify(users), {
       status: 200,
       headers: { "Content-Type": "application/json" },

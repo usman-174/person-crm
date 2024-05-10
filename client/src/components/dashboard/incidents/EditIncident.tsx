@@ -30,7 +30,6 @@ import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
 import axios from "axios";
 
-
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -57,31 +56,29 @@ export function EditIncident({ incident }: props) {
     resolver: zodResolver(addIncidentSchema),
     defaultValues: {
       targeted: incident.targeted || "",
-      date: new Date(incident.date|| Date.now()),
+      date: new Date(incident.date || Date.now()),
       time: incident.time || "",
       title: incident.title || "",
       source: incident.source || "SOCIAL_MEDIA",
-        location: incident.location || "",
-        type: incident.type || "",
+      location: incident.location || "",
+      type: incident.type || "",
       notes: incident.notes || "",
+      city: incident.city || "",
+      state: incident.state || "",
       personIds: incident.persons.map((person) => person.id) || [],
       schoolIds: incident.schools.map((school) => school.id) || [],
       organizationIds: incident.organizations.map((org) => org.id).flat() || [],
     },
   });
- 
-
 
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addIncidentSchema>) => {
       try {
-        const { data } = await axios.put(
+        await axios.put(
           `/api/${REAVALIDAION_TIME.INCIDENT.type}/${incident.id}`,
-          payload,
           {
-            headers: {
-              Authorization: `Bearer ${session.data?.user.token}`,
-            },
+            ...payload,
+            date: format(payload.date, "yyyy-MM-dd"),
           }
         );
       } catch (error: any) {
@@ -96,15 +93,15 @@ export function EditIncident({ incident }: props) {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_INCIDENTS] });
       let { data } = await axios.post("/api/revalidate", {
         tags: [
-            ...REAVALIDAION_TIME.COUNT.TAGS,
-            ...REAVALIDAION_TIME.INCIDENT.TAGS(incident.id),
-            QUERY_KEYS.ALL_PERSONS
-          ],
-          // path:"/"
+          ...REAVALIDAION_TIME.COUNT.TAGS,
+          ...REAVALIDAION_TIME.INCIDENT.TAGS(incident.id),
+          QUERY_KEYS.ALL_PERSONS,
+        ],
+        // path:"/"
       });
-    //   if (data) {
-    //     router.push(`/dashboard/${QUERY_KEYS.ALL_INCIDENTS}`);
-    //   }
+      //   if (data) {
+      //     router.push(`/dashboard/${QUERY_KEYS.ALL_INCIDENTS}`);
+      //   }
     },
     onError: (error: any) => {
       toast.error(error.message);
@@ -217,6 +214,36 @@ export function EditIncident({ incident }: props) {
             )}
           />
         </div>
+        <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>City </FormLabel>
+                <FormControl>
+                  <Input placeholder="City" {...field} autoComplete="false" />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>State </FormLabel>
+                <FormControl>
+                  <Input placeholder="State" {...field} autoComplete="false" />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="notes"
@@ -302,8 +329,13 @@ export function EditIncident({ incident }: props) {
         </div>
         <IncidentSelects form={form} />
 
-        <Button type="submit" disabled={mutation.isPending}
-        aria-disabled={mutation.isPending}>Submit</Button>
+        <Button
+          type="submit"
+          disabled={mutation.isPending}
+          aria-disabled={mutation.isPending}
+        >
+          Submit
+        </Button>
       </form>
     </Form>
   );

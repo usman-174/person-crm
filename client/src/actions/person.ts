@@ -39,6 +39,7 @@ export const getAllPersons = async (): Promise<PERSON[] | any> => {
         const res = await prisma.person.findMany({
           include: {
             social: true,
+            organizations: true,
             incidents: { orderBy: { createdAt: "desc" } },
           },
         });

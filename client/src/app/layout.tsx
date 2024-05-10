@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import AuthProvider from "@/components/providers/auth/AuthProvider";
 import QueryProvider from "@/components/providers/auth/reactQuery/QueryProvider";
 import NextTopLoader from 'nextjs-toploader';
+import 'react-day-picker/dist/style.css';
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -54,7 +55,7 @@ export default function RootLayout({
               }}
             />
             <Navbar />
-            <div className="mx-20 mt-20">{children}</div>
+            <div className="mx-3 md:mx-20  mt-5 md:mt-20">{children}</div>
           </AuthProvider>
         </QueryProvider>
       </body>

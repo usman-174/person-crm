@@ -1,5 +1,5 @@
 import Schools from "@/components/dashboard/schools/Schools";
-
+import { Suspense } from "react";
 
 const page = async () => {
   // const session = await getServerSession(authOptions);
@@ -9,8 +9,9 @@ const page = async () => {
     <div className="container">
       <h1 className="text-center text-3xl font-semibold">Schools</h1>
       <br />
-
-      <Schools  />
+      <Suspense>
+        <Schools />
+      </Suspense>
     </div>
   );
 };

@@ -22,23 +22,26 @@ interface UserButtonProps {
 
 export default function UserButton({ user }: UserButtonProps) {
   const isAdmin = user?.role === "ADMIN";
-  
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="flex items-center gap-2">
-
-        <Button size="icon" className="flex-none rounded-full">
-          <Image
-            src={user.mainPhoto || avatarPlaceholder}
-            alt="User profile picture"
-            width={50}
-            height={50}
-            className="aspect-square rounded-full bg-background object-cover"
+        <div className="flex items-center gap-2 md:scale-100 scale-90">
+          <Button size="icon" className="flex-none rounded-full">
+            <Image
+              src={user.mainPhoto || avatarPlaceholder}
+              alt="User profile picture"
+              width={50}
+              height={50}
+              className="aspect-square rounded-full bg-background object-cover"
             />
-        </Button>
-          {isAdmin ? <span className="bg-red-200 border border-red-600 text-red-700  rounded-md text-xs p-1">ADMIN</span>:null}
-            </div>
+          </Button>
+          {isAdmin ? (
+            <span className="bg-red-200 border border-red-600 text-red-700  rounded-md text-xs p-1">
+              ADMIN
+            </span>
+          ) : null}
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>{user.username || "User"}</DropdownMenuLabel>

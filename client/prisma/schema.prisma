@@ -29,14 +29,15 @@ model Incident {
   title        String
   type         String
   targeted     String
-  date         DateTime
+  date         String?
   time         String
   source       UserSource?
   location     String
   notes        String?
   createdAt    DateTime    @default(now())
   lastModified DateTime    @updatedAt
-
+  city         String?
+  state        String?
   persons          Person[]       @relation("involved_persons")
   schools          School[]       @relation("involved_schools")
   organizations    Organization[] @relation("involved_organizations")

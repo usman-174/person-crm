@@ -41,7 +41,8 @@ export const addIncidentSchema = z.object({
   personIds: z.array(z.string()).optional(),
   organizationIds: z.array(z.string()).optional(),
   schoolIds: z.array(z.string()).optional(),
-
+  city: z.string().optional(),
+  state: z.string().optional(),
   notes: z
     .string()
 
