@@ -29,14 +29,12 @@ import { z } from "zod";
 import { addSocialSchema } from "./socials/validation/addSocailSchema";
 
 interface AddSocialDialogProps {
-  token: string;
   personId: string;
   open: boolean;
   setOpen: (open: boolean) => void;
 }
 
 export function AddSocialDialog({
-  token,
   personId,
   open,
   setOpen,
@@ -54,20 +52,9 @@ export function AddSocialDialog({
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addSocialSchema>) => {
       try {
-        console.log({
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
         const { data } = await axios.post(
           `/api/${REAVALIDAION_TIME.PERSON.type}/social`,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          payload
         );
       } catch (error: any) {
         console.log(
@@ -86,7 +73,7 @@ export function AddSocialDialog({
         tags: [...REAVALIDAION_TIME.PERSON.TAGS(personId)],
       });
       if (data) {
-        console.log("refreshing");
+       
 
         router.refresh();
         setOpen(false);

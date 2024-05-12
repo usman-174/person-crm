@@ -31,16 +31,17 @@ import { QueryClient, useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { addPersonSchema } from "./valdidations/addPerson";
+import { useState } from "react";
+import { UploadImages } from "../UploadImages";
 
 export function AddPerson() {
-  const session = useSession();
   const queryClient = new QueryClient();
+  const [files, setFiles] = useState<File[]>([]);
 
   const router = useRouter();
   const form = useForm<z.infer<typeof addPersonSchema>>({
@@ -61,19 +62,47 @@ export function AddPerson() {
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addPersonSchema>) => {
       try {
-        await axios.post(`/api/person`, payload);
+        const { data } = await axios.post(`/api/person`, payload);
+        return data;
       } catch (error: any) {
         throw new Error(
           error.response?.data?.message || "Failed to add Person"
         );
       }
     },
-    onSuccess: async () => {
-      toast.success("User Added successfully");
+    onSuccess: async (response) => {
+      const urls = [];
+      if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          const formData = new FormData();
+          formData.append("file", files[i]);
+          formData.append("upload_preset", "person-crm");
+          formData.append("folder", "person");
+
+          // You can add additional parameters like folder name, tags, etc. if needed
+
+          try {
+            const { data } = await axios.post(
+              `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+              formData
+            );
+            urls.push({ url: data.secure_url, public_id: data.public_id });
+          } catch (error) {
+            console.error("Error uploading image:", error);
+            // Handle error
+          }
+        }
+      }
+      await axios.post(`/api/images`, {
+        type: REAVALIDAION_TIME.PERSON.type,
+        typeId: response.id,
+        images: urls,
+      });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_PERSONS] });
       let { data } = await axios.post("/api/revalidate", {
         tags: [...REAVALIDAION_TIME.COUNT.TAGS, QUERY_KEYS.ALL_PERSONS],
       });
+      toast.success("Person Added successfully");
       if (data) {
         router.push("/dashboard/persons");
       }
@@ -306,7 +335,7 @@ export function AddPerson() {
             )}
           />
         </div>
-
+        <UploadImages files={files} setFiles={setFiles} />
         <Button
           type="submit"
           disabled={mutation.isPending}

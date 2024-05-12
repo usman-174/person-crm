@@ -47,19 +47,20 @@ import { AddSocialDialog } from "./AddSocialDialog";
 import { editPersonSchema } from "./valdidations/EditPerson";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import ShowImages from "../ShowImages";
+import { UploadImages } from "../UploadImages";
 
 type props = {
   person: PERSON;
 };
 export function EditPerson({ person }: props) {
-  const session = useSession();
+  const [toastId, setToastId] = useState<string | null>(null);
+
   const [mounted, setMounted] = useState(false);
   const [files, setFiles] = useState<FileList | any>([]);
-  const [filesPreview, setFilesPreview] = useState<string[]>([]);
   const queryClient = new QueryClient();
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const [imgError, setImgError] = useState<String>("");
   const form = useForm<z.infer<typeof editPersonSchema>>({
     mode: "onSubmit",
     resolver: zodResolver(editPersonSchema),
@@ -100,8 +101,6 @@ export function EditPerson({ person }: props) {
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof editPersonSchema>) => {
       try {
-     
-        
         const { data } = await axios.put(
           `/api/${REAVALIDAION_TIME.PERSON.type}/${person.id}`,
           payload
@@ -114,26 +113,57 @@ export function EditPerson({ person }: props) {
       }
     },
     onSuccess: async () => {
-      let { data } = await axios.post("/api/revalidate", {
+      const urls = [];
+      if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          const formData = new FormData();
+          formData.append("file", files[i]);
+          formData.append("upload_preset", "person-crm");
+          formData.append("folder", "person");
+
+          // You can add additional parameters like folder name, tags, etc. if needed
+
+          try {
+            const { data } = await axios.post(
+              `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+              formData
+            );
+            urls.push({ url: data.secure_url, public_id: data.public_id });
+          } catch (error) {
+            console.error("Error uploading image:", error);
+            // Handle error
+          }
+        }
+      }
+      if (urls.length > 0) {
+        await axios.post(`/api/images`, {
+          type: REAVALIDAION_TIME.PERSON.type,
+          typeId: person.id,
+          images: urls,
+        });
+      }
+      await axios.post("/api/revalidate", {
         tags: [
           ...REAVALIDAION_TIME.COUNT.TAGS,
           ...REAVALIDAION_TIME.PERSON.TAGS(person.id),
-          QUERY_KEYS.ALL_PERSONS,
         ],
       });
-      if (data) {
-        router.refresh();
-        // router.push("/dashboard/persons");
-      }
+
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_PERSONS] });
-      toast.success("User Updated successfully");
+      setFiles([]);
+      toast.dismiss(toastId!);
+      toast.success("Person Updated successfully");
+      router.refresh();
     },
     onError: (error: any) => {
+      toast.dismiss(toastId!);
+
       toast.error(error.message);
     },
   });
   function onSubmit(values: z.infer<typeof editPersonSchema>) {
-    
+    const id = toast.loading("Updating Person...");
+    setToastId(id);
     // return;
     mutation.mutate({
       ...values,
@@ -142,25 +172,6 @@ export function EditPerson({ person }: props) {
     });
   }
 
-
-  const handleImages = (e: any) => {
-    setImgError("");
-    //only accept image
-    const files = e.target.files;
-
-    if (files.length > 3) {
-      setImgError("You can only upload 3 images");
-      return;
-    }
-    setFiles(files);
-    let filesArray = Array.from(files).map((file) =>
-      URL.createObjectURL(file as Blob)
-    );
-    setFilesPreview(filesArray);
-    
-
-    // form.setValue("files", files);
-  };
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -175,7 +186,6 @@ export function EditPerson({ person }: props) {
         <div>
           <div className="text-right ml-auto">
             <AddSocialDialog
-              token={session.data?.user.token}
               open={open}
               setOpen={setOpen}
               personId={person.id}
@@ -486,51 +496,9 @@ export function EditPerson({ person }: props) {
                     ))
                   : null}
               </div>
-              <div className=" w-full gap-1.5 hidden ">
-                <Label htmlFor="picture">
-                  Pictures <span className="text-xs">{files?.length}/3</span>
-                </Label>
-                {imgError && (
-                  <p className="text-xs text-destructive">{imgError}</p>
-                )}
-                <Input
-                  id="picture"
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className=" max-w-sm "
-                  onChange={handleImages}
-                />
 
-                <div className="flex gap-2 my-2">
-                  {filesPreview.map((file) => (
-                    <Image
-                      key={file}
-                      src={file}
-                      alt="preview"
-                      width={176}
-                      onClick={() => {
-                        //remove image
-                        let newFiles = Array.from(files);
-                        newFiles.splice(newFiles.indexOf(file), 1);
-                        setFiles((prev: any) => {
-                          let newFiles2 = Array.from(prev);
-                          newFiles2.splice(newFiles2.indexOf(file), 1);
-                          return newFiles2;
-                        });
-                        setFilesPreview((prev) => {
-                          let newFiles2 = Array.from(prev);
-                          newFiles2.splice(newFiles2.indexOf(file), 1);
-                          return newFiles2;
-                        });
-                        // form.setValue("files", newFiles as any);
-                      }}
-                      height={176}
-                      className="w-44 aspect-square object-contain hover:opacity-70 cursor-pointer "
-                    />
-                  ))}
-                </div>
-              </div>
+              <ShowImages images={person?.images || []} />
+              <UploadImages files={files} setFiles={setFiles} />
               <Button
                 type="submit"
                 disabled={mutation.isPending}

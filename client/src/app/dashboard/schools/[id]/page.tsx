@@ -9,6 +9,7 @@ import { SCHOOL } from "@/types/COMMON";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 import { DeleteDialog } from "@/components/dashboard/DeleteDialog";
+import ShowImages from "@/components/dashboard/ShowImages";
 type props = {
   params: {
     id: string;
@@ -17,11 +18,11 @@ type props = {
 
 const page = async ({ params }: props) => {
   const session = await getServerSession(authOptions);
-  console.log("session",session);
-  
-  let school: SCHOOL |null = null;
+  console.log("session", session);
+
+  let school: SCHOOL | null = null;
   if (session?.user) {
-    school = await getSchool(params.id) ;
+    school = await getSchool(params.id);
   }
   if (!school) return null;
 
@@ -72,7 +73,7 @@ const page = async ({ params }: props) => {
                 {school.heads.length}
               </span>
             </h1>
-        
+
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-8">
               {school.heads?.map((head) => (
                 <div key={head.id} className="p-2">
@@ -173,6 +174,7 @@ const page = async ({ params }: props) => {
         <p className="leading-4 ">{school?.notes || "N/A"}</p>
       </div>
       <Separator className="my-5" />
+      <ShowImages images={school?.images || []} />
       {/* <div className="text-accent-foreground md:mx-10 mb-10">
         <h3 className="text-md font-semibold">Socials</h3>
         <div className="flex items-center flex-wrap gap-4">

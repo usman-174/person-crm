@@ -5,6 +5,9 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url).searchParams;
   const query = url.get("query");
   const sort = url.get("sort");
+
+  const city = url.get("city");
+  const state = url.get("state");
   let orderBy = {};
   if (sort?.length) {
     orderBy = {
@@ -29,6 +32,8 @@ export async function GET(request: NextRequest) {
               ],
             }
           : {}),
+        ...(city ? { city: { equals: city } } : {}),
+        ...(state ? { state: { equals: state } } : {}),
       },
       include: {
         heads: true,

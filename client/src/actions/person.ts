@@ -15,11 +15,25 @@ export const getPerson = async (id: string): Promise<PERSON | any> => {
             lastModifiedBy: true,
           },
         });
-
-        return person;
+        const images = await prisma.image.findMany({
+          where: {
+            personId: id,
+          },
+          orderBy: {
+            primary: 'desc'
+          },
+        });
+        //delete passwords
+        if (person?.createdBy?.password) {
+          person.createdBy.password = null;
+        }
+        if (person?.lastModifiedBy?.password) {
+          person.lastModifiedBy.password = null;
+        }
+        return { ...person, images };
       } catch (error: any) {
         console.log("Error: ", error.message);
-        return { error: "Failed to fetch user data" };
+        return { error: "Failed to fetch Person data" };
       }
     },
     REAVALIDAION_TIME.PERSON.TAGS(id),
@@ -47,7 +61,7 @@ export const getAllPersons = async (): Promise<PERSON[] | any> => {
         return res;
       } catch (error: any) {
         console.log("Error: ", error.message);
-        return { error: "Failed to fetch user data" };
+        return { error: "Failed to fetch Person data" };
       }
     },
     [QUERY_KEYS.ALL_PERSONS],

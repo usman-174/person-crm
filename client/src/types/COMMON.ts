@@ -11,17 +11,25 @@ export interface INCIDENT {
   source?: SourceType;
   city?: string;
   state?: string;
+  country?: string;
   persons: PERSON[];
   schools: SCHOOL[];
   organizations: ORGANIZATION[];
   location: string;
   notes?: string;
   createdAt: Date;
+  images: IMAGE[];
   createdBy?: USER;
   createdById?: string;
   lastModified: Date;
   lastModifiedById?: string;
   lastModifiedBy?: USER;
+}
+export interface IMAGE {
+  id: string;
+  url: string;
+  public_id?: string;
+  primary: boolean;
 }
 export interface PERSON {
   id: string;
@@ -29,6 +37,7 @@ export interface PERSON {
   TFF_ID?: string;
   fname?: string;
   mname?: string;
+  images: IMAGE[];
 
   lname?: string;
   fullName: string;
@@ -55,11 +64,15 @@ export interface PERSON {
 export interface ORGANIZATION {
   id: string;
   name: string;
-  city?: string | null;
+  city?: string;
   notes?: string | null;
   createdAt: DateTime;
   createdBy?: USER;
   lastModifiedBy?: USER;
+  images: IMAGE[];
+  country?: string;
+  state?: string;
+
   lastModified: Date;
   heads: PERSON[];
   schools: SCHOOL[];
@@ -73,6 +86,9 @@ export interface SCHOOL {
   organizationId?: string;
   headId?: string | null;
   notes?: string | null;
+  images: IMAGE[];
+  country?: string;
+
   createdAt: Date;
   lastModified: Date;
   createdBy?: USER;

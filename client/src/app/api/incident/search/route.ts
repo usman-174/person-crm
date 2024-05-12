@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
         lastModifiedBy: true,
         organizations: true,
         persons: true,
+   
         schools: true,
       },
       orderBy,

@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -21,19 +20,23 @@ import { z } from "zod";
 
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
-
 import { ORGANIZATION } from "@/types/COMMON";
 import axios from "axios";
 import { SelectHeads } from "../SelectHeads";
 import { editOrganizationSchema } from "./validations/editOrganizationSchema";
+import { useState } from "react";
+import ShowImages from "../ShowImages";
+import { UploadImages } from "../UploadImages";
+import CountriesSelect from "../CountriesSelect";
 type props = {
   organization: ORGANIZATION;
 };
 export function EditOrganization({ organization }: props) {
-  const session = useSession();
   const queryClient = new QueryClient();
 
   const router = useRouter();
+  const [toastId, setToastId] = useState<string | null>(null);
+  const [files, setFiles] = useState<FileList | any>([]);
 
   const form = useForm<z.infer<typeof editOrganizationSchema>>({
     mode: "onSubmit",
@@ -41,6 +44,8 @@ export function EditOrganization({ organization }: props) {
     defaultValues: {
       id: organization.id,
       name: organization.name,
+      country: organization.country || ``,
+      state: organization.state || "",
       city: organization.city || "",
       notes: organization.notes || "",
       headIds: organization.heads?.map((head) => head.id) || [],
@@ -52,13 +57,9 @@ export function EditOrganization({ organization }: props) {
       try {
         const { data } = await axios.put(
           `/api/${REAVALIDAION_TIME.ORGANIZATION.type}/${organization.id}`,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${session.data?.user.token}`,
-            },
-          }
+          payload
         );
+        return data;
       } catch (error: any) {
         throw new Error(
           error.response?.data?.message ||
@@ -67,9 +68,35 @@ export function EditOrganization({ organization }: props) {
       }
     },
     onSuccess: async () => {
-      toast.success(
-        `${REAVALIDAION_TIME.ORGANIZATION.type} Edited successfully`
-      );
+      const urls = [];
+      if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          const formData = new FormData();
+          formData.append("file", files[i]);
+          formData.append("upload_preset", "person-crm");
+          formData.append("folder", "organization");
+
+          // You can add additional parameters like folder name, tags, etc. if needed
+
+          try {
+            const { data } = await axios.post(
+              `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+              formData
+            );
+            urls.push({ url: data.secure_url, public_id: data.public_id });
+          } catch (error) {
+            console.error("Error uploading image:", error);
+            // Handle error
+          }
+        }
+      }
+      if (urls.length > 0) {
+        await axios.post(`/api/images`, {
+          type: REAVALIDAION_TIME.ORGANIZATION.type,
+          typeId: organization.id,
+          images: urls,
+        });
+      }
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS],
       });
@@ -79,16 +106,20 @@ export function EditOrganization({ organization }: props) {
           ...REAVALIDAION_TIME.ORGANIZATION.TAGS(organization.id),
         ],
       });
-      if (data) {
-        router.push(`/dashboard/${QUERY_KEYS.ALL_ORGANIZATIONS}`);
-      }
+      setFiles([]);
+      toast.dismiss(toastId!);
+      toast.success("Organization Updated successfully");
+      router.refresh();
     },
     onError: (error: any) => {
+      toast.dismiss(toastId!);
+
       toast.error(error.message);
     },
   });
   function onSubmit(values: z.infer<typeof editOrganizationSchema>) {
-    console.log("values", values);
+    const id = toast.loading("Updating Organization...");
+    setToastId(id);
 
     mutation.mutate(values);
   }
@@ -115,27 +146,8 @@ export function EditOrganization({ organization }: props) {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>
-                  City{" "}
-                  <span className="text-xs text-muted-foreground">
-                    (optional)
-                  </span>{" "}
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="City" {...field} autoComplete="false" />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
-
+        <CountriesSelect form={form} />
         <FormField
           control={form.control}
           name="notes"
@@ -157,10 +169,16 @@ export function EditOrganization({ organization }: props) {
           )}
         />
 
-        <SelectHeads token={session.data?.user.token} form={form} />
-
-        <Button type="submit" disabled={mutation.isPending}
-        aria-disabled={mutation.isPending}>Submit</Button>
+        <SelectHeads form={form} />
+        <ShowImages images={organization?.images || []} />
+        <UploadImages files={files} setFiles={setFiles} />
+        <Button
+          type="submit"
+          disabled={mutation.isPending}
+          aria-disabled={mutation.isPending}
+        >
+          Submit
+        </Button>
       </form>
     </Form>
   );

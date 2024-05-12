@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PERSON } from "@/types/COMMON";
-import { USER } from "@/types/USER";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
 import { Plus } from "lucide-react";
@@ -22,13 +21,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-type Props = {
-  user: USER & {
-    token: string;
-  };
-};
 
-const Persons = ({ user }: Props) => {
+
+const Persons = () => {
   const searchParams = useSearchParams();
 
   const query = searchParams.get("query") || "";
@@ -56,11 +51,7 @@ const Persons = ({ user }: Props) => {
           REAVALIDAION_TIME.PERSON.type
         }/search?${params.toString()}`;
 
-        const res = await fetch(url, {
-          headers: {
-            Authorization: "Bearer " + user.token,
-          },
-        });
+        const res = await fetch(url, );
         return res.json();
       } catch (error) {
         return [];

@@ -17,6 +17,8 @@ export const editIncidentSchema = z.object({
   city: z.string().optional(),
   state: z.string().optional(),
   location: z.string(),
+  country: z.string().optional(),
+
   type: z
     .string({
       message: "Please enter a valid Type",

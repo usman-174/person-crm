@@ -21,14 +21,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-const Organizations = () => {
+
+interface Props {
+  cities: string[];
+  states: string[];
+}
+const Organizations = ({ cities, states }: Props) => {
   const searchParams = useSearchParams();
 
-  const query = searchParams.get("query") || "";
   const pathname = usePathname();
 
   const { replace } = useRouter();
+  const query = searchParams.get("query") || "";
   const sort = searchParams.get("sort") || "";
+  const city = searchParams.get("city") || "";
+  const state = searchParams.get("state") || "";
   const handleSelect = (e: string | Date, key: string) => {
     const params = new URLSearchParams(searchParams);
     if (e) {
@@ -40,7 +47,7 @@ const Organizations = () => {
   };
 
   const { data, isFetching } = useQuery<ORGANIZATION[]>({
-    queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS, query, sort],
+    queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS, query, sort, city, state],
 
     queryFn: async () => {
       try {
@@ -61,10 +68,54 @@ const Organizations = () => {
   return (
     <>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <SearchBar
-          handleSelect={handleSelect}
-          placeholder="Search Organizations"
-        />
+        <div className="flex md:items-center gap-2 flex-col md:flex-row justify-end md:justify-start">
+          <SearchBar
+            handleSelect={handleSelect}
+            placeholder="Search Organizations"
+          />
+          <Select
+            onValueChange={(e) => handleSelect(e, "city")}
+            defaultValue={city}
+            key={city}
+          >
+            <SelectTrigger className="min-w-32">
+              <SelectValue placeholder="City" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel onClick={() => handleSelect("", "city")}>
+                  Cities
+                </SelectLabel>
+                {cities.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select
+            onValueChange={(e) => handleSelect(e, "state")}
+            defaultValue={state}
+            key={state}
+          >
+            <SelectTrigger className="min-w-32">
+              <SelectValue placeholder="State" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel onClick={() => handleSelect("", "state")}>
+                  States
+                </SelectLabel>
+                {states.map((state) => (
+                  <SelectItem key={state} value={state}>
+                    {state}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="flex items-center justify-end gap-4 md:mt-0 mt-5">
           <Select
             onValueChange={(e) => handleSelect(e, "sort")}
@@ -124,6 +175,14 @@ const Organizations = () => {
                       <span>
                         <span className="text-primary">City</span> :{" "}
                         {organization.city}
+                      </span>
+                      <span>
+                        <span className="text-primary">state</span> :{" "}
+                        {organization.state}
+                      </span>
+                      <span>
+                        <span className="text-primary">Country</span> :{" "}
+                        {organization.country}
                       </span>
                     </p>
                     <div className="text-muted-foreground text-xs md:text-sm">

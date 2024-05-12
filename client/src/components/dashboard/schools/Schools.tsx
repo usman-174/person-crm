@@ -14,30 +14,35 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SCHOOL } from "@/types/COMMON";
-import { USER } from "@/types/USER";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { formatDistance } from "date-fns";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-type Props = {
-  user: USER & {
-    token: string;
-  };
-};
+interface Props {
+  cities: string[];
+  states: string[];
+}
 
-const Schools = () => {
+const Schools = ({ cities, states }: Props) => {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
 
   const query = searchParams.get("query") || "";
   const sort = searchParams.get("sort") || "";
+  const city = searchParams.get("city") || "";
+  const state = searchParams.get("state") || "";
 
-  const pathname = usePathname();
-
-  const { replace } = useRouter();
   const handleSelect = (e: string | Date, key: string) => {
+    console.log("dwadawd");
+    
     const params = new URLSearchParams(searchParams);
+    if (params.get(key) === e) {
+      params.delete(key);
+      replace(`${pathname}?${params.toString()}`);
+    }
     if (e) {
       params.set(key, e as string);
     } else {
@@ -46,7 +51,7 @@ const Schools = () => {
     replace(`${pathname}?${params.toString()}`);
   };
   const { data, isFetching } = useQuery<SCHOOL[]>({
-    queryKey: [QUERY_KEYS.ALL_SCHOOLS, query, sort],
+    queryKey: [QUERY_KEYS.ALL_SCHOOLS, query, sort, city, state],
 
     queryFn: async () => {
       try {
@@ -67,7 +72,56 @@ const Schools = () => {
   return (
     <div>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <SearchBar handleSelect={handleSelect} placeholder="Search Schools" />
+        <div className="flex md:items-center gap-2 flex-col md:flex-row justify-end md:justify-start">
+          <SearchBar handleSelect={handleSelect} placeholder="Search Schools" />
+          <Select
+            onValueChange={(e) => handleSelect(e, "city")}
+            defaultValue={city}
+            key={city}
+          >
+            <SelectTrigger className="min-w-32">
+              <SelectValue placeholder="City" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel onClick={() => handleSelect("", "city")}>
+                  Citites
+                </SelectLabel>
+                {cities.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select
+            onValueChange={(e) => handleSelect(e, "state")}
+            defaultValue={state}
+            key={state}
+          >
+            <SelectTrigger className="min-w-32">
+              <SelectValue placeholder="State" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel onClick={() => handleSelect("", "state")}>
+                  States
+                </SelectLabel>
+
+                {states.map((state) => (
+                  <SelectItem
+                    // onClick={() => handleSelect(state, "state")}
+                    key={state}
+                    value={state}
+                  >
+                    {state}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="flex items-center justify-end gap-4 md:mt-0 mt-5">
           <Select
             onValueChange={(e) => handleSelect(e, "sort")}
@@ -75,14 +129,13 @@ const Schools = () => {
             key={sort}
           >
             <SelectTrigger className="w-fit">
-              <SelectValue
-               
-                placeholder="Sort By"
-              />
+              <SelectValue placeholder="Sort By" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel  onClick={() => handleSelect("", "sort")}>Sort by</SelectLabel>
+                <SelectLabel onClick={() => handleSelect("", "sort")}>
+                  Sort by
+                </SelectLabel>
                 <SelectItem value="createdAt-desc">Newest</SelectItem>
                 <SelectItem value="createdAt-asc">Oldest</SelectItem>
                 <SelectItem value="lastModified-desc">Modified</SelectItem>
@@ -146,17 +199,17 @@ const Schools = () => {
                 </CardContent>
 
                 <CardFooter className="flex items-center justify-between">
-                <div className="flex flex-col gap-1 items-start">
-                  <span className="text-xs text-muted-foreground mr-1">
-                    Modified :{" "}
-                    {formatDistance(
-                      new Date(school.lastModified),
-                      
-                      new Date(),
-                      { addSuffix: true }
-                    )}
-                  </span>
-                    </div>
+                  <div className="flex flex-col gap-1 items-start">
+                    <span className="text-xs text-muted-foreground mr-1">
+                      Modified :{" "}
+                      {formatDistance(
+                        new Date(school.lastModified),
+
+                        new Date(),
+                        { addSuffix: true }
+                      )}
+                    </span>
+                  </div>
                   <Link href={"/dashboard/schools/" + school.id}>
                     <Button variant={"outline"}>Details</Button>
                   </Link>

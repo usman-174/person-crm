@@ -20,7 +20,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -29,12 +28,15 @@ import { z } from "zod";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
 import axios from "axios";
+import { useState } from "react";
 import { SelectHeads } from "../SelectHeads";
+import { UploadImages } from "../UploadImages";
 import { addSchoolSchema } from "./validations/addSchool";
+import CountriesSelect from "../CountriesSelect";
 
 export function AddSchool() {
-  const session = useSession();
   const queryClient = new QueryClient();
+  const [files, setFiles] = useState<File[]>([]);
 
   const router = useRouter();
   const form = useForm<z.infer<typeof addSchoolSchema>>({
@@ -43,6 +45,7 @@ export function AddSchool() {
     defaultValues: {
       name: "",
       state: "",
+      country: "",
       city: "",
       notes: "",
       headIds: [],
@@ -67,6 +70,7 @@ export function AddSchool() {
           `/api/${REAVALIDAION_TIME.SCHOOL.type}`,
           payload
         );
+        return data;
       } catch (error: any) {
         throw new Error(
           error.response?.data?.message ||
@@ -74,12 +78,40 @@ export function AddSchool() {
         );
       }
     },
-    onSuccess: async () => {
+    onSuccess: async (response) => {
+      const urls = [];
+      if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          const formData = new FormData();
+          formData.append("file", files[i]);
+          formData.append("upload_preset", "person-crm");
+          formData.append("folder", "school");
+
+          // You can add additional parameters like folder name, tags, etc. if needed
+
+          try {
+            const { data } = await axios.post(
+              `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+              formData
+            );
+            urls.push({ url: data.secure_url, public_id: data.public_id });
+          } catch (error) {
+            console.error("Error uploading image:", error);
+            // Handle error
+          }
+        }
+      }
+      await axios.post(`/api/images`, {
+        type: REAVALIDAION_TIME.SCHOOL.type,
+        typeId: response.id,
+        images: urls,
+      });
       toast.success(`${REAVALIDAION_TIME.SCHOOL.type} Added successfully`);
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_SCHOOLS] });
       let { data } = await axios.post("/api/revalidate", {
         tags: REAVALIDAION_TIME.COUNT.TAGS,
       });
+      setFiles([]);
       if (data) {
         router.push(`/dashboard/${QUERY_KEYS.ALL_SCHOOLS}`);
       }
@@ -101,7 +133,7 @@ export function AddSchool() {
           <FormField
             control={form.control}
             name="name"
-            render={({ field, formState }) => (
+            render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel>Name</FormLabel>
                 <FormControl>
@@ -116,42 +148,7 @@ export function AddSchool() {
               </FormItem>
             )}
           />
-        </div>
 
-        <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
-          <FormField
-            control={form.control}
-            name="state"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>State</FormLabel>
-                <FormControl>
-                  <Input placeholder="State" {...field} autoComplete="false" />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>
-                  City{" "}
-                  <span className="text-xs text-muted-foreground">
-                    (optional)
-                  </span>{" "}
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="City" {...field} autoComplete="false" />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="organizationId"
@@ -181,10 +178,11 @@ export function AddSchool() {
             )}
           />
         </div>
+        <CountriesSelect form={form} />
         <FormField
           control={form.control}
           name="notes"
-          render={({ field, formState }) => (
+          render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>
                 Notes
@@ -202,8 +200,8 @@ export function AddSchool() {
           )}
         />
 
-        <SelectHeads token={session.data?.user.token} form={form} />
-
+        <SelectHeads form={form} />
+        <UploadImages files={files} setFiles={setFiles} />
         <Button
           type="submit"
           disabled={mutation.isPending}

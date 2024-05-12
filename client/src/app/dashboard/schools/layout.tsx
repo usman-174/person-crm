@@ -8,8 +8,11 @@ const layout = ({ children }: { children: React.ReactNode }) => {
       {/* <GoBack />
       <br /> */}
       <br />
+      <br />
 
       {children}
+      <br />
+      <br />
     </div>
   );
 };

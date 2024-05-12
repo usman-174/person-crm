@@ -20,7 +20,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -40,14 +39,18 @@ import { cn } from "@/lib/utils";
 import { INCIDENT } from "@/types/COMMON";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
 import { IncidentSelects } from "./IncidentSelects";
+import ShowImages from "./ShowImages";
+import { UploadImages } from "./UploadImages";
 import { addIncidentSchema } from "./validations/addIncident";
+import CountriesSelect from "../CountriesSelect";
 type props = {
   incident: INCIDENT;
 };
 export function EditIncident({ incident }: props) {
-  const session = useSession();
   const queryClient = new QueryClient();
+  const [files, setFiles] = useState<File[]>([]);
 
   const router = useRouter();
 
@@ -61,26 +64,28 @@ export function EditIncident({ incident }: props) {
       title: incident.title || "",
       source: incident.source || "SOCIAL_MEDIA",
       location: incident.location || "",
+      country: incident.country || "",
+      state: incident.state || "",
+      city: incident.city || "",
       type: incident.type || "",
       notes: incident.notes || "",
-      city: incident.city || "",
-      state: incident.state || "",
-      personIds: incident.persons.map((person) => person.id) || [],
-      schoolIds: incident.schools.map((school) => school.id) || [],
-      organizationIds: incident.organizations.map((org) => org.id).flat() || [],
+      personIds: incident?.persons?.map((person) => person.id) || [],
+      schoolIds: incident?.schools?.map((school) => school.id) || [],
+      organizationIds: incident?.organizations?.map((org) => org.id).flat() || [],
     },
   });
-
+  const [toastId, setToastId] = useState<string | null>(null);
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addIncidentSchema>) => {
       try {
-        await axios.put(
+        const { data } = await axios.put(
           `/api/${REAVALIDAION_TIME.INCIDENT.type}/${incident.id}`,
           {
             ...payload,
             date: format(payload.date, "yyyy-MM-dd"),
           }
         );
+        return data;
       } catch (error: any) {
         throw new Error(
           error.response?.data?.message ||
@@ -88,10 +93,39 @@ export function EditIncident({ incident }: props) {
         );
       }
     },
-    onSuccess: async () => {
-      toast.success(`${REAVALIDAION_TIME.INCIDENT.type} Edited successfully`);
+    onSuccess: async (response) => {
+      const urls = [];
+      if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          const formData = new FormData();
+          formData.append("file", files[i]);
+          formData.append("upload_preset", "person-crm");
+          formData.append("folder", "incidents");
+
+          // You can add additional parameters like folder name, tags, etc. if needed
+
+          try {
+            const { data } = await axios.post(
+              `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+              formData
+            );
+            urls.push({ url: data.secure_url, public_id: data.public_id });
+          } catch (error) {
+            console.error("Error uploading image:", error);
+            // Handle error
+          }
+        }
+      }
+      if (urls.length > 0) {
+        await axios.post(`/api/images`, {
+          type: REAVALIDAION_TIME.INCIDENT.type,
+          typeId: incident.id,
+          images: urls,
+        });
+      }
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_INCIDENTS] });
-      let { data } = await axios.post("/api/revalidate", {
+      // let { data: revalidated } =
+      await axios.post("/api/revalidate", {
         tags: [
           ...REAVALIDAION_TIME.COUNT.TAGS,
           ...REAVALIDAION_TIME.INCIDENT.TAGS(incident.id),
@@ -99,17 +133,24 @@ export function EditIncident({ incident }: props) {
         ],
         // path:"/"
       });
-      //   if (data) {
-      //     router.push(`/dashboard/${QUERY_KEYS.ALL_INCIDENTS}`);
-      //   }
+      // if (revalidated) {
+      //   router.push(`/dashboard/${QUERY_KEYS.ALL_INCIDENTS}`);
+      // }
+      setFiles([]);
+      toast.dismiss(toastId!);
+      setToastId(null);
+      toast.success(`${REAVALIDAION_TIME.INCIDENT.type} Edited successfully`);
+
+      router.refresh();
     },
     onError: (error: any) => {
+      if (toastId) toast.dismiss(toastId!);
       toast.error(error.message);
     },
   });
   function onSubmit(values: z.infer<typeof addIncidentSchema>) {
-    console.log("values", values);
-
+    const id = toast.loading("Updating Incident...");
+    setToastId(id);
     mutation.mutate(values);
   }
 
@@ -214,7 +255,8 @@ export function EditIncident({ incident }: props) {
             )}
           />
         </div>
-        <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
+        <CountriesSelect form={form} />
+        {/* <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
           <FormField
             control={form.control}
             name="city"
@@ -243,7 +285,7 @@ export function EditIncident({ incident }: props) {
               </FormItem>
             )}
           />
-        </div>
+        </div> */}
         <FormField
           control={form.control}
           name="notes"
@@ -329,6 +371,8 @@ export function EditIncident({ incident }: props) {
         </div>
         <IncidentSelects form={form} />
 
+        <ShowImages images={incident?.images || []} />
+        <UploadImages files={files} setFiles={setFiles} />
         <Button
           type="submit"
           disabled={mutation.isPending}

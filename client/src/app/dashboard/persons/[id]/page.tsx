@@ -1,11 +1,10 @@
 import { getPerson } from "@/actions/person";
-import { authOptions } from "@/utils/authOptions";
 import { Separator } from "@/components/ui/separator";
-import { getServerSession } from "next-auth";
 import Image from "next/image";
 
 import { QUERY_KEYS } from "@/actions/contants";
 import { DeleteDialog } from "@/components/dashboard/DeleteDialog";
+import ShowImages from "@/components/dashboard/ShowImages";
 import { Button } from "@/components/ui/button";
 import { PERSON } from "@/types/COMMON";
 import { Pencil } from "lucide-react";
@@ -17,13 +16,10 @@ type props = {
 };
 
 const page = async ({ params }: props) => {
-  const session = await getServerSession(authOptions);
   let person: PERSON | null = null;
-  if (session?.user) {
-    person = await getPerson(params.id);
-  }
+
+  person = await getPerson(params.id);
   if (!person) return null;
-  const user = session?.user;
   return (
     <div className="">
       <div className="flex md:items-start md:justify-between flex-col-reverse md:flex-row">
@@ -42,21 +38,21 @@ const page = async ({ params }: props) => {
         {/* <OptionsDropDown/>
          */}
         <div className="flex flex-col gap-2 ">
-          {user.role === "ADMIN" ? (
-            <div className="flex items-center gap-4">
-              <DeleteDialog
-                queryKey={QUERY_KEYS.ALL_PERSONS}
-                type="person"
-                path="/dashboard/persons"
-              />
-              <Link href={"/dashboard/persons/edit/" + person?.id}>
-                <Button variant={"outline"}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  <span>Edit</span>
-                </Button>
-              </Link>
-            </div>
-          ) : null}
+          {/* {user.role === "ADMIN" ? ( */}
+          <div className="flex items-center gap-4">
+            <DeleteDialog
+              queryKey={QUERY_KEYS.ALL_PERSONS}
+              type="person"
+              path="/dashboard/persons"
+            />
+            <Link href={"/dashboard/persons/edit/" + person?.id}>
+              <Button variant={"outline"}>
+                <Pencil className="mr-2 h-4 w-4" />
+                <span>Edit</span>
+              </Button>
+            </Link>
+          </div>
+          {/* ) : null} */}
           <p className="text-sm">
             Last Modified by : {person?.lastModifiedBy?.username || "N/A"}
           </p>
@@ -179,7 +175,7 @@ const page = async ({ params }: props) => {
         <h3 className="text-md font-semibold">Socials</h3>
         <div className="flex items-center flex-wrap gap-4">
           {person?.social?.length ? (
-            person?.social?.map((social,i) => (
+            person?.social?.map((social, i) => (
               <div key={social?.id + i}>
                 <div
                   key={social.id}
@@ -206,6 +202,7 @@ const page = async ({ params }: props) => {
           )}
         </div>
       </div>
+      <ShowImages images={person?.images || []} />
     </div>
   );
 };

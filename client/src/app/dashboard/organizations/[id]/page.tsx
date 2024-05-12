@@ -10,6 +10,7 @@ import { Pencil } from "lucide-react";
 import Link from "next/link";
 import { DeleteDialog } from "@/components/dashboard/DeleteDialog";
 import { getOrganization } from "@/actions/organization";
+import ShowImages from "@/components/dashboard/ShowImages";
 type props = {
   params: {
     id: string;
@@ -62,6 +63,22 @@ const page = async ({ params }: props) => {
 
       <div className="grid gap-2 grid-cols-1 md:grid-cols-2  mt-5">
         <div className="flex flex-col gap-1">
+          <p className=" flex flex-wrap gap-4 md:flex-nowrap text-muted-foreground text-xs md:text-sm">
+            <span>
+              <span className="text-primary">City</span> :{" "}
+              {organization.city || "N/A"}
+            </span>
+            <span>
+              <span className="text-primary">State</span> :{" "}
+              {organization.state || "N/A"}
+            </span>
+            <span>
+              <span className="text-primary">Country</span> :{" "}
+              {organization.country || "N/A"}
+            </span>
+          </p>
+          <Separator className="my-2" />
+
           <h1 className="text-md font-semibold">
             Heads :{" "}
             <span className="text-sm text-muted-foreground">
@@ -89,7 +106,12 @@ const page = async ({ params }: props) => {
           </div>
           <Separator className="my-5" />
           <div>
-            <h1 className="text-md font-semibold">Schools</h1>
+            <h1 className="text-md font-semibold">
+              Schools :{" "}
+              <span className="text-sm text-muted-foreground">
+                {organization.schools.length}
+              </span>
+            </h1>
             <div className="flex flex-wrap md:flex-nowrap flex-row  items-center gap-4 ">
               {organization.schools?.map((school) => (
                 <div
@@ -114,6 +136,12 @@ const page = async ({ params }: props) => {
                       {school.state || "N/A"}
                     </p>
                   </div>
+                  <div>
+                    <h1 className="text-md font-semibold">State</h1>
+                    <p className="text-muted-foreground text-sm">
+                      {school.country || "N/A"}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -126,37 +154,7 @@ const page = async ({ params }: props) => {
         <p className="leading-4 ">{organization?.notes || "N/A"}</p>
       </div>
       <Separator className="my-5" />
-      {/* <div className="text-accent-foreground md:mx-10 mb-10">
-        <h3 className="text-md font-semibold">Socials</h3>
-        <div className="flex items-center flex-wrap gap-4">
-          {school?.social?.length ? (
-            school?.social?.map((social) => (
-              <>
-                <div
-                  key={social.id}
-                  className="flex flex-row items-center gap-2"
-                >
-                  <h1 className="text-md font-semibold">
-                    Platform:{" "}
-                    <span className="font-normal text-muted-foreground">
-                      {social.platform}
-                    </span>
-                  </h1>
-                  <h1 className="text-md font-semibold">
-                    Account:{" "}
-                    <span className="font-normal text-muted-foreground">
-                      {social.account}
-                    </span>
-                  </h1>
-                </div>
-                <Separator orientation="vertical" />
-              </>
-            ))
-          ) : (
-            <p className="text-muted-foreground">No socials available</p>
-          )}
-        </div>
-      </div> */}
+      <ShowImages images={organization?.images || []} />
     </div>
   );
 };

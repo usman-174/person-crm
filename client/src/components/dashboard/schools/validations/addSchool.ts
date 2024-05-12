@@ -25,12 +25,13 @@ export const addSchoolSchema = z.object({
       message: "Please enter a valid State",
       required_error: "State is required",
     })
-    .min(2, {
-      message: "State must be at least 2 characters.",
-    })
-    .max(50, {
-      message: "State must not exceed 50 characters.",
-    }),
+
+    .optional(),
+  country: z
+    .string()
+
+    .optional(),
+
   headIds: z.array(z.string()).optional(),
   organizationId: z.string().optional(),
 

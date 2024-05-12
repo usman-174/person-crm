@@ -26,7 +26,6 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
-
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -37,13 +36,21 @@ import { cn } from "@/lib/utils";
 import axios from "axios";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
+import CountriesSelect from "../CountriesSelect";
 import { IncidentSelects } from "./IncidentSelects";
+import { UploadImages } from "./UploadImages";
 import { addIncidentSchema } from "./validations/addIncident";
 export function AddIncidents() {
   const queryClient = new QueryClient();
-
+  const [files, setFiles] = useState<File[]>([]);
   const router = useRouter();
-
+  // const [countries, setCountries] = useState<ICountry[]>(
+  //   Country.getAllCountries()
+  // );
+  // const countries: ICountry[] = Country.getAllCountries();
+  // const [states, setStates] = useState<IState[]>([]);
+  // const [cities, setCities] = useState<ICity[]>([]);
   const form = useForm<z.infer<typeof addIncidentSchema>>({
     mode: "onSubmit",
     resolver: zodResolver(addIncidentSchema),
@@ -56,6 +63,7 @@ export function AddIncidents() {
       city: "",
       state: "",
       notes: "",
+      country: "",
       personIds: [],
       organizationIds: [],
       schoolIds: [],
@@ -65,10 +73,14 @@ export function AddIncidents() {
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof addIncidentSchema>) => {
       try {
-        await axios.post(`/api/${REAVALIDAION_TIME.INCIDENT.type}`, {
-          ...payload,
-          date: format(payload.date, "yyyy-MM-dd"),
-        });
+        const { data } = await axios.post(
+          `/api/${REAVALIDAION_TIME.INCIDENT.type}`,
+          {
+            ...payload,
+            date: format(payload.date, "yyyy-MM-dd"),
+          }
+        );
+        return data;
       } catch (error: any) {
         throw new Error(
           error.response?.data?.message ||
@@ -76,13 +88,46 @@ export function AddIncidents() {
         );
       }
     },
-    onSuccess: async () => {
+    onSuccess: async (response) => {
+      const urls = [];
+      if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          const formData = new FormData();
+          formData.append("file", files[i]);
+          formData.append("upload_preset", "person-crm");
+          formData.append("folder", "incidents");
+
+          // You can add additional parameters like folder name, tags, etc. if needed
+
+          try {
+            const { data } = await axios.post(
+              `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+              formData
+            );
+            urls.push({
+              url: data.secure_url,
+              public_id: data.public_id,
+            });
+          } catch (error) {
+            console.error("Error uploading image:", error);
+            // Handle error
+          }
+        }
+      }
+      const { data } = await axios.post(`/api/images`, {
+        type: REAVALIDAION_TIME.INCIDENT.type,
+        typeId: response.id,
+        images: urls,
+      });
+      console.log("data", data);
+
       toast.success(`${REAVALIDAION_TIME.INCIDENT.type} Added successfully`);
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_INCIDENTS] });
-      let { data } = await axios.post("/api/revalidate", {
+      let { data: res } = await axios.post("/api/revalidate", {
         tags: [...REAVALIDAION_TIME.COUNT.TAGS, QUERY_KEYS.ALL_PERSONS],
       });
-      if (data) {
+
+      if (res) {
         router.push(`/dashboard/${QUERY_KEYS.ALL_INCIDENTS}`);
       }
     },
@@ -95,6 +140,14 @@ export function AddIncidents() {
 
     mutation.mutate(values);
   }
+  
+  // useEffect(() => {
+  //   if (form.getValues().country) {
+  //     console.log("Changed");
+
+  //     states = State.getStatesOfCountry(form.getValues().country);
+  //   }
+  // }, [form.getValues().country]);
 
   return (
     <Form {...form}>
@@ -137,36 +190,109 @@ export function AddIncidents() {
             )}
           />
         </div>
-        <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
+        <CountriesSelect form={form} />
+        {/* <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Country</FormLabel>
+                <Select
+                  onValueChange={(e) => {
+                    field.onChange(e);
+                    setStates(State.getStatesOfCountry(e));
+                  }}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a Country" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem value={country.isoCode}>
+                        {country.name}
+                      </SelectItem>
+                    ))}
+                   
+                  </SelectContent>
+                </Select>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="state"
+            disabled={
+              !form.getValues().country || form.getValues().country !== "US"
+            }
+            render={({ field, formState }) => (
+              <FormItem className="w-full">
+                <FormLabel>State</FormLabel>
+
+                <Select
+                  onValueChange={(e) => {
+                    field.onChange(e);
+                    setCities(
+                      City.getCitiesOfState(form.getValues().country!, e)
+                    );
+                  }}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a State" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {form.getValues().country === "US" ? (
+                      states.map((states) => (
+                        <SelectItem value={states.isoCode}>
+                          {states.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="x">No States</SelectItem>
+                    )}
+                   
+                  </SelectContent>
+                </Select>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="city"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>City </FormLabel>
-                <FormControl>
-                  <Input placeholder="City" {...field} autoComplete="false" />
-                </FormControl>
-
-                <FormMessage />
+                <FormLabel>City</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a City" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {cities.map((city) => (
+                      <SelectItem value={city.name}>{city.name}</SelectItem>
+                    ))}
+                    
+                  </SelectContent>
+                </Select>
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="state"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>State </FormLabel>
-                <FormControl>
-                  <Input placeholder="State" {...field} autoComplete="false" />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        </div> */}
         <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
           <FormField
             control={form.control}
@@ -310,6 +436,8 @@ export function AddIncidents() {
           />
         </div>
         <IncidentSelects form={form} />
+
+        <UploadImages files={files} setFiles={setFiles} />
 
         <Button
           type="submit"

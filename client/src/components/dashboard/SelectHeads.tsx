@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Check } from "lucide-react";
 
-export function SelectHeads({ token, form }: { token: string; form: any }) {
+export function SelectHeads({  form }: {  form: any }) {
   const [headIds, setHeadIds] = React.useState<string[]>(
     form.getValues().headIds || []
   );

@@ -1,11 +1,9 @@
 import Persons from "@/components/dashboard/persons/Persons";
-import { authOptions } from "@/utils/authOptions";
-import { getServerSession } from "next-auth";
 import { Suspense } from "react";
 
 const page = async () => {
-  const session = await getServerSession(authOptions);
-  const user = session?.user;
+
+ 
   return (
     <div className="">
      
@@ -13,7 +11,7 @@ const page = async () => {
       <br />
 
       <Suspense>
-      <Persons user={user} />
+      <Persons   />
       </Suspense>
     </div>
   );

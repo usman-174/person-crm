@@ -14,7 +14,20 @@ export const editOrganizationSchema = z.object({
       message: "Name must not exceed 50 characters.",
     }),
 
-  city: z
+    city: z
+    .string({
+      message: "Please enter a valid City",
+      required_error: "City is required",
+    })
+
+    .optional(),
+  country: z
+    .string({
+      message: "Please enter a valid City",
+      required_error: "City is required",
+    })
+    .optional(),
+  state: z
     .string({
       message: "Please enter a valid City",
       required_error: "City is required",

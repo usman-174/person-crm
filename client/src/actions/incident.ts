@@ -7,7 +7,7 @@ export const getIncident = async (id: string): Promise<any> => {
   return await cache(
     async () => {
       try {
-        const incidents = await prisma.incident.findUnique({
+        const incident = await prisma.incident.findUnique({
           where: { id: String(id) },
           include: {
             createdBy: true,
@@ -17,15 +17,24 @@ export const getIncident = async (id: string): Promise<any> => {
             schools: true,
           },
         });
+        const images = await prisma.image.findMany({
+          where: {
+            incidentId: id,
+          },
+          orderBy: {
+            primary: 'desc'
+          },
+        });
+
         //delete passwords
-        if (incidents?.createdBy?.password) {
-          incidents.createdBy.password = null;
+        if (incident?.createdBy?.password) {
+          incident.createdBy.password = null;
         }
-        if (incidents?.lastModifiedBy?.password) {
-          incidents.lastModifiedBy.password = null;
+        if (incident?.lastModifiedBy?.password) {
+          incident.lastModifiedBy.password = null;
         }
 
-        return incidents;
+        return { ...incident, images };
       } catch (error: any) {
         console.log("Error: ", error.message);
         return { error: "Failed to fetch Incident data" };

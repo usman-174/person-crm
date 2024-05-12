@@ -13,22 +13,21 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
-
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
-
-
 import axios from "axios";
 import { SelectHeads } from "../SelectHeads";
 import { addOrganizationSchema } from "./validations/addOrganizationSchema";
+import { useState } from "react";
+import { UploadImages } from "../UploadImages";
+import CountriesSelect from "../CountriesSelect";
 
 export function AddOrganization() {
-  const session = useSession();
   const queryClient = new QueryClient();
+  const [files, setFiles] = useState<File[]>([]);
 
   const router = useRouter();
 
@@ -39,6 +38,8 @@ export function AddOrganization() {
       name: "",
 
       city: "",
+      country: "",
+      state: "",
       notes: "",
       headIds: [],
     },
@@ -49,25 +50,49 @@ export function AddOrganization() {
       try {
         const { data } = await axios.post(
           `/api/${REAVALIDAION_TIME.ORGANIZATION.type}`,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${session.data?.user.token}`,
-            },
-          }
+          payload
         );
+        return data;
       } catch (error: any) {
-        console.log("error", error.response?.data?.message|| error.message);
-        
+        console.log("error", error.response?.data?.message || error.message);
+
         throw new Error(
           error.response?.data?.message ||
             `Failed to add ${REAVALIDAION_TIME.ORGANIZATION.type}`
         );
       }
     },
-    onSuccess: async () => {
-      toast.success(`${REAVALIDAION_TIME.ORGANIZATION.type} Added successfully`);
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS] });
+    onSuccess: async (response) => {
+      const urls = [];
+      if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          const formData = new FormData();
+          formData.append("file", files[i]);
+          formData.append("upload_preset", "person-crm");
+          formData.append("folder", "organization");
+
+          // You can add additional parameters like folder name, tags, etc. if needed
+
+          try {
+            const { data } = await axios.post(
+              `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+              formData
+            );
+            urls.push({ url: data.secure_url, public_id: data.public_id });
+          } catch (error) {
+            console.error("Error uploading image:", error);
+            // Handle error
+          }
+        }
+      }
+      await axios.post(`/api/images`, {
+        type: REAVALIDAION_TIME.ORGANIZATION.type,
+        typeId: response.id,
+        images: urls,
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS],
+      });
       let { data } = await axios.post("/api/revalidate", {
         tags: REAVALIDAION_TIME.COUNT.TAGS,
       });
@@ -80,8 +105,6 @@ export function AddOrganization() {
     },
   });
   function onSubmit(values: z.infer<typeof addOrganizationSchema>) {
-    console.log("values", values);
-
     mutation.mutate(values);
   }
 
@@ -107,27 +130,8 @@ export function AddOrganization() {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>
-                  City{" "}
-                  <span className="text-xs text-muted-foreground">
-                    (optional)
-                  </span>{" "}
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="City" {...field} autoComplete="false" />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
-
+        <CountriesSelect form={form} />
         <FormField
           control={form.control}
           name="notes"
@@ -149,10 +153,16 @@ export function AddOrganization() {
           )}
         />
 
-        <SelectHeads token={session.data?.user.token} form={form} />
+        <SelectHeads form={form} />
+        <UploadImages files={files} setFiles={setFiles} />
 
-        <Button type="submit" disabled={mutation.isPending}
-        aria-disabled={mutation.isPending}>Submit</Button>
+        <Button
+          type="submit"
+          disabled={mutation.isPending}
+          aria-disabled={mutation.isPending}
+        >
+          Submit
+        </Button>
       </form>
     </Form>
   );

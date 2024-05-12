@@ -4,11 +4,12 @@ import { getServerSession } from "next-auth";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 import { getIncident } from "@/actions/incident";
 import { DeleteDialog } from "@/components/dashboard/DeleteDialog";
+import ShowImages from "@/components/dashboard/incidents/ShowImages";
 import { Button } from "@/components/ui/button";
 import { INCIDENT } from "@/types/COMMON";
+import { authOptions } from "@/utils/authOptions";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
-import { authOptions } from "@/utils/authOptions";
 type props = {
   params: {
     id: string;
@@ -21,6 +22,7 @@ const page = async ({ params }: props) => {
 
   if (!incident) return null;
   const user = session?.user;
+
   return (
     <div>
       <div className="flex md:items-start md:justify-between flex-col-reverse md:flex-row mb-5">
@@ -40,6 +42,10 @@ const page = async ({ params }: props) => {
             <span>
               <span className="text-primary">State</span> :{" "}
               {incident.state || "N/A"}
+            </span>
+            <span>
+              <span className="text-primary">Country</span> :{" "}
+              {incident.country || "N/A"}
             </span>
           </p>
         </div>
@@ -174,6 +180,7 @@ const page = async ({ params }: props) => {
           <h3 className="text-md font-semibold">Notes</h3>
           <p className="leading-4 ">{incident?.notes || "N/A"}</p>
         </div>
+        <ShowImages images={incident?.images || []} />
       </div>
     </div>
   );

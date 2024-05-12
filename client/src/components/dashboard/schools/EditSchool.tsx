@@ -29,7 +29,12 @@ import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
 import { SCHOOL } from "@/types/COMMON";
 import axios from "axios";
+import { useState } from "react";
+import { SelectHeads } from "../SelectHeads";
+import ShowImages from "../ShowImages";
+import { UploadImages } from "../UploadImages";
 import { editSchoolSchema } from "./validations/editSchool";
+import CountriesSelect from "../CountriesSelect";
 type props = {
   school: SCHOOL;
 };
@@ -39,15 +44,21 @@ export function EditSchool({ school }: props) {
   const queryClient = new QueryClient();
 
   const router = useRouter();
+  const [files, setFiles] = useState<File[]>([]);
+  const [toastId, setToastId] = useState<string | null>(null);
+
   const form = useForm<z.infer<typeof editSchoolSchema>>({
     mode: "onSubmit",
     resolver: zodResolver(editSchoolSchema),
     defaultValues: {
       id: school.id,
       name: school.name || "",
+      country: school.country || ``,
       state: school.state || "",
       city: school.city || "",
       notes: school.notes || "",
+
+
       headIds: school.heads?.map((head) => head.id) || [],
       organizationId: school.organizationId || "",
     },
@@ -62,8 +73,7 @@ export function EditSchool({ school }: props) {
       return data;
     },
   });
-  console.log({organizations});
-  
+
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof editSchoolSchema>) => {
       try {
@@ -71,6 +81,7 @@ export function EditSchool({ school }: props) {
           `${process.env.NEXT_PUBLIC_BASE_URL}/${REAVALIDAION_TIME.SCHOOL.type}/${school.id}`,
           payload
         );
+        return data;
       } catch (error: any) {
         throw new Error(
           error.response?.data?.message ||
@@ -79,24 +90,59 @@ export function EditSchool({ school }: props) {
       }
     },
     onSuccess: async () => {
-      let { data } = await axios.post("/api/revalidate", {
+      const urls = [];
+      if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          const formData = new FormData();
+          formData.append("file", files[i]);
+          formData.append("upload_preset", "person-crm");
+          formData.append("folder", "schools");
+
+          // You can add additional parameters like folder name, tags, etc. if needed
+
+          try {
+            const { data } = await axios.post(
+              `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+              formData
+            );
+            urls.push({ url: data.secure_url, public_id: data.public_id });
+          } catch (error) {
+            console.error("Error uploading image:", error);
+            // Handle error
+          }
+        }
+      }
+      if (urls.length > 0) {
+        await axios.post(`/api/images`, {
+          type: REAVALIDAION_TIME.SCHOOL.type,
+          typeId: school.id,
+          images: urls,
+        });
+      }
+      await axios.post("/api/revalidate", {
         tags: [
           ...REAVALIDAION_TIME.COUNT.TAGS,
           ...REAVALIDAION_TIME.SCHOOL.TAGS(school.id),
         ],
       });
-      if (data) {
-        router.refresh();
-        // router.push("/dashboard/persons");
-      }
+
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_SCHOOLS] });
-      toast.success("School Updated successfully");
+      setFiles([]);
+      toast.dismiss(toastId!);
+      setToastId(null);
+      toast.success(`${REAVALIDAION_TIME.INCIDENT.type} Edited successfully`);
+
+      router.refresh();
     },
     onError: (error: any) => {
+      toast.dismiss(toastId!);
+
       toast.error(error.message);
     },
   });
   function onSubmit(values: z.infer<typeof editSchoolSchema>) {
+    const id = toast.loading("Updating School...");
+    setToastId(id);
     mutation.mutate(values);
   }
   return (
@@ -121,42 +167,7 @@ export function EditSchool({ school }: props) {
               </FormItem>
             )}
           />
-        </div>
 
-        <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
-          <FormField
-            control={form.control}
-            name="state"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>State</FormLabel>
-                <FormControl>
-                  <Input placeholder="State" {...field} autoComplete="false" />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>
-                  City{" "}
-                  <span className="text-xs text-muted-foreground">
-                    (optional)
-                  </span>{" "}
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="City" {...field} autoComplete="false" />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="organizationId"
@@ -186,6 +197,7 @@ export function EditSchool({ school }: props) {
             )}
           />
         </div>
+        <CountriesSelect form={form} />
         <FormField
           control={form.control}
           name="notes"
@@ -206,8 +218,9 @@ export function EditSchool({ school }: props) {
             </FormItem>
           )}
         />
-        {/* <SelectHeads token={session.data?.user.token} form={form} /> */}
-
+        <SelectHeads form={form} />
+        <ShowImages images={school?.images || []} />
+        <UploadImages files={files} setFiles={setFiles} />
         <Button
           type="submit"
           disabled={mutation.isPending}
