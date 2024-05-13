@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
         ...(query
           ? {
               OR: [
-                { name: { contains: String(query) } },
+                { name: { contains: String(query) , mode: "insensitive"} },
 
-                { notes: { contains: String(query) } },
+                { notes: { contains: String(query), mode: "insensitive" } },
 
                 // Add more fields as needed
               ],
@@ -39,11 +39,13 @@ export async function GET(request: NextRequest) {
         heads: true,
         schools: true,
         createdBy: true,
+        images: true,
         lastModifiedBy: true,
       },
       orderBy,
     });
-
+  
+    
     return new Response(JSON.stringify(schools), {
       status: 200,
       headers: { "Content-Type": "application/json" },

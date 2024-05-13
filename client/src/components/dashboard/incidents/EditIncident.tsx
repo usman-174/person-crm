@@ -340,6 +340,9 @@ export function EditIncident({ incident }: props) {
                       disabled={(date) =>
                         date > new Date() || date < new Date("1900-01-01")
                       }
+                      captionLayout="dropdown"
+                      fromYear={1988}
+                      toYear={2035}
                       initialFocus
                     />
                   </PopoverContent>

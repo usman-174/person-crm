@@ -101,15 +101,21 @@ export function AddSchool() {
           }
         }
       }
-      await axios.post(`/api/images`, {
-        type: REAVALIDAION_TIME.SCHOOL.type,
-        typeId: response.id,
-        images: urls,
-      });
+      if (urls.length > 0) {
+        await axios.post(`/api/images`, {
+          type: REAVALIDAION_TIME.SCHOOL.type,
+          typeId: response.id,
+          images: urls,
+        });
+      }
       toast.success(`${REAVALIDAION_TIME.SCHOOL.type} Added successfully`);
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_SCHOOLS] });
       let { data } = await axios.post("/api/revalidate", {
-        tags: REAVALIDAION_TIME.COUNT.TAGS,
+        tags: [
+          ...REAVALIDAION_TIME.COUNT.TAGS,
+          REAVALIDAION_TIME.CITIES.type,
+          REAVALIDAION_TIME.STATES.type,
+        ],
       });
       setFiles([]);
       if (data) {

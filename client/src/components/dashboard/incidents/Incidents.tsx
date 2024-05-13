@@ -2,21 +2,21 @@
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 import SearchBar from "@/components/dashboard/SearchBar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { INCIDENT } from "@/types/COMMON";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { format, formatDistanceToNow } from "date-fns";
+import { format, formatDistance } from "date-fns";
 import { CalendarIcon, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -26,7 +26,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface Props {
   cities: string[];
@@ -42,11 +51,11 @@ const Incidents = ({ cities, states }: Props) => {
   const { replace } = useRouter();
   const sort = searchParams.get("sort") || "";
   const date = searchParams.get("date") || "";
-  const city = searchParams.get("city") || "";
-  const state = searchParams.get("state") || "";
+  const city = searchParams.get("city") || "non";
+  const state = searchParams.get("state") || "non";
   const handleSelect = (e: string | Date, key: string) => {
     const params = new URLSearchParams(searchParams);
-    if (e) {
+    if (e && e !== "non") {
       params.set(key, e as string);
     } else {
       params.delete(key);
@@ -76,7 +85,7 @@ const Incidents = ({ cities, states }: Props) => {
   return (
     <div className="w-full ">
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-        <div className="flex md:items-center gap-2 flex-col md:flex-row justify-end md:justify-start">
+        <div className="flex lg:items-center items-start gap-2 flex-col lg:flex-row justify-end lg:justify-start">
           <SearchBar
             placeholder="Search Incidents"
             handleSelect={handleSelect}
@@ -126,16 +135,13 @@ const Incidents = ({ cities, states }: Props) => {
           <Select
             onValueChange={(e) => handleSelect(e, "city")}
             defaultValue={city}
-            key={city}
           >
-            <SelectTrigger className="min-w-32">
+            <SelectTrigger className="w-fit md:min-w-32">
               <SelectValue placeholder="City" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel onClick={() => handleSelect("", "city")}>
-                  Cities
-                </SelectLabel>
+                <SelectItem value={"non"}>Select City</SelectItem>
                 {cities.map((city) => (
                   <SelectItem key={city} value={city}>
                     {city}
@@ -147,16 +153,13 @@ const Incidents = ({ cities, states }: Props) => {
           <Select
             onValueChange={(e) => handleSelect(e, "state")}
             defaultValue={state}
-            key={state}
           >
-            <SelectTrigger className="min-w-32">
+            <SelectTrigger className="w-fit md:min-w-32">
               <SelectValue placeholder="State" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel onClick={() => handleSelect("", "state")}>
-                  States
-                </SelectLabel>
+                <SelectItem value={"non"}>Select State</SelectItem>
                 {states.map((state) => (
                   <SelectItem key={state} value={state}>
                     {state}
@@ -187,8 +190,8 @@ const Incidents = ({ cities, states }: Props) => {
             </SelectContent>
           </Select>
           <Link href={"/dashboard/incidents/add"}>
-            <Button variant={"link"} className="text-lg">
-              <Plus size={"25"} />
+            <Button variant={"link"} className="text-md md:text-lg">
+              <Plus size={"22"} />
               Add Incident
             </Button>
           </Link>
@@ -212,67 +215,72 @@ const Incidents = ({ cities, states }: Props) => {
         </div>
       ) : null}
       {data?.length ? (
-        <div className="grid grid-cols-1 gap-2 justify-items-stretch sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 mt-10 mx-auto ">
-          {data.map((incident) => (
-            <center key={incident.id}>
-              <Card className=" ">
-                <CardContent>
-                  <div className="flex flex-col items-start justify-center gap-2 mt-3">
-                    <span className="text-md md:text-lg font-semibold">
-                      {incident?.title}
-                    </span>
-                    <p className=" flex flex-wrap gap-4 md:flex-nowrap text-muted-foreground text-xs md:text-sm">
-                      <span>
-                        <span className="text-primary">City</span> :{" "}
-                        {incident.city || "N/A"}
-                      </span>
-                      <span>
-                        <span className="text-primary">State</span> :{" "}
-                        {incident.state || "N/A"}
-                      </span>
-                    </p>
-                    <div className="text-muted-foreground text-xs md:text-sm">
-                      <span className="text-primary">Persons</span> :{" "}
-                      {incident?.persons?.length}
-                    </div>
-                    <div className="text-muted-foreground text-xs md:text-sm">
-                      <span className="text-primary">Schools</span> :{" "}
-                      {incident?.schools?.length}
-                    </div>
-                    <div className="text-muted-foreground text-xs md:text-sm">
-                      <span className="text-primary">Org</span> :{" "}
-                      {incident?.organizations?.length}
-                    </div>
-                  </div>
-                </CardContent>
+        <Table className="overflow-x-auto min-w-[700px] md:w-full mt-20">
+         
+          <TableHeader>
+            <TableRow>
+              <TableHead>Title</TableHead>
+              <TableHead>Targeted</TableHead>
 
-                <CardFooter className="flex items-center justify-between">
-                  <div className="flex flex-col gap-1 items-start">
-                    <span className="text-xs text-muted-foreground mr-1">
-                      Incident : {new Date(incident.date).toLocaleDateString()}
-                    </span>
-                    <span className="text-xs text-muted-foreground mr-1">
-                      Modified :{" "}
-                      {formatDistanceToNow(
-                        new Date(incident.lastModified),
+              <TableHead>Country</TableHead>
+              <TableHead>City</TableHead>
+              <TableHead>State</TableHead>
+              <TableHead>Notes</TableHead>
+              <TableHead>Incident Date</TableHead>
 
-                        { addSuffix: false }
-                      )}
-                    </span>
-                    <span className="text-xs text-muted-foreground mr-1">
-                      Created :{" "}
-                      {format(new Date(incident.createdAt), "MMMM dd, yyyy")}
-                    </span>
-                  </div>
+              <TableHead>LastModified</TableHead>
+              <TableHead>CreatedAt</TableHead>
+              <TableHead>Photo</TableHead>
+              <TableHead>Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data?.map((incident) => (
+              <TableRow key={incident.id || "N/A"}>
+                <TableCell>{incident.title || "N/A"}</TableCell>
 
-                  <Link href={"/dashboard/incidents/" + incident.id}>
-                    <Button variant={"outline"}>Details</Button>
+                <TableCell>{incident.targeted || "N/A"}</TableCell>
+                <TableCell>{incident.country || "N/A"}</TableCell>
+                <TableCell>{incident.city || "N/A"}</TableCell>
+                <TableCell>{incident.state || "N/A"}</TableCell>
+                <TableCell className="break-all max-w-36 truncate">
+                  {incident.notes?.slice(0, 60) || "N/A"}
+                </TableCell>
+
+                <TableCell>
+                  {format(new Date(incident.date), "dd/MM/yyyy")}
+                </TableCell>
+                <TableCell>
+                  {formatDistance(new Date(incident.lastModified), new Date(), {
+                    addSuffix: true,
+                  })}
+                </TableCell>
+                <TableCell>
+                  {format(new Date(incident.createdAt), "dd/MM/yyyy")}
+                </TableCell>
+                <TableCell>
+                  {incident.images.length ? (
+                    <Image
+                      src={incident.images[0].url}
+                      alt={incident.title}
+                      width={100}
+                      height={100}
+                      className="w-14 h-14 rounded-sm"
+                    />
+                  ) : (
+                    <span>N/A</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Link href={`/dashboard/incidents/${incident.id}`}>
+                    <Button variant="outline">Details</Button>
                   </Link>
-                </CardFooter>
-              </Card>
-            </center>
-          ))}
-        </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        
+        </Table>
       ) : !isFetching ? (
         // <center>
         <h2 className="my-10 text-2xl text-center">No Incidents available</h2>

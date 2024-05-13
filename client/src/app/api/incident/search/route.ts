@@ -21,11 +21,13 @@ export async function GET(request: NextRequest) {
         ...(query
           ? {
               OR: [
-                { location: { contains: String(query) } },
-                { type: { contains: String(query) } },
-                { notes: { contains: String(query) } },
-                { time: { contains: String(query) } },
-                { title: { contains: String(query) } },
+                { location: { contains: String(query), mode: "insensitive" } },
+                { type: { contains: String(query), mode: "insensitive" } },
+
+                { targeted: { contains: String(query), mode: "insensitive" } },
+                { notes: { contains: String(query), mode: "insensitive" } },
+                { time: { contains: String(query), mode: "insensitive" } },
+                { title: { contains: String(query), mode: "insensitive" } },
 
                 // Add more fields as needed
               ],
@@ -41,7 +43,7 @@ export async function GET(request: NextRequest) {
         lastModifiedBy: true,
         organizations: true,
         persons: true,
-   
+        images: true,
         schools: true,
       },
       orderBy,

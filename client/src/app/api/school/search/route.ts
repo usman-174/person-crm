@@ -20,23 +20,24 @@ export async function GET(request: NextRequest) {
         ...(query
           ? {
               OR: [
-                { name: { contains: String(query) } },
-                { city: { contains: String(query) } },
-                { state: { contains: String(query) } },
-                { notes: { contains: String(query) } },
+                { name: { contains: String(query), mode: "insensitive" } },
+                { city: { contains: String(query), mode: "insensitive" } },
+                { state: { contains: String(query), mode: "insensitive" } },
+                { notes: { contains: String(query), mode: "insensitive" } },
 
                 // Add more fields as needed
               ],
             }
           : {}),
-          ...(city ? { city: { equals: city } } : {}),
-          ...(state ? { state: { equals: state } } : {}),
+        ...(city ? { city: { equals: city } } : {}),
+        ...(state ? { state: { equals: state } } : {}),
       },
       include: {
         heads: true,
         organization: true,
         lastModifiedBy: true,
         createdBy: true,
+        images: true,
       },
       orderBy,
     });

@@ -70,6 +70,8 @@ export interface ORGANIZATION {
   createdBy?: USER;
   lastModifiedBy?: USER;
   images: IMAGE[];
+ 
+
   country?: string;
   state?: string;
 

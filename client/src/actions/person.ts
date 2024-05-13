@@ -20,7 +20,7 @@ export const getPerson = async (id: string): Promise<PERSON | any> => {
             personId: id,
           },
           orderBy: {
-            primary: 'desc'
+            primary: "desc",
           },
         });
         //delete passwords
@@ -54,6 +54,7 @@ export const getAllPersons = async (): Promise<PERSON[] | any> => {
           include: {
             social: true,
             organizations: true,
+            images: true,
             incidents: { orderBy: { createdAt: "desc" } },
           },
         });

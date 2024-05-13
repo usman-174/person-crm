@@ -24,7 +24,7 @@ model Organization {
   lastModifiedById String?
   lastModifiedBy   User?      @relation("org_last_modified_by", fields: [lastModifiedById], references: [id])
   heads            Person[]   @relation("OrganizationHeads")
-  Image            Image[]
+  images            Image[]
 }
 
 model Image {
@@ -107,7 +107,7 @@ model Person {
   lastModifiedById String?
 
   social Social[]
-  Image  Image[]
+  images  Image[]
 }
 
 model User {
@@ -159,7 +159,7 @@ model School {
   lastModifiedBy   User?   @relation("schl_last_modified_by", fields: [lastModifiedById], references: [id])
   createdById      String?
   lastModifiedById String?
-  Image            Image[]
+  images            Image[]
 }
 
 model Icon {

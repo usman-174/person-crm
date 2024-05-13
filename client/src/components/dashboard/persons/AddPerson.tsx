@@ -320,6 +320,9 @@ export function AddPerson() {
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
+                      captionLayout="dropdown"
+                      fromYear={1988}
+                      toYear={2035}
                       selected={field.value}
                       onSelect={field.onChange}
                       disabled={(date) =>

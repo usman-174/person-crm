@@ -114,17 +114,23 @@ export function AddIncidents() {
           }
         }
       }
-      const { data } = await axios.post(`/api/images`, {
-        type: REAVALIDAION_TIME.INCIDENT.type,
-        typeId: response.id,
-        images: urls,
-      });
-      console.log("data", data);
+      if (urls.length > 0) {
+        await axios.post(`/api/images`, {
+          type: REAVALIDAION_TIME.INCIDENT.type,
+          typeId: response.id,
+          images: urls,
+        });
+      }
 
       toast.success(`${REAVALIDAION_TIME.INCIDENT.type} Added successfully`);
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_INCIDENTS] });
       let { data: res } = await axios.post("/api/revalidate", {
-        tags: [...REAVALIDAION_TIME.COUNT.TAGS, QUERY_KEYS.ALL_PERSONS],
+        tags: [
+          ...REAVALIDAION_TIME.COUNT.TAGS,
+          REAVALIDAION_TIME.CITIES.type,
+          REAVALIDAION_TIME.STATES.type,
+          QUERY_KEYS.ALL_PERSONS,
+        ],
       });
 
       if (res) {
@@ -136,11 +142,9 @@ export function AddIncidents() {
     },
   });
   function onSubmit(values: z.infer<typeof addIncidentSchema>) {
-    console.log("values", values);
-
     mutation.mutate(values);
   }
-  
+
   // useEffect(() => {
   //   if (form.getValues().country) {
   //     console.log("Changed");

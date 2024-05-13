@@ -18,19 +18,23 @@ export async function GET(request: NextRequest) {
         ...(query
           ? {
               OR: [
-                { username: { contains: query as string } },
-                { TFF_ID: { contains: query as string } },
-                { fname: { contains: query as string } },
-                { mname: { contains: query as string } },
-                { lname: { contains: query as string } },
-                { address: { contains: query as string } },
-                { address2: { contains: query as string } },
-                { city: { contains: query as string } },
-                { state: { contains: query as string } },
-                { country: { contains: query as string } },
-                // { role: { contains: query as string } },
-                { title: { contains: query as string } },
-                { notes: { contains: query as string } },
+                {
+                  username: { contains: query as string, mode: "insensitive" },
+                },
+                { TFF_ID: { contains: query as string, mode: "insensitive" } },
+                { fname: { contains: query as string, mode: "insensitive" } },
+                { mname: { contains: query as string, mode: "insensitive" } },
+                { lname: { contains: query as string, mode: "insensitive" } },
+                { address: { contains: query as string, mode: "insensitive" } },
+                {
+                  address2: { contains: query as string, mode: "insensitive" },
+                },
+                { city: { contains: query as string, mode: "insensitive" } },
+                { state: { contains: query as string, mode: "insensitive" } },
+                { country: { contains: query as string, mode: "insensitive" } },
+                // { role: { contains: query as string, mode: "insensitive" } },
+                { title: { contains: query as string, mode: "insensitive" } },
+                { notes: { contains: query as string, mode: "insensitive" } },
                 // Add more fields as needed
               ],
             }
@@ -38,7 +42,12 @@ export async function GET(request: NextRequest) {
       },
 
       orderBy,
-      include: { social: true, organizations: true, incidents: true },
+      include: {
+        social: true,
+        organizations: true,
+        incidents: true,
+        images: true,
+      },
     });
 
     return new Response(JSON.stringify(persons), {

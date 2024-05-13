@@ -73,8 +73,6 @@ export function AddSocialDialog({
         tags: [...REAVALIDAION_TIME.PERSON.TAGS(personId)],
       });
       if (data) {
-       
-
         router.refresh();
         setOpen(false);
       }
@@ -103,12 +101,12 @@ export function AddSocialDialog({
               <FormField
                 control={form.control}
                 name="account"
-                render={({ field, formState }) => (
+                render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Account</FormLabel>
+                    <FormLabel>Account Link</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Account..."
+                        placeholder="http://example.com"
                         {...field}
                         autoComplete="false"
                       />

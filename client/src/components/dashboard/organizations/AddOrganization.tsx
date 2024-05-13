@@ -85,16 +85,23 @@ export function AddOrganization() {
           }
         }
       }
-      await axios.post(`/api/images`, {
-        type: REAVALIDAION_TIME.ORGANIZATION.type,
-        typeId: response.id,
-        images: urls,
-      });
+      if(urls.length > 0) {
+
+        await axios.post(`/api/images`, {
+          type: REAVALIDAION_TIME.ORGANIZATION.type,
+          typeId: response.id,
+          images: urls,
+        });
+      }
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS],
       });
       let { data } = await axios.post("/api/revalidate", {
-        tags: REAVALIDAION_TIME.COUNT.TAGS,
+        tags: [
+          ...REAVALIDAION_TIME.COUNT.TAGS,
+          REAVALIDAION_TIME.CITIES.type,
+          REAVALIDAION_TIME.STATES.type,
+        ],
       });
       if (data) {
         router.push(`/dashboard/${QUERY_KEYS.ALL_ORGANIZATIONS}`);
