@@ -21,6 +21,8 @@ const page = async ({ params }: props) => {
   let organization: ORGANIZATION | null = await getOrganization(params.id);
 
   if (!organization) return null;
+  const session = await getServerSession(authOptions);
+  const user = session?.user;
 
   return (
     <div>
@@ -38,7 +40,7 @@ const page = async ({ params }: props) => {
         </div>
 
         <div className="flex flex-col gap-2 ">
-          <div className="flex items-center gap-4">
+         {user? <div className="flex items-center gap-4">
             <DeleteDialog
               queryKey={QUERY_KEYS.ALL_ORGANIZATIONS}
               type={REAVALIDAION_TIME.ORGANIZATION.type}
@@ -51,7 +53,7 @@ const page = async ({ params }: props) => {
                 <span>Edit</span>
               </Button>
             </Link>
-          </div>
+          </div>:null}
           <p className="text-sm">
             Last Modified by : {organization.lastModifiedBy?.username || "N/A"}
           </p>

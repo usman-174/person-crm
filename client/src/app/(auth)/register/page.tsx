@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth_constants } from "@/constants";
-import axios from "axios"
+import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
@@ -27,6 +27,7 @@ const page = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState("");
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
@@ -36,6 +37,12 @@ const page = () => {
       setError(auth_constants.register.errorMessage);
       return;
     }
+
+    if(formData.password.length < 6) {
+      setError(auth_constants.register.passwordLengthMessage);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError(auth_constants.register.passwordMismatchMessage);
       return;
@@ -50,18 +57,16 @@ const page = () => {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("/api/auth/register",
-        formData
-      );
+      const { data } = await axios.post("/api/auth/register", formData);
       if (data) {
         toast.success(auth_constants.register.successMessage);
         router.push("/login");
       }
     } catch (error: any) {
       setError(error.response.data.message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
     toast.dismiss(toastId);
   };
   return (
@@ -111,13 +116,13 @@ const page = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="username">
-                {auth_constants.register.usernameLabel}
+              <Label htmlFor="email">
+                {auth_constants.register.emailLabel}
               </Label>
               <Input
-                id="username"
-                name="username"
-                placeholder={auth_constants.register.usernamePlaceholder}
+                id="email"
+                name="email"
+                placeholder={auth_constants.register.emailPlaceholder}
                 onChange={(e) =>
                   setFormData({ ...formData, username: e.target.value })
                 }
@@ -156,7 +161,9 @@ const page = () => {
               />
             </div>
             <Button className="w-full" type="submit">
-              {auth_constants.register.registerButton}
+              {loading
+                ? auth_constants.register.loadingButton
+                : auth_constants.register.registerButton}
             </Button>
 
             <div className="mt-3">

@@ -94,11 +94,13 @@ export function AddPerson() {
           }
         }
       }
-      await axios.post(`/api/images`, {
-        type: REAVALIDAION_TIME.PERSON.type,
-        typeId: response.id,
-        images: urls,
-      });
+      if (urls.length > 0) {
+        await axios.post(`/api/images`, {
+          type: REAVALIDAION_TIME.PERSON.type,
+          typeId: response.id,
+          images: urls,
+        });
+      }
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_PERSONS] });
       let { data } = await axios.post("/api/revalidate", {
         tags: [...REAVALIDAION_TIME.COUNT.TAGS, QUERY_KEYS.ALL_PERSONS],

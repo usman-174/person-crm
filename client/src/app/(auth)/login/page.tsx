@@ -18,11 +18,11 @@ import { FormEvent, useState } from "react";
 // @ts-ignore
 import toast from "react-hot-toast";
 
-
 const page = () => {
   const router = useRouter();
-  const searchParam = useSearchParams()
-  const callbackUrl = searchParam.get("callbackUrl")
+  const searchParam = useSearchParams();
+  const callbackUrl = searchParam.get("callbackUrl");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -46,6 +46,7 @@ const page = () => {
     });
 
     try {
+      setLoading(true);
       const res = await signIn("credentials", {
         username: formData.username,
         password: formData.password,
@@ -53,7 +54,6 @@ const page = () => {
         // redirect: true,
         callbackUrl: callbackUrl || "/",
       });
-      console.log({ res });
 
       if (res?.error) {
         setError(res.error);
@@ -64,6 +64,8 @@ const page = () => {
       }
     } catch (error) {
       setError(auth_constants.login.ErrorInvalidCredentials);
+    } finally {
+      setLoading(false);
     }
 
     toast.dismiss(toastId);
@@ -116,16 +118,23 @@ const page = () => {
                 type="password"
               />
             </div>
-            <Button className="w-full" type="submit">
-              {auth_constants.login.ButtonLogin}
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={loading}
+              aria-disabled={loading}
+            >
+              {loading
+                ? auth_constants.login.ButtonLoading
+                : auth_constants.login.ButtonLogin}
             </Button>
-                
+
             <div className="mt-3">
               {auth_constants.login.LinkRegisterText}
               <Link href={"/register"} className="mx-1  text-accent-foreground">
                 {auth_constants.login.LinkRegister}
               </Link>
-          </div>
+            </div>
           </form>
         </CardContent>
       </Card>

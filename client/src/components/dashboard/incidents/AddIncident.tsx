@@ -131,6 +131,7 @@ export function AddIncidents() {
           REAVALIDAION_TIME.STATES.type,
           QUERY_KEYS.ALL_PERSONS,
         ],
+        path :"/"
       });
 
       if (res) {
@@ -195,108 +196,7 @@ export function AddIncidents() {
           />
         </div>
         <CountriesSelect form={form} />
-        {/* <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
-          <FormField
-            control={form.control}
-            name="country"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>Country</FormLabel>
-                <Select
-                  onValueChange={(e) => {
-                    field.onChange(e);
-                    setStates(State.getStatesOfCountry(e));
-                  }}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a Country" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {countries.map((country) => (
-                      <SelectItem value={country.isoCode}>
-                        {country.name}
-                      </SelectItem>
-                    ))}
-                   
-                  </SelectContent>
-                </Select>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="state"
-            disabled={
-              !form.getValues().country || form.getValues().country !== "US"
-            }
-            render={({ field, formState }) => (
-              <FormItem className="w-full">
-                <FormLabel>State</FormLabel>
-
-                <Select
-                  onValueChange={(e) => {
-                    field.onChange(e);
-                    setCities(
-                      City.getCitiesOfState(form.getValues().country!, e)
-                    );
-                  }}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a State" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {form.getValues().country === "US" ? (
-                      states.map((states) => (
-                        <SelectItem value={states.isoCode}>
-                          {states.name}
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="x">No States</SelectItem>
-                    )}
-                   
-                  </SelectContent>
-                </Select>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>City</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a City" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {cities.map((city) => (
-                      <SelectItem value={city.name}>{city.name}</SelectItem>
-                    ))}
-                    
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
-        </div> */}
+      
         <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
           <FormField
             control={form.control}

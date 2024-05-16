@@ -33,17 +33,10 @@ export const editPersonSchema = z.object({
     .max(50, {
       message: "Lastname must not exceed 50 characters.",
     }),
-  country: z
-    .string({
-      message: "Please enter a valid country",
-      required_error: "Country is required",
-    })
-    .min(2, {
-      message: "Country must be at least 2 characters.",
-    })
-    .max(50, {
-      message: "Country must not exceed 50 characters.",
-    }),
+  country: z.string({
+    message: "Please enter a valid country",
+    required_error: "Country is required",
+  }),
   title: z
     .string({
       message: "Please enter a valid title",
@@ -58,21 +51,8 @@ export const editPersonSchema = z.object({
   // City is optional, so use optional()
   city: z
     .string()
-    .min(2, {
-      message: "City must be at least 2 characters.",
-    })
-    .max(50, {
-      message: "City must not exceed 50 characters.",
-    })
     .optional(),
-  state: z
-    .string()
-    .min(2, {
-      message: "State must be at least 2 characters.",
-    })
-    .max(50, {
-      message: "State must not exceed 50 characters.",
-    }),
+  state: z.string().optional(),
   notes: z.string().optional(),
   //source enum either "sociamedia" or "perons"
   source: z.enum(["SOCIAL_MEDIA", "PERSON"], {

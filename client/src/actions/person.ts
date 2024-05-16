@@ -13,6 +13,7 @@ export const getPerson = async (id: string): Promise<PERSON | any> => {
             social: true,
             createdBy: true,
             lastModifiedBy: true,
+            incidents: { orderBy: { createdAt: "desc" } },
           },
         });
         const images = await prisma.image.findMany({
@@ -54,6 +55,7 @@ export const getAllPersons = async (): Promise<PERSON[] | any> => {
           include: {
             social: true,
             organizations: true,
+            schools: true,
             images: true,
             incidents: { orderBy: { createdAt: "desc" } },
           },

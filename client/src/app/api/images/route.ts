@@ -1,4 +1,3 @@
-import { cloudinary } from "@/lib/cloudinary";
 import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 

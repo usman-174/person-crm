@@ -102,6 +102,7 @@ export function AddOrganization() {
           REAVALIDAION_TIME.CITIES.type,
           REAVALIDAION_TIME.STATES.type,
         ],
+        path :"/"
       });
       if (data) {
         router.push(`/dashboard/${QUERY_KEYS.ALL_ORGANIZATIONS}`);

@@ -55,6 +55,7 @@ export interface PERSON {
   source?: SourceType;
   incidents: INCIDENT[];
   organizations: ORGANIZATION[];
+  schools: SCHOOL[];
   notes?: string;
   createdAt: Date;
   lastModified: Date;

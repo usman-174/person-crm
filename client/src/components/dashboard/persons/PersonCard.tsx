@@ -36,20 +36,13 @@ const PersonCard = ({ person }: Props) => {
             No. of Organizations: {person.organizations?.length}
           </span>
           <span className="text-sm ">
+            No. of Schools: {person.schools?.length}
+          </span>
+
+          <span className="text-sm ">
             No. of Incidents: {person.incidents?.length}
           </span>
-          {/* <div className="flex flex-col items-start gap-3">
-          {person.incidents?.slice(0, 2).map((incident,i) => (
-            <Link key={incident.id+i} href={"/dashboard/incidents/"+incident.id}>
-            <div >
-              <div className="text-accent-foreground uppercase cursor-pointer text-xs md:text-sm">
-                {incident.title}
-              </div>
-              
-            </div>
-            </Link>
-          ))}
-        </div> */}
+        
         </div>
         <div className="flex flex-col gap-2 mt-3">
           {person.social?.map((social, i) => (

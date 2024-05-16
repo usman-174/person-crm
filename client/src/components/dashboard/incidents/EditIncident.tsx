@@ -131,7 +131,7 @@ export function EditIncident({ incident }: props) {
           ...REAVALIDAION_TIME.INCIDENT.TAGS(incident.id),
           QUERY_KEYS.ALL_PERSONS,
         ],
-        // path:"/"
+        path:"/"
       });
       // if (revalidated) {
       //   router.push(`/dashboard/${QUERY_KEYS.ALL_INCIDENTS}`);

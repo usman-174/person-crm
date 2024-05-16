@@ -17,10 +17,10 @@ type props = {
 };
 
 const page = async ({ params }: props) => {
-  const session = await getServerSession(authOptions);
   let incident: INCIDENT | null = await getIncident(params.id);
-
+  
   if (!incident) return null;
+  const session = await getServerSession(authOptions);
   const user = session?.user;
 
   return (
@@ -52,7 +52,7 @@ const page = async ({ params }: props) => {
         {/* <OptionsDropDown/>
          */}
         <div className="flex flex-col gap-2 ">
-          {user.role === "ADMIN" ? (
+          {user? (
             <div className="flex items-center gap-4">
               <DeleteDialog
                 queryKey={QUERY_KEYS.ALL_INCIDENTS}

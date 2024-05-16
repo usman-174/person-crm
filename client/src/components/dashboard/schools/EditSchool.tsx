@@ -124,6 +124,7 @@ export function EditSchool({ school }: props) {
           ...REAVALIDAION_TIME.COUNT.TAGS,
           ...REAVALIDAION_TIME.SCHOOL.TAGS(school.id),
         ],
+        path :"/"
       });
 
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ALL_SCHOOLS] });

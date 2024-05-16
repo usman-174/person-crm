@@ -57,21 +57,11 @@ export const addPersonSchema = z.object({
   // City is optional, so use optional()
   city: z
     .string()
-    .min(2, {
-      message: "City must be at least 2 characters.",
-    })
-    .max(50, {
-      message: "City must not exceed 50 characters.",
-    })
+   
     .optional(),
   state: z
     .string()
-    .min(2, {
-      message: "State must be at least 2 characters.",
-    })
-    .max(50, {
-      message: "State must not exceed 50 characters.",
-    })
+   
     .optional(),
   notes: z.string().optional(),
   //source enum either "sociamedia" or "perons"

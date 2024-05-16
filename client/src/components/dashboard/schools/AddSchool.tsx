@@ -116,6 +116,7 @@ export function AddSchool() {
           REAVALIDAION_TIME.CITIES.type,
           REAVALIDAION_TIME.STATES.type,
         ],
+        path :"/"
       });
       setFiles([]);
       if (data) {

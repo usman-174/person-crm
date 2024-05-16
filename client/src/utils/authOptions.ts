@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
         username: { label: "Username", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         // Add logic here to look up the user from the credentials supplied
         let user = null;
         if (!credentials) {
@@ -48,8 +48,10 @@ export const authOptions: NextAuthOptions = {
 
           return {user} as any;
         } catch (error: any) {
+          console.log({error:error.message});
+          
           return {
-            error: error?.response?.data?.message || error.message,
+            error: "Invalid Credentials"
           };
 
           // throw new Error(error?.response.data.message);

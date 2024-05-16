@@ -105,6 +105,7 @@ export function EditOrganization({ organization }: props) {
           ...REAVALIDAION_TIME.COUNT.TAGS,
           ...REAVALIDAION_TIME.ORGANIZATION.TAGS(organization.id),
         ],
+        path :"/"
       });
       setFiles([]);
       toast.dismiss(toastId!);

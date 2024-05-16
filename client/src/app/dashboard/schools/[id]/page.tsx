@@ -18,12 +18,10 @@ type props = {
 
 const page = async ({ params }: props) => {
   const session = await getServerSession(authOptions);
-  console.log("session", session);
+  const user = session?.user;
 
-  let school: SCHOOL | null = null;
-  if (session?.user) {
-    school = await getSchool(params.id);
-  }
+  let school: SCHOOL | null = await getSchool(params.id);
+
   if (!school) return null;
 
   return (
@@ -41,20 +39,22 @@ const page = async ({ params }: props) => {
         {/* <OptionsDropDown/>
          */}
         <div className="flex flex-col gap-2 ">
-          <div className="flex items-center gap-4">
-            <DeleteDialog
-              queryKey={QUERY_KEYS.ALL_SCHOOLS}
-              type="school"
-              path="/dashboard/schools"
-            />
+          {user ? (
+            <div className="flex items-center gap-4">
+              <DeleteDialog
+                queryKey={QUERY_KEYS.ALL_SCHOOLS}
+                type="school"
+                path="/dashboard/schools"
+              />
 
-            <Link href={"/dashboard/schools/edit/" + school?.id}>
-              <Button variant={"outline"}>
-                <Pencil className="mr-2 h-4 w-4" />
-                <span>Edit</span>
-              </Button>
-            </Link>
-          </div>
+              <Link href={"/dashboard/schools/edit/" + school?.id}>
+                <Button variant={"outline"}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  <span>Edit</span>
+                </Button>
+              </Link>
+            </div>
+          ) : null}
           <p className="text-sm">
             Last Modified by : {school?.lastModifiedBy?.username || "N/A"}
           </p>
