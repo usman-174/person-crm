@@ -5,11 +5,12 @@ export const addPersonSchema = z.object({
     .string({
       message: "Please enter a valid Email",
       required_error: "Email is required",
-    }).email({
+    })
+    .email({
       message: "Please enter a valid email address",
     }),
-    fullName: z.string().optional(),
-    fname: z
+  fullName: z.string().optional(),
+  fname: z
     .string({
       message: "Please enter a valid firstname",
       required_error: "Firstname is required",
@@ -70,7 +71,8 @@ export const addPersonSchema = z.object({
     })
     .max(50, {
       message: "State must not exceed 50 characters.",
-    }),
+    })
+    .optional(),
   notes: z.string().optional(),
   //source enum either "sociamedia" or "perons"
   source: z.enum(["SOCIAL_MEDIA", "PERSON"], {
@@ -81,10 +83,13 @@ export const addPersonSchema = z.object({
   DOB: z.date({
     required_error: "Select a Date of Birth.",
   }),
-  social : z.array(z.object({
-    account: z.string().optional(),
-    platform: z.string().optional(),
-    personId: z.string().optional(),
-  })).optional()
-
+  social: z
+    .array(
+      z.object({
+        account: z.string().optional(),
+        platform: z.string().optional(),
+        personId: z.string().optional(),
+      })
+    )
+    .optional(),
 });

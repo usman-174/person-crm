@@ -38,7 +38,7 @@ import { z } from "zod";
 import { addPersonSchema } from "./valdidations/addPerson";
 import { useState } from "react";
 import { UploadImages } from "../UploadImages";
-
+import CountriesSelect from "../CountriesSelect";
 export function AddPerson() {
   const queryClient = new QueryClient();
   const [files, setFiles] = useState<File[]>([]);
@@ -51,6 +51,7 @@ export function AddPerson() {
       username: "",
       fname: "",
       lname: "",
+      state: "",
       country: "",
       title: "",
       city: "",
@@ -193,59 +194,7 @@ export function AddPerson() {
             )}
           />
         </div>
-        <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
-          <FormField
-            control={form.control}
-            name="country"
-            render={({ field, formState }) => (
-              <FormItem className="w-full">
-                <FormLabel>Country</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Country"
-                    {...field}
-                    autoComplete="false"
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="state"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>State</FormLabel>
-                <FormControl>
-                  <Input placeholder="State" {...field} autoComplete="false" />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>
-                  City{" "}
-                  <span className="text-xs text-muted-foreground">
-                    (optional)
-                  </span>{" "}
-                </FormLabel>
-                <FormControl>
-                  <Input placeholder="City" {...field} autoComplete="false" />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <CountriesSelect form={form} />
         <FormField
           control={form.control}
           name="notes"

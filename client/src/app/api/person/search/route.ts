@@ -5,6 +5,9 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url).searchParams;
   const query = url.get("query");
   const sort = url.get("sort");
+  const city = url.get("city");
+  const state = url.get("state");
+
   let orderBy = {};
   if (sort?.length) {
     orderBy = {
@@ -39,6 +42,12 @@ export async function GET(request: NextRequest) {
               ],
             }
           : {}),
+        ...(city
+          ? { city: { contains: city as string, mode: "insensitive" } }
+          : {}),
+        ...(state
+          ? { state: { contains: state as string, mode: "insensitive" } }
+          : {}),
       },
 
       orderBy,
@@ -46,7 +55,11 @@ export async function GET(request: NextRequest) {
         social: true,
         organizations: true,
         incidents: true,
-        images: true,
+        images: {
+          orderBy: {
+            primary: "desc",
+          },
+        },
       },
     });
 

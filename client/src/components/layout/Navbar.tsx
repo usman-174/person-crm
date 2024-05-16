@@ -2,8 +2,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import UserButton from "./UserButton";
+import { LogOut } from "lucide-react";
 
 const Navbar = () => {
   const session = useSession();
@@ -16,16 +17,29 @@ const Navbar = () => {
           PERSON-CRM
         </Link>
         <div className="flex items-center gap-3 md:gap-10 ">
-          {user && user.role === "ADMIN" && (
-            <Link
-              href="/dashboard"
-              className="font-semibold text-sm md:text-md"
-            >
-              Dashboard
-            </Link>
-          )}
-          {user && <UserButton user={user} />}
-          {!user && session.status !== "loading" && <SignInButton />}
+          {/* {user && <UserButton user={user} />} */}
+
+          
+          {user && session.status !== "loading" ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="font-semibold text-sm md:text-md"
+              >
+                Dashboard
+              </Link>
+              <Button
+                size={"sm"}
+                variant={"outline"}
+                onClick={() => signOut({ callbackUrl: "/" })}
+              >
+                <LogOut size={20} />
+                SignOut
+              </Button>
+            </>
+          ) : !user && session.status !== "loading" ? (
+            <SignInButton />
+          ) : null}
         </div>
       </nav>
     </header>

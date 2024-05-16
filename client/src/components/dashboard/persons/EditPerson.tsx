@@ -49,6 +49,7 @@ import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import ShowImages from "../ShowImages";
 import { UploadImages } from "../UploadImages";
+import CountriesSelect from "../CountriesSelect";
 
 type props = {
   person: PERSON;
@@ -269,67 +270,7 @@ export function EditPerson({ person }: props) {
                   )}
                 />
               </div>
-              <div className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between ">
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Country</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Country"
-                          {...field}
-                          autoComplete="false"
-                        />
-                      </FormControl>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="state"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>State</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="State"
-                          {...field}
-                          autoComplete="false"
-                        />
-                      </FormControl>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="city"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>
-                        City{" "}
-                        <span className="text-xs text-muted-foreground">
-                          (optional)
-                        </span>{" "}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="City"
-                          {...field}
-                          autoComplete="false"
-                        />
-                      </FormControl>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <CountriesSelect form={form} />
               <FormField
                 control={form.control}
                 name="notes"

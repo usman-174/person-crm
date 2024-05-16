@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { PERSON } from "@/types/COMMON";
-import { unstable_cache as cache } from "next/cache";
+import { unstable_cache as cache, unstable_noStore } from "next/cache";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "./contants";
 
 export const getPerson = async (id: string): Promise<PERSON | any> => {
@@ -72,3 +72,54 @@ export const getAllPersons = async (): Promise<PERSON[] | any> => {
     }
   )();
 };
+
+export async function getAllPersonCities() {
+  unstable_noStore();
+  return await cache(
+    async () => {
+      try {
+        const cities = await prisma.person.findMany({
+          distinct: ["city"],
+          select: {
+            city: true,
+          },
+        });
+
+        return cities.map((person) => person.city).filter(Boolean);
+      } catch (error) {
+        console.error("Error fetching cities:", error);
+        throw error;
+      }
+    },
+    [REAVALIDAION_TIME.CITIES.type],
+    {
+      revalidate: 200,
+      tags: [REAVALIDAION_TIME.CITIES.type],
+    }
+  )();
+}
+export async function getAllPersonStates() {
+  unstable_noStore();
+  return await cache(
+    async () => {
+      try {
+        const states = await prisma.person.findMany({
+          distinct: ["state"],
+          select: {
+            state: true,
+          },
+        });
+
+        return states.map((person) => person.state).filter(Boolean);
+      } catch (error) {
+        console.error("Error fetching states:", error);
+        throw error;
+      }
+    },
+    [REAVALIDAION_TIME.STATES.type],
+    {
+      revalidate: 200,
+      tags: [REAVALIDAION_TIME.STATES.type],
+    }
+  )();
+}
