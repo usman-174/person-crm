@@ -15,6 +15,20 @@ type props = {
     id: string;
   };
 };
+const renderLabelValuePair = (label: string, value: string | undefined) => {
+  if (value) {
+    return (
+      <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
+        <div>
+          <h1 className="text-md font-semibold">{label}</h1>
+          <p className="text-muted-foreground text-sm">{value}</p>
+        </div>
+      </div>
+    );
+  } else {
+    return null;
+  }
+};
 
 const page = async ({ params }: props) => {
   const session = await getServerSession(authOptions);
@@ -64,7 +78,7 @@ const page = async ({ params }: props) => {
         </div>
       </div>
 
-      <div className="grid gap-2 grid-cols-1 md:grid-cols-2 mt-4">
+      <div className=" mt-5">
         <div className="flex flex-col gap-3">
           <div className="">
             <h1 className="text-md font-semibold">
@@ -93,119 +107,31 @@ const page = async ({ params }: props) => {
               ))}
             </div>
           </div>
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
-            <div>
-              <h1 className="text-md font-semibold">Org's name</h1>
-              <p className="text-muted-foreground text-sm">
-                {school?.organization?.name || "N/A"}
-              </p>
-            </div>
-            <div>
-              <h1 className="text-md font-semibold">Org's state</h1>
-              <p className="text-muted-foreground text-sm">
-                {school?.state || "N/A"}
-              </p>
-            </div>
-            <div>
-              <h1 className="text-md font-semibold">Org's City</h1>
-              <p className="text-muted-foreground text-sm">
-                {school?.city || "N/A"}
-              </p>
-            </div>
-          </div>
-          {/* <div className="flex flex-wrap sm:flex-nowrap items-center gap-5">
-            <div>
-              <h1 className="text-md font-semibold">Country</h1>
-              <p className="text-muted-foreground text-sm">
-                {school?.country || "N/A"}
-              </p>
-            </div>
-            <div>
-              <h1 className="text-md font-semibold">State</h1>
-              <p className="text-muted-foreground text-sm">
-                {school?.state || "N/A"}
-              </p>
-            </div>
-            <div>
-              <h1 className="text-md font-semibold">City</h1>
-              <p className="text-muted-foreground text-sm">
-                {school?.city || "N/A"}
-              </p>
-            </div>
-          </div>
-          <div>
-            <h1 className="text-md font-semibold">Address1</h1>
-            <p className="text-muted-foreground text-sm">
-              {school?.address || "N/A"}
-            </p>
-          </div>
-          <div>
-            <h1 className="text-md font-semibold">Address2</h1>
-            <p className="text-muted-foreground text-sm">
-              {school?.address2 || "N/A"}
-            </p>
-          </div>
+          <Separator className="" />
 
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-5">
-            <div>
-              <h1 className="text-md font-semibold">Type</h1>
-              <p className="text-accent-foreground text-sm">
-                {school?.type || "N/A"}
-              </p>
+          <div className="">
+            <h1 className="text-md font-semibold">Organization: </h1>
+
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 mx-3">
+              {renderLabelValuePair("Name", school?.organization?.name)}
+              {renderLabelValuePair("City", school?.city)}
+              {renderLabelValuePair("State", school?.state)}
+              {renderLabelValuePair("Country", school?.country)}
             </div>
-            <div>
-              <h1 className="text-md font-semibold">Source</h1>
-              <p className="text-accent-foreground text-sm">
-                {school?.source || "N/A"}
-              </p>
-            </div>
-            <div>
-              <h1 className="text-md font-semibold">Date of Birth</h1>
-              <p className="text-muted-foreground text-sm">
-                {new Date(school.DOB!).toLocaleDateString() || "N/A"}
-              </p>
-            </div>
-          </div> */}
+          </div>
         </div>
       </div>
-      <Separator className="my-5" />
-      <div className="text-accent-foreground md:mx-10 mb-10">
-        <h3 className="text-md font-semibold">Notes</h3>
-        <p className="leading-4 ">{school?.notes || "N/A"}</p>
-      </div>
+      {school?.notes ? (
+        <>
+          <Separator className="my-5" />
+          <div className="text-accent-foreground  mb-10">
+            <h3 className="text-md font-semibold">Notes</h3>
+            <p className="leading-4 ">{school?.notes || "N/A"}</p>
+          </div>
+        </>
+      ) : null}
       <Separator className="my-5" />
       <ShowImages images={school?.images || []} />
-      {/* <div className="text-accent-foreground md:mx-10 mb-10">
-        <h3 className="text-md font-semibold">Socials</h3>
-        <div className="flex items-center flex-wrap gap-4">
-          {school?.social?.length ? (
-            school?.social?.map((social) => (
-              <>
-                <div
-                  key={social.id}
-                  className="flex flex-row items-center gap-2"
-                >
-                  <h1 className="text-md font-semibold">
-                    Platform:{" "}
-                    <span className="font-normal text-muted-foreground">
-                      {social.platform}
-                    </span>
-                  </h1>
-                  <h1 className="text-md font-semibold">
-                    Account:{" "}
-                    <span className="font-normal text-muted-foreground">
-                      {social.account}
-                    </span>
-                  </h1>
-                </div>
-                <Separator orientation="vertical" />
-              </>
-            ))
-          ) : (
-            <p className="text-muted-foreground">No socials available</p>
-          )}
-        </div>
-      </div> */}
     </div>
   );
 };

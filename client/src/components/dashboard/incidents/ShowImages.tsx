@@ -64,7 +64,7 @@ export default function ShowImages({ images }: props) {
           {images?.map((image, index) => (
             <div
               key={image.id + index}
-              className="relative aspect-square w-44 md:w-64 shadow-sm"
+              className="relative aspect-square w-36  md:w-64 shadow-sm"
             >
               <ImageDialog image={image} />
               {isEdit ? (

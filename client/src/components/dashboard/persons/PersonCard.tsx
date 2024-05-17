@@ -47,9 +47,11 @@ const PersonCard = ({ person }: Props) => {
         <div className="flex flex-col gap-2 mt-3">
           {person.social?.map((social, i) => (
             <div key={social.id + i} className="flex gap-2">
+              <Link href={social.account} target="_blank">
               <span className="text-xs text-muted-foreground cursor-pointer">
                 {social.platform}
               </span>
+              </Link>
             </div>
           ))}
         </div>

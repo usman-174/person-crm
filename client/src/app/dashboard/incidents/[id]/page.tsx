@@ -15,10 +15,23 @@ type props = {
     id: string;
   };
 };
-
+const renderLabelValuePair = (label: string, value: string | undefined) => {
+  if (value) {
+    return (
+      <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
+        <div>
+          <h1 className="text-md font-semibold">{label}</h1>
+          <p className="text-muted-foreground text-sm">{value}</p>
+        </div>
+      </div>
+    );
+  } else {
+    return null;
+  }
+};
 const page = async ({ params }: props) => {
   let incident: INCIDENT | null = await getIncident(params.id);
-  
+
   if (!incident) return null;
   const session = await getServerSession(authOptions);
   const user = session?.user;
@@ -35,24 +48,41 @@ const page = async ({ params }: props) => {
           </p>
           <p className="text-accent-foreground text-sm mt-2">{incident?.id}</p>
           <p className=" flex flex-wrap gap-4 md:flex-nowrap text-muted-foreground text-xs md:text-sm">
-            <span>
-              <span className="text-primary">City</span> :{" "}
-              {incident.city || "N/A"}
-            </span>
-            <span>
-              <span className="text-primary">State</span> :{" "}
-              {incident.state || "N/A"}
-            </span>
-            <span>
-              <span className="text-primary">Country</span> :{" "}
-              {incident.country || "N/A"}
-            </span>
+            {renderLabelValuePair("City", incident.city)}
+            {renderLabelValuePair("State", incident.state)}
+            {renderLabelValuePair("Country", incident.country)}
           </p>
+          <div className="mt-3 flex gap-1 flex-col sm:flex-row items-start md:gap-3">
+            {incident.type ? (
+              <h1 className="text-sm sm:text-md font-semibold">
+                Type :{" "}
+                <span className="text-xs sm:text-sm text-muted-foreground">
+                  {incident.type}
+                </span>
+              </h1>
+            ) : null}
+            {incident.targeted ? (
+              <h1 className="text-sm sm:text-md font-semibold">
+                Targeted :{" "}
+                <span className="text-xs sm:text-sm  text-muted-foreground">
+                  {incident.targeted}
+                </span>
+              </h1>
+            ) : null}
+            {incident.location ? (
+              <h1 className="text-sm sm:text-md font-semibold">
+                Location :{" "}
+                <span className="text-xs sm:text-sm text-muted-foreground">
+                  {incident.location}
+                </span>
+              </h1>
+            ) : null}
+          </div>
         </div>
         {/* <OptionsDropDown/>
          */}
         <div className="flex flex-col gap-2 ">
-          {user? (
+          {user ? (
             <div className="flex items-center gap-4">
               <DeleteDialog
                 queryKey={QUERY_KEYS.ALL_INCIDENTS}
@@ -78,7 +108,7 @@ const page = async ({ params }: props) => {
       </div>
 
       <div className="">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <div className="">
             <h1 className="text-md font-semibold">
               Persons :{" "}
@@ -106,7 +136,7 @@ const page = async ({ params }: props) => {
               ))}
             </div>
           </div>
-          <Separator className="mt-4" />
+          <Separator />
 
           <div>
             <h1 className="text-md font-semibold">
@@ -175,11 +205,16 @@ const page = async ({ params }: props) => {
             </div>
           </div>
         </div>
-        <Separator className="my-5" />
-        <div className="text-accent-foreground md:mx-10 mb-10">
-          <h3 className="text-md font-semibold">Notes</h3>
-          <p className="leading-4 ">{incident?.notes || "N/A"}</p>
-        </div>
+        {incident?.notes ? (
+          <>
+            {" "}
+            <Separator className="my-5" />
+            <div className="text-accent-foreground mb-10">
+              <h3 className="text-md font-semibold">Notes</h3>
+              <p className="leading-4 ">{incident?.notes || "N/A"}</p>
+            </div>
+          </>
+        ) : null}
         <ShowImages images={incident?.images || []} />
       </div>
     </div>

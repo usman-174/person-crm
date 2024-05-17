@@ -91,7 +91,7 @@ const page = async ({ params }: props) => {
         </div>
       </div>
 
-      <div className="grid gap-2 grid-cols-1 md:grid-cols-2  mt-5">
+      <div className="grid gap-2 grid-cols-1 md:grid-cols-2 mt-5">
         <div className="relative w-full h-56 md:w-auto md:h-auto overflow-hidden">
           <Image
             src={person?.images[0]?.url || "/profile.png"}
@@ -132,7 +132,7 @@ const page = async ({ params }: props) => {
         </div>
       </div>
       <Separator className="my-5" />
-      <div className="text-accent-foreground md:mx-10 mb-10">
+      <div className="text-accent-foreground  mb-10">
         <h3 className="text-md font-semibold">
           Incidents :{" "}
           <span className="text-sm text-muted-foreground">
@@ -142,26 +142,25 @@ const page = async ({ params }: props) => {
         <div className="flex flex-col gap-4 md:flex-nowrap text-muted-foreground text-xs md:text-sm">
           {person?.incidents?.map((incident, i) => (
             <div key={incident.id + i} className="flex gap-2 items-start">
+              <span>{renderLabelValuePair("Title", incident.title)}</span>
               <span>
-               {renderLabelValuePair("Title", incident.title)}
+                {renderLabelValuePair(
+                  "date",
+                  new Date(incident.date).toLocaleDateString()
+                )}
               </span>
-              <span>
-                {renderLabelValuePair("date", new Date(incident.date).toLocaleDateString())}
-              </span>
-              <span>
-                {renderLabelValuePair("Type", incident.type)}
-              </span>
+              <span>{renderLabelValuePair("Type", incident.type)}</span>
             </div>
           ))}
         </div>
       </div>
       <Separator className="my-5" />
-      <div className="text-accent-foreground md:mx-10 mb-10">
+      <div className="text-accent-foreground  mb-10">
         <h3 className="text-md font-semibold">Notes</h3>
         <p className="leading-4 ">{person?.notes || "N/A"}</p>
       </div>
       <Separator className="my-5" />
-      <div className="text-accent-foreground md:mx-10 mb-10">
+      <div className="text-accent-foreground  mb-10">
         <h3 className="text-md font-semibold">Socials</h3>
         <div className="flex items-center flex-wrap gap-4">
           {person?.social?.length ? (

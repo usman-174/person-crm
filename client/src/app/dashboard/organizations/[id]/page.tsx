@@ -16,6 +16,20 @@ type props = {
     id: string;
   };
 };
+const renderLabelValuePair = (label: string, value: string | undefined) => {
+  if (value) {
+    return (
+      <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
+        <div>
+          <h1 className="text-md font-semibold">{label}</h1>
+          <p className="text-muted-foreground text-sm">{value}</p>
+        </div>
+      </div>
+    );
+  } else {
+    return null;
+  }
+};
 
 const page = async ({ params }: props) => {
   let organization: ORGANIZATION | null = await getOrganization(params.id);
@@ -40,20 +54,22 @@ const page = async ({ params }: props) => {
         </div>
 
         <div className="flex flex-col gap-2 ">
-         {user? <div className="flex items-center gap-4">
-            <DeleteDialog
-              queryKey={QUERY_KEYS.ALL_ORGANIZATIONS}
-              type={REAVALIDAION_TIME.ORGANIZATION.type}
-              path="/dashboard/organizations"
-            />
+          {user ? (
+            <div className="flex items-center gap-4">
+              <DeleteDialog
+                queryKey={QUERY_KEYS.ALL_ORGANIZATIONS}
+                type={REAVALIDAION_TIME.ORGANIZATION.type}
+                path="/dashboard/organizations"
+              />
 
-            <Link href={"/dashboard/organizations/edit/" + organization.id}>
-              <Button variant={"outline"}>
-                <Pencil className="mr-2 h-4 w-4" />
-                <span>Edit</span>
-              </Button>
-            </Link>
-          </div>:null}
+              <Link href={"/dashboard/organizations/edit/" + organization.id}>
+                <Button variant={"outline"}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  <span>Edit</span>
+                </Button>
+              </Link>
+            </div>
+          ) : null}
           <p className="text-sm">
             Last Modified by : {organization.lastModifiedBy?.username || "N/A"}
           </p>
@@ -63,51 +79,17 @@ const page = async ({ params }: props) => {
         </div>
       </div>
 
-      <div className="grid gap-2 grid-cols-1 md:grid-cols-2  mt-5">
+      <div className="">
         <div className="flex flex-col gap-1">
-          <p className=" flex flex-wrap gap-4 md:flex-nowrap text-muted-foreground text-xs md:text-sm">
-            <span>
-              <span className="text-primary">City</span> :{" "}
-              {organization.city || "N/A"}
-            </span>
-            <span>
-              <span className="text-primary">State</span> :{" "}
-              {organization.state || "N/A"}
-            </span>
-            <span>
-              <span className="text-primary">Country</span> :{" "}
-              {organization.country || "N/A"}
-            </span>
+          <p className=" flex flex-wrap gap-4 md:flex-nowrap text-muted-foreground text-xs md:text-sm my-3">
+            {renderLabelValuePair("City", organization.city)}
+            {renderLabelValuePair("State", organization.state)}
+            {renderLabelValuePair("Country", organization.country)}
           </p>
-          <Separator className="my-2" />
 
-          <h1 className="text-md font-semibold">
-            Heads :{" "}
-            <span className="text-sm text-muted-foreground">
-              {organization.heads.length}
-            </span>
-          </h1>
-
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-8">
-            {organization.heads?.map((head) => (
-              <div key={head.id} className="p-2">
-                <div>
-                  <p className="text-muted-foreground text-md uppercase">
-                    {head.fullName || "N/A"}
-                  </p>
-                </div>
-                <div>
-                  <h1 className="text-md font-semibold">
-                    <p className="text-muted-foreground text-sm">
-                      {head?.source || "N/A"}
-                    </p>
-                  </h1>
-                </div>
-              </div>
-            ))}
-          </div>
-          <Separator className="my-5" />
-          <div>
+         
+        
+          <div className="mt-2">
             <h1 className="text-md font-semibold">
               Schools :{" "}
               <span className="text-sm text-muted-foreground">
@@ -148,13 +130,45 @@ const page = async ({ params }: props) => {
               ))}
             </div>
           </div>
+          <Separator className="my-3" />
+          <div>
+            <h1 className="text-md font-semibold">
+              Heads :{" "}
+              <span className="text-sm text-muted-foreground">
+                {organization.heads.length}
+              </span>
+            </h1>
+
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-8">
+              {organization.heads?.map((head) => (
+                <div key={head.id} className="p-2">
+                  <div>
+                    <p className="text-muted-foreground text-md uppercase">
+                      {head.fullName || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <h1 className="text-md font-semibold">
+                      <p className="text-muted-foreground text-sm">
+                        {head?.source || "N/A"}
+                      </p>
+                    </h1>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-      <Separator className="my-5" />
-      <div className="text-accent-foreground md:mx-10 mb-10">
-        <h3 className="text-md font-semibold">Notes</h3>
-        <p className="leading-4 ">{organization?.notes || "N/A"}</p>
-      </div>
+      {organization?.notes ? (
+        <>
+          <Separator className="my-5" />
+          <div className="text-accent-foreground  mb-10">
+            <h3 className="text-md font-semibold">Notes</h3>
+            <p className="leading-4 mx-3">{organization?.notes || "N/A"}</p>
+          </div>
+        </>
+      ) : null}
       <Separator className="my-5" />
       <ShowImages images={organization?.images || []} />
     </div>
