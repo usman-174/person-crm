@@ -30,11 +30,11 @@ import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 import { SCHOOL } from "@/types/COMMON";
 import axios from "axios";
 import { useState } from "react";
+import CountriesSelect from "../CountriesSelect";
 import { SelectHeads } from "../SelectHeads";
 import ShowImages from "../ShowImages";
 import { UploadImages } from "../UploadImages";
 import { editSchoolSchema } from "./validations/editSchool";
-import CountriesSelect from "../CountriesSelect";
 type props = {
   school: SCHOOL;
 };

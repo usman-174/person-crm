@@ -1,8 +1,6 @@
 import { getCount } from "@/actions/dashboard";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { authOptions } from "@/utils/authOptions";
 import { PersonStanding, School, User2, Workflow } from "lucide-react";
-import { getServerSession } from "next-auth";
 import Link from "next/link";
 import React from "react";
 // import { authOptions } from "../api/auth/[...nextauth]/route";

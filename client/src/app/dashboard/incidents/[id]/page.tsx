@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 import { getIncident } from "@/actions/incident";
 import { DeleteDialog } from "@/components/dashboard/DeleteDialog";
-import ShowImages from "@/components/dashboard/incidents/ShowImages";
+import ShowImages from "@/components/dashboard/ShowImages";
 import { Button } from "@/components/ui/button";
 import { INCIDENT } from "@/types/COMMON";
 import { authOptions } from "@/utils/authOptions";

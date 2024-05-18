@@ -39,18 +39,13 @@ import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import CountriesSelect from "../CountriesSelect";
 import { IncidentSelects } from "./IncidentSelects";
-import { UploadImages } from "./UploadImages";
+import { UploadImages } from "@/components/dashboard/UploadImages";
 import { addIncidentSchema } from "./validations/addIncident";
 export function AddIncidents() {
   const queryClient = new QueryClient();
   const [files, setFiles] = useState<File[]>([]);
   const router = useRouter();
-  // const [countries, setCountries] = useState<ICountry[]>(
-  //   Country.getAllCountries()
-  // );
-  // const countries: ICountry[] = Country.getAllCountries();
-  // const [states, setStates] = useState<IState[]>([]);
-  // const [cities, setCities] = useState<ICity[]>([]);
+  
   const form = useForm<z.infer<typeof addIncidentSchema>>({
     mode: "onSubmit",
     resolver: zodResolver(addIncidentSchema),

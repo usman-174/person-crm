@@ -1,9 +1,9 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import React from "react";
-import { SearchIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { SearchIcon } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import React from "react";
 interface SearchBarProps {
   query?: string;
   handleSelect: (e: string, x: any) => void;

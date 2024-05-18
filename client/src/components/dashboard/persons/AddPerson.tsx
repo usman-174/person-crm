@@ -32,13 +32,13 @@ import axios from "axios";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
-import { addPersonSchema } from "./valdidations/addPerson";
-import { useState } from "react";
-import { UploadImages } from "../UploadImages";
 import CountriesSelect from "../CountriesSelect";
+import { UploadImages } from "../UploadImages";
+import { addPersonSchema } from "./valdidations/addPerson";
 export function AddPerson() {
   const queryClient = new QueryClient();
   const [files, setFiles] = useState<File[]>([]);

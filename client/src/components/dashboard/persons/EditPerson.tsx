@@ -32,9 +32,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import { CalendarIcon, Delete } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -43,13 +42,11 @@ import { z } from "zod";
 import { PERSON } from "@/types/COMMON";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { AddSocialDialog } from "./AddSocialDialog";
-import { editPersonSchema } from "./valdidations/EditPerson";
-import { Label } from "@/components/ui/label";
-import Image from "next/image";
+import CountriesSelect from "../CountriesSelect";
 import ShowImages from "../ShowImages";
 import { UploadImages } from "../UploadImages";
-import CountriesSelect from "../CountriesSelect";
+import { AddSocialDialog } from "./AddSocialDialog";
+import { editPersonSchema } from "./valdidations/EditPerson";
 
 type props = {
   person: PERSON;

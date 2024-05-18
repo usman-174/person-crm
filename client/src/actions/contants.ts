@@ -1,4 +1,3 @@
-import { ALL } from "dns";
 
 export const QUERY_KEYS = {
   ALL_SCHOOLS: "schools",

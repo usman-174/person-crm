@@ -22,12 +22,12 @@ import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
 import { ORGANIZATION } from "@/types/COMMON";
 import axios from "axios";
-import { SelectHeads } from "../SelectHeads";
-import { editOrganizationSchema } from "./validations/editOrganizationSchema";
 import { useState } from "react";
+import CountriesSelect from "../CountriesSelect";
+import { SelectHeads } from "../SelectHeads";
 import ShowImages from "../ShowImages";
 import { UploadImages } from "../UploadImages";
-import CountriesSelect from "../CountriesSelect";
+import { editOrganizationSchema } from "./validations/editOrganizationSchema";
 type props = {
   organization: ORGANIZATION;
 };

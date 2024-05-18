@@ -1,13 +1,13 @@
-import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
-import "./globals.css";
-import { Toaster } from "react-hot-toast";
-import { cn } from "@/lib/utils";
 import AuthProvider from "@/components/providers/auth/AuthProvider";
 import QueryProvider from "@/components/providers/auth/reactQuery/QueryProvider";
+import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
+import { Inter as FontSans } from "next/font/google";
 import NextTopLoader from 'nextjs-toploader';
 import 'react-day-picker/dist/style.css';
+import { Toaster } from "react-hot-toast";
+import "./globals.css";
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -55,7 +55,10 @@ export default function RootLayout({
               }}
             />
             <Navbar />
-            <div className="mx-3 md:mx-20  mt-5 md:mt-20">{children}</div>
+                
+            <div className="mx-3 md:mx-20  mt-5 md:mt-20">
+            
+              {children}</div>
           </AuthProvider>
         </QueryProvider>
       </body>

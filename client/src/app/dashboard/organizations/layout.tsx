@@ -1,4 +1,3 @@
-import GoBack from "@/components/layout/GoBack";
 import React from "react";
 
 const layout = ({ children }: { children: React.ReactNode }) => {

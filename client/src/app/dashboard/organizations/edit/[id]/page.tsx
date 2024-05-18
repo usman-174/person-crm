@@ -1,9 +1,7 @@
 import { getOrganization } from "@/actions/organization";
-import { authOptions } from "@/utils/authOptions";
 import { EditOrganization } from "@/components/dashboard/organizations/EditOrganization";
 import { ORGANIZATION } from "@/types/COMMON";
 
-import { getServerSession } from "next-auth";
 type props = {
   params: {
     id: string;

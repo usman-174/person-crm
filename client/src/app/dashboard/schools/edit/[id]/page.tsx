@@ -1,7 +1,7 @@
 import { getSchool } from "@/actions/school";
-import { authOptions } from "@/utils/authOptions";
 import { EditSchool } from "@/components/dashboard/schools/EditSchool";
 import { SCHOOL } from "@/types/COMMON";
+import { authOptions } from "@/utils/authOptions";
 
 import { getServerSession } from "next-auth";
 type props = {

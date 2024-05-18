@@ -29,10 +29,10 @@ import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
 
 import axios from "axios";
 import { useState } from "react";
+import CountriesSelect from "../CountriesSelect";
 import { SelectHeads } from "../SelectHeads";
 import { UploadImages } from "../UploadImages";
 import { addSchoolSchema } from "./validations/addSchool";
-import CountriesSelect from "../CountriesSelect";
 
 export function AddSchool() {
   const queryClient = new QueryClient();

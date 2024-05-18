@@ -61,7 +61,7 @@ const CountriesSelect = ({ form }: Props) => {
               </FormControl>
               <SelectContent>
                 {countries.map((country) => (
-                  <SelectItem key={country.latitude} value={country.isoCode}>
+                  <SelectItem key={country.isoCode} value={country.isoCode}>
                     {country.name}
                   </SelectItem>
                 ))}
@@ -98,7 +98,7 @@ const CountriesSelect = ({ form }: Props) => {
               <SelectContent>
                 {form.getValues().country === "US"
                   ? states.map((state) => (
-                      <SelectItem key={state.latitude} value={state.isoCode}>
+                      <SelectItem key={state.isoCode} value={state.isoCode}>
                         {state.name}
                       </SelectItem>
                     ))
@@ -125,7 +125,7 @@ const CountriesSelect = ({ form }: Props) => {
               </FormControl>
               <SelectContent>
                 {cities.map((city) => (
-                  <SelectItem key={city.longitude} value={city.name}>{city.name}</SelectItem>
+                  <SelectItem key={city.name} value={city.name}>{city.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

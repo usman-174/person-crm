@@ -1,16 +1,15 @@
-import { authOptions } from "@/utils/authOptions";
 import { Separator } from "@/components/ui/separator";
+import { authOptions } from "@/utils/authOptions";
 import { getServerSession } from "next-auth";
 
 import { QUERY_KEYS, REAVALIDAION_TIME } from "@/actions/contants";
-import { getSchool } from "@/actions/school";
+import { getOrganization } from "@/actions/organization";
+import { DeleteDialog } from "@/components/dashboard/DeleteDialog";
+import ShowImages from "@/components/dashboard/ShowImages";
 import { Button } from "@/components/ui/button";
-import { ORGANIZATION, SCHOOL } from "@/types/COMMON";
+import { ORGANIZATION } from "@/types/COMMON";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
-import { DeleteDialog } from "@/components/dashboard/DeleteDialog";
-import { getOrganization } from "@/actions/organization";
-import ShowImages from "@/components/dashboard/ShowImages";
 type props = {
   params: {
     id: string;

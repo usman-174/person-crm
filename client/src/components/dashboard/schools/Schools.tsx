@@ -5,14 +5,6 @@ import { Button } from "@/components/ui/button";
 import { format, formatDistance } from "date-fns";
 
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Select,
   SelectContent,
   SelectGroup,
@@ -22,6 +14,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { SCHOOL } from "@/types/COMMON";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
