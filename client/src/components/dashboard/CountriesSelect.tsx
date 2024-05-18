@@ -79,7 +79,7 @@ const CountriesSelect = ({ form }: Props) => {
         disabled={
           !form.getValues().country || form.getValues().country !== "US"
         }
-        render={({ field, formState }) => (
+        render={({ field }) => (
           <FormItem className="w-full">
             <FormLabel>State</FormLabel>
 

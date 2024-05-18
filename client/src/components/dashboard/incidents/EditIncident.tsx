@@ -41,10 +41,11 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { IncidentSelects } from "./IncidentSelects";
-import ShowImages from "./ShowImages";
-import { UploadImages } from "./UploadImages";
+
 import { addIncidentSchema } from "./validations/addIncident";
 import CountriesSelect from "../CountriesSelect";
+import ShowImages from "../ShowImages";
+import { UploadImages } from "../UploadImages";
 type props = {
   incident: INCIDENT;
 };
