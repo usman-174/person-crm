@@ -37,7 +37,7 @@ export const auth_constants = {
         successMessage: "Registered successfully",
         errorMessage: "Please enter all fields",
         passwordMismatchMessage: "Passwords do not match",
-        LinkRegisterText: "Already have an Account?",
+        LinkRegisterText: "Already have an account?",
         loginLink: "Login",
     }
 }
