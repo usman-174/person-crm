@@ -16,7 +16,7 @@ export default async function Home() {
 
   return (
     <div className="sm:container mx-auto mt-10">
-      <h1 className="h1 text-center mx-auto">Persons CRM</h1>
+      <h1 className="h1 text-center mx-auto">The True Faces.</h1>
       {user?.role === "ADMIN" ? (
         <div className="text-right w-full">
           <Link href={"/dashboard/persons/add"}>
@@ -31,7 +31,7 @@ export default async function Home() {
        <HomePage persons={persons}/>
       ) : (
         <div className="text-center text-2xl font-semibold">
-          No Persons Found
+          Dignity is a mask we wear to hide our ignorance. - Elbert Hubbard
         </div>
       )}
     </div>
