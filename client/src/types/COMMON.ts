@@ -100,7 +100,7 @@ export interface SCHOOL {
   organization?: ORGANIZATION;
 }
 
-interface Social {
+export interface Social {
   id: string;
   platform: SocialPlatform;
   account: string;

@@ -371,8 +371,8 @@ export function EditPerson({ person }: props) {
                 {person?.social?.length
                   ? person.social!.map((social, ind) => (
                       <div
-                        key={social.id}
-                        className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between "
+                        key={social.id+ind}
+                        className="flex items-center gap-5 flex-wrap sm:flex-nowrap md:justify-between my-2"
                       >
                         <FormField
                           control={form.control}

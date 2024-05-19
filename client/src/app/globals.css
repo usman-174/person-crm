@@ -78,3 +78,53 @@
 .rdp-vhidden {
   @apply hidden;
 }
+.h1 {
+  font-size: 2.5em; /* default size */
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .h1 {
+    font-size: 2em; /* smaller size for mobile devices */
+  }
+}
+
+.pagination {
+  display: flex;
+  list-style: none;
+  padding: 0;
+ 
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.pagination li {
+  margin: 0 5px;
+  font-size: 17px;
+}
+
+.pagination a {
+  text-decoration: none;
+  color: gray;
+  padding: 8px 10px;
+ 
+ 
+  cursor: pointer;
+}
+
+/* .pagination a:hover {
+  background-color: #f0f0f0;
+} */
+
+.pagination .active a {
+  /* background-color: #8c8c8d; */
+  color: black;
+  font-weight: bold;
+  border-radius: 20px;
+  
+}
+
+.pagination .disabled a {
+  color: #ddd;
+  cursor: default;
+}
